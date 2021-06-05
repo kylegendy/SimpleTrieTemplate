@@ -123,42 +123,27 @@ public:
      * @param value - the value being stored at element
      * @return - an iterator to the node that holds value
      */
-    iterator insert(std::pair<key_type,mapped_type>& p);
-    iterator insert(std::pair<key_type,mapped_type>&& p);
-    iterator insert(key_type article, mapped_type& value);
-    iterator insert(key_type article, mapped_type&& value);
-    iterator insert(key_type article, std::forward_list<mapped_type>& value);
-    iterator insert(key_type article, std::forward_list<mapped_type>&& value);
+    iterator insert(std::pair<key_type,mapped_type>& p, iterator pos = iterator());
+    iterator insert(std::pair<key_type,mapped_type>&& p, iterator pos = iterator());
 
-    // insert starting at a specific iterator location
-    iterator insert(iterator pos, std::pair<key_type,mapped_type>& p);
-    iterator insert(iterator pos, std::pair<key_type,mapped_type>&& p);
-    iterator insert(iterator pos, key_type article, mapped_type& value);
-    iterator insert(iterator pos, key_type article, mapped_type&& value);
-    iterator insert(iterator pos, key_type article, std::forward_list<mapped_type>& value);
-    iterator insert(iterator pos, key_type article, std::forward_list<mapped_type>&& value);
+    iterator insert(std::pair<key_type,std::forward_list<mapped_type>>& p, iterator pos = iterator());
+    iterator insert(std::pair<key_type,std::forward_list<mapped_type>>&& p, iterator pos = iterator());
+
+    iterator insert(key_type article, mapped_type& value, iterator pos = iterator());
+    iterator insert(key_type article, mapped_type&& value, iterator pos = iterator());
+
+    iterator insert(key_type article, std::forward_list<mapped_type>& value, iterator pos = iterator());
+    iterator insert(key_type article, std::forward_list<mapped_type>&& value, iterator pos = iterator());
 
     /**
      * erases articles within trie
      * @param article - the key being deleted
      */
-    void erase(key_type article);
-
-    // erase article if descendant from pos
-    void erase(iterator pos, key_type article);
-
-    /**
-     * calles eraser on iterator at the end of the article's node sequence
-     * @param pos - the iterator at the end of the article's node sequence
-     */
-    void erase(iterator& pos);
-    void erase(iterator&& pos);
+    void erase(key_type article,iterator pos = iterator());
 
     // erase all articles in between iterators
-    void erase(iterator& topmost, iterator& bottommost);
-    void erase(iterator&& topmost, iterator& bottommost);
-    void erase(iterator& topmost, iterator&& bottommost);
-    void erase(iterator&& topmost, iterator&& bottommost);
+    void erase(iterator& lastNode, iterator firstNode = iterator());
+    void erase(iterator&& lastNode, iterator firstNode = iterator());
 
     /**
      * swaps the contents
@@ -187,14 +172,14 @@ public:
      * @param article - the article being searched for
      * @return - returns a pair of a boolean and an iterator at the last viable node for the article's node sequence
      */
-    std::pair<bool,std::unique_ptr<iterator>> scout(key_type article);
+    std::pair<bool,std::unique_ptr<iterator>> scout(key_type article,iterator pos = iterator());
 
     /**
      * checks if the container contains element
      * @param element - the key being searched for
      * @return - true if in container, else false
      */
-    bool contains(key_type article);
+    bool contains(key_type article,iterator pos = iterator());
 
 //////////////////////////////////////////////////////
 //// COMPARERS
@@ -232,6 +217,8 @@ private:
     std::pair<bool,std::unique_ptr<iterator>> scout_helper_foundTarget(key_type& key, Node* node);
 
     std::pair<bool,std::unique_ptr<iterator>> scout_helper_childAccess(key_type& key, Node* node, uint32_t signal);
+
+    iterator insert(iterator pos, key_type article, std::forward_list<mapped_type>& value);
 
     iterator insert_recursive(Node* &curNode,Node* parentNode,key_type& key, std::forward_list<mapped_type>& value);
 
