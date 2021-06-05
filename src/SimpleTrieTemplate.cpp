@@ -163,12 +163,11 @@ Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::find(key
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 std::pair<bool, std::unique_ptr<Iterator<K,T,S>>>
-SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::scout(const key_type &article) {
-    key_type duplicate(article);
+SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::scout(key_type article) {
     if (root.get() == nullptr) {
         return std::pair<bool, std::unique_ptr<iterator>>(false,nullptr);
     }
-    return scout_helper(duplicate, root.get());
+    return scout_helper(article, root.get());
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
@@ -178,18 +177,19 @@ bool SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::contains(key_type a
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 bool SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::operator==(const SimpleTrieTemplate &rhs) const {
-    if (this == &rhs)
+    if (this == &rhs) // check to see if same address
         return true;
 
-    if (size() == rhs.size()) {
+    if (size() == rhs.size()) { // first check size
+        // if root holds nullptr, then rhs.root must hold nullptr to be equal
         if (root.get() == nullptr) {
             return rhs.root.get() == nullptr;
         }
+        // else root does not hold nullptr, and rhs.root must hold equivalent node as root to be equivalent
         else if (rhs.root.get() != nullptr) {
             return *root == *(rhs.root);
         }
     }
-
     return false;
 }
 

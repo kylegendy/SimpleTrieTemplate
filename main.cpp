@@ -66,7 +66,6 @@ int main() {
     return 0;
 }
 
-//region //FUNCTION DEFINITIONS
 void run_tests() {
     constructor_default_tests();
     constructor_copy_tests();
@@ -92,6 +91,7 @@ void print_message(const std::string& s) {
     }
 }
 
+//region //FUNCTION DEFINITIONS
 void constructor_default_tests() {
     std::cout << "default constructor test(s): ";
     std::string s;
