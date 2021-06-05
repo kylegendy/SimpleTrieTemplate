@@ -125,10 +125,18 @@ public:
      */
     iterator insert(std::pair<key_type,mapped_type>& p);
     iterator insert(std::pair<key_type,mapped_type>&& p);
-    iterator insert(key_type article, mapped_type&& value);
-    iterator insert(key_type article, std::forward_list<mapped_type>&& value);
     iterator insert(key_type article, mapped_type& value);
+    iterator insert(key_type article, mapped_type&& value);
     iterator insert(key_type article, std::forward_list<mapped_type>& value);
+    iterator insert(key_type article, std::forward_list<mapped_type>&& value);
+
+    // insert starting at a specific iterator location
+    iterator insert(iterator pos, std::pair<key_type,mapped_type>& p);
+    iterator insert(iterator pos, std::pair<key_type,mapped_type>&& p);
+    iterator insert(iterator pos, key_type article, mapped_type& value);
+    iterator insert(iterator pos, key_type article, mapped_type&& value);
+    iterator insert(iterator pos, key_type article, std::forward_list<mapped_type>& value);
+    iterator insert(iterator pos, key_type article, std::forward_list<mapped_type>&& value);
 
     /**
      * erases articles within trie
@@ -136,12 +144,21 @@ public:
      */
     void erase(key_type article);
 
+    // erase article if descendant from pos
+    void erase(iterator pos, key_type article);
+
     /**
      * calles eraser on iterator at the end of the article's node sequence
      * @param pos - the iterator at the end of the article's node sequence
      */
     void erase(iterator& pos);
     void erase(iterator&& pos);
+
+    // erase all articles in between iterators
+    void erase(iterator& topmost, iterator& bottommost);
+    void erase(iterator&& topmost, iterator& bottommost);
+    void erase(iterator& topmost, iterator&& bottommost);
+    void erase(iterator&& topmost, iterator&& bottommost);
 
     /**
      * swaps the contents
@@ -170,7 +187,7 @@ public:
      * @param article - the article being searched for
      * @return - returns a pair of a boolean and an iterator at the last viable node for the article's node sequence
      */
-    std::pair<bool,std::unique_ptr<iterator>> scout(const key_type& article);
+    std::pair<bool,std::unique_ptr<iterator>> scout(key_type article);
 
     /**
      * checks if the container contains element
@@ -219,7 +236,6 @@ private:
     iterator insert_recursive(Node* &curNode,Node* parentNode,key_type& key, std::forward_list<mapped_type>& value);
 
     void valid_childAccess_helper(const Node& node, const uint32_t& signal);
-
 };
 
 #include "../src/SimpleTrieTemplate.cpp"
