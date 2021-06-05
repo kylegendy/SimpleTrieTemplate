@@ -133,9 +133,8 @@ public:
     /**
      * erases articles within trie
      * @param article - the key being deleted
-     * @return - true if an element was deleted, false if not
      */
-    bool erase(key_type article);
+    void erase(key_type article);
 
     /**
      * calles eraser on iterator at the end of the article's node sequence

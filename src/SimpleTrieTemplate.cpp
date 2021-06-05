@@ -111,22 +111,20 @@ Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(k
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
-bool SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::erase(key_type article) {
-    auto iter(find(article));
+void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::erase(key_type article) {
+    iterator iter(find(article));
     if (iter != end()) {
-        erase(iter);
-        return true;
+        eraser(iter);
     }
-    return false;
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
-void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::erase(SimpleTrieTemplate::iterator& pos) {
+void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::erase(iterator& pos) {
     eraser(pos);
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
-void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::erase(SimpleTrieTemplate::iterator &&pos) {
+void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::erase(iterator &&pos) {
     eraser(pos);
 }
 
