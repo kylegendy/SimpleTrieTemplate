@@ -34,18 +34,29 @@ void size_tests();
     std::string size_checkValid(SimpleTrieTemplate<int,char> &trie, uint32_t correctCnt, uint32_t cnt);
 
 void clear_tests();
+    std::string clear_diffCases();
+    std::string clear_properOut(SimpleTrieTemplate<int,char> &trie, uint32_t cnt);
+    std::string clear_multiple();
+    std::string clear_empty_empty();
+    std::string clear_filled_empty();
+    std::string clear_empty_filled();
+    std::string clear_filled_filled();
 
 void insert_tests();
 
 void erase_tests();
 
 void swap_tests();
+    std::string swap_oneAndOther(SimpleTrieTemplate<int,char> &one, SimpleTrieTemplate<int,char> &other, int32_t cnt);
 
 void find_tests();
+    std::string find_keyInTrie(SimpleTrieTemplate<int,char> &trie, int key, bool valid, int32_t cnt);
 
 void scout_tests();
+    std::string scout_keyInTrie(SimpleTrieTemplate<int,char> &trie, int key, bool valid, int32_t cnt);
 
 void contains_tests();
+    std::string contains_keyInTrie(SimpleTrieTemplate<int,char> &trie, int key, bool valid, int32_t cnt);
 
 void iterator_tests();
 //endregion
@@ -62,13 +73,13 @@ void run_tests() {
     assignment_tests();
     empty_tests();
     size_tests();
-//    clear_tests();
+    clear_tests();
 //    insert_tests();
 //    erase_tests();
-//    swap_tests();
-//    find_tests();
-//    scout_tests();
-//    contains_tests();
+    swap_tests();
+    find_tests();
+    scout_tests();
+    contains_tests();
 //    iterator_tests();
 }
 
@@ -387,51 +398,123 @@ void clear_tests() {
     std::cout << "clear test(s): ";
     std::string s;
 
-    // when empty
-
-    // when not empty
+    // when empty and not empty
+    s += clear_diffCases();
 
     // called multiple times
+    s += clear_multiple();
 
     print_message(s);
 }
+//region //EMPTY
+std::string  clear_diffCases() {
+    SimpleTrieTemplate<int,char> trie_one, trie_two, trie_three;
+    std::string out;
+
+    // when empty
+    out += clear_properOut(trie_one, 1);
+
+    // filled with one
+    trie_two.insert(3,'a');
+    out += clear_properOut(trie_two, 2);
+
+    // filled with more than one
+    trie_three.insert(3,'a');
+    trie_three.insert(1,'b');
+    trie_three.insert(8,'c');
+    trie_three.insert(8,'u');
+    trie_three.insert(8,'n');
+    trie_three.insert(8,'t');
+    out += clear_properOut(trie_three,3);
+
+    return out;
+}
+
+std::string clear_properOut(SimpleTrieTemplate<int,char> &trie, uint32_t cnt) {
+    std::string out("\t- proper return(" + std::to_string(cnt) + "): ");
+    try {
+        trie.clear();
+        return (trie.empty() && trie.size() == 0) ? "" : out + "fail\n";
+    }
+    catch(...) {
+        return out + "UNKNOWN ERROR\n";
+    }
+}
+
+std::string clear_multiple() {
+
+    std::string out;
+
+    out += clear_empty_empty();
+    out += clear_filled_empty();
+    out += clear_empty_filled();
+    out += clear_filled_filled();
+
+    return out;
+}
+
+std::string clear_empty_empty() {
+    SimpleTrieTemplate<int,char> trie_empty;
+    std::string out;
+
+    out += clear_properOut(trie_empty, 4);
+    out += clear_properOut(trie_empty, 5);
+
+    return out;
+}
+
+std::string clear_filled_empty() {
+    SimpleTrieTemplate<int,char> trie;
+    std::string out;
+
+    trie.insert(3,'a');
+
+    out += clear_properOut(trie, 6);
+    out += clear_properOut(trie,7);
+
+    return out;
+}
+
+std::string clear_empty_filled() {
+    SimpleTrieTemplate<int,char> trie;
+    std::string out;
+
+    out += clear_properOut(trie,8);
+    trie.insert(3,'a');
+    out += clear_properOut(trie,9);
+
+    return out;
+}
+
+std::string clear_filled_filled() {
+    SimpleTrieTemplate<int,char> trie;
+    std::string out;
+
+    trie.insert(3,'a');
+    out += clear_properOut(trie,10);
+    trie.insert(4,'b');
+    out += clear_properOut(trie,11);
+
+    return out;
+}
+
+//endregion
 
 void insert_tests() {
     std::cout << "insert test(s): ";
     std::string s;
 
-    // insert duplicate values at same key
-    // affects size appropriately
+    // pair&
 
-    ///// ARTICLES
-    // insert non-const rvalues into empty
-    // insert non-const rvalues into non-empty
+    // pair&&
 
-    // insert non-const lvalues into empty
-    // insert non-const lvalues into non-empty
+    // mapped_type&
 
-    // insert const rvalues into empty
-    // insert const rvalues into non-empty
+    // mapped_type&&
 
-    // insert const lvalues into empty
-    // insert const lvalues into non-empty
+    // forward_list&
 
-    // insert duplicate keys into empty
-    // insert duplicate keys into non-empty
-
-
-    ///// VALUES
-    // insert non-const rvalues
-
-    // insert non-const lvalues
-
-    // insert const rvalues
-
-    // insert const lvalues
-
-    // insert non-list value
-
-    // insert list value
+    // forward_list&&
 
     print_message(s);
 }
@@ -440,6 +523,14 @@ void erase_tests() {
     std::cout << "erase test(s): ";
     std::string s;
 
+    // called on empty trie
+        // changes number appropriately
+
+    // non-existent key
+        // changes number appropriately
+
+    // actual key
+
     print_message(s);
 }
 
@@ -447,29 +538,160 @@ void swap_tests() {
     std::cout << "swap test(s): ";
     std::string s;
 
+    // empty to empty
+    SimpleTrieTemplate<int,char> trie_one, trie_two;
+    s += swap_oneAndOther(trie_one,trie_two,1);
+
+    // empty to filled
+    SimpleTrieTemplate<int,char> trie_three, trie_four;
+    trie_four.insert(3,'a');
+    trie_four.insert(2,'b');
+    trie_four.insert(5,'c');
+    s += swap_oneAndOther(trie_three,trie_four,2);
+
+    // filled to empty
+    SimpleTrieTemplate<int,char> trie_five, trie_six;
+    trie_five.insert(3,'a');
+    trie_five.insert(2,'b');
+    trie_five.insert(5,'c');
+    s += swap_oneAndOther(trie_five,trie_six,3);
+
+    // filled to filled
+    SimpleTrieTemplate<int,char> trie_seven, trie_eight;
+    trie_seven.insert(3,'a');
+    trie_seven.insert(2,'b');
+    trie_seven.insert(5,'c');
+    trie_eight.insert(3,'a');
+    trie_eight.insert(2,'b');
+    trie_eight.insert(5,'c');
+    trie_eight.insert(6,'d');
+    s += swap_oneAndOther(trie_seven,trie_eight,4);
+
     print_message(s);
 }
+//region //SWAP
+std::string swap_oneAndOther(SimpleTrieTemplate<int,char> &one, SimpleTrieTemplate<int,char> &other, int32_t cnt) {
+    std::string out("\t- proper swap(" + std::to_string(cnt) + "): ");
+    try {
+        SimpleTrieTemplate<int,char> copy_one(one), copy_other(other);
+        one.swap(other);
+        return (one == copy_other && other == copy_one) ? "" : out + "fail\n";
+    }
+    catch(...) {
+        return out + "UNKNOWN ERROR\n";
+    }
+}
+
+//endregion
 
 void find_tests() {
     std::cout << "find test(s): ";
     std::string s;
 
+    // empty trie
+    SimpleTrieTemplate<int,char> empty;
+    s += find_keyInTrie(empty,3,false,1);
+
+    // filled trie, invalid key
+    SimpleTrieTemplate<int,char> filled;
+    filled.insert(3,'a');
+    filled.insert(2,'b');
+    filled.insert(5,'c');
+    s += find_keyInTrie(filled,7,false,2);
+
+    // filled trie, valid key
+    s += find_keyInTrie(filled,5,true,2);
+
     print_message(s);
 }
+//region //FIND
+std::string find_keyInTrie(SimpleTrieTemplate<int,char> &trie, int key, bool valid, int32_t cnt) {
+    std::string out("\t- proper find(" + std::to_string(cnt) + "): ");
+    try {
+        auto it = trie.find(key);
+        bool found(true);
+        if (it != trie.end()) {
+            found = it.first() == key;
+        }
+        return ((it != trie.end()) == valid && found) ? "" : out + "fail\n";
+    }
+    catch(...) {
+        return out + "UNKNOWN ERROR\n";
+    }
+}
+
+//endregion
 
 void scout_tests() {
     std::cout << "scout test(s): ";
     std::string s;
 
+    // empty trie
+    SimpleTrieTemplate<int,char> empty;
+    s += scout_keyInTrie(empty,3,false,1);
+
+    // filled trie, invalid key
+    SimpleTrieTemplate<int,char> trie;
+    trie.insert(3,'a');
+    trie.insert(2,'b');
+    trie.insert(5,'c');
+    s += scout_keyInTrie(trie,8,false,2);
+
+    // filled key, valid key
+    s += scout_keyInTrie(trie,5,true,3);
+
     print_message(s);
 }
+//region //SCOUT
+std::string scout_keyInTrie(SimpleTrieTemplate<int,char> &trie, int key, bool valid, int32_t cnt) {
+    std::string out("\t- proper scout(" + std::to_string(cnt) + "): ");
+    try {
+        auto it = trie.scout(key);
+        bool found(true);
+        if (it.first) {
+            found = it.second->first() == key;
+        }
+        return (it.first == valid && found) ? "" : out + "fail\n";
+    }
+    catch(...) {
+        return out + "UNKNOWN ERROR\n";
+    }
+}
+
+//endregion
 
 void contains_tests() {
     std::cout << "contains test(s): ";
     std::string s;
 
+    // empty trie
+    SimpleTrieTemplate<int,char> empty;
+    s += contains_keyInTrie(empty,3,false,1);
+
+    // filled trie, invalid key
+    SimpleTrieTemplate<int,char> trie;
+    trie.insert(3,'a');
+    trie.insert(2,'b');
+    trie.insert(5,'c');
+    s += contains_keyInTrie(trie,8,false,2);
+
+    // filled key, valid key
+    s += contains_keyInTrie(trie,5,true,3);
+
     print_message(s);
 }
+//region //CONTAINS
+std::string contains_keyInTrie(SimpleTrieTemplate<int,char> &trie, int key, bool valid, int32_t cnt) {
+    std::string out("\t- proper contains(" + std::to_string(cnt) + "): ");
+    try {
+        return (trie.contains(key) == valid) ? "" : out + "fail\n";
+    }
+    catch(...) {
+        return out + "UNKNOWN ERROR\n";
+    }
+}
+
+//endregion
 
 void iterator_tests() {
     std::cout << "iterator test(s): ";

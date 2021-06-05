@@ -46,6 +46,16 @@ void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::clear() noexcept {
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(std::pair<key_type, mapped_type> &p) {
+    return insert(p.first,p.second);
+}
+
+template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(std::pair<key_type, mapped_type> &&p) {
+    return insert(p.first,p.second);
+}
+
+template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 Iterator<K,T,S>
 SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(key_type article, mapped_type &&value) {
     std::forward_list<mapped_type> val;
@@ -111,7 +121,12 @@ bool SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::erase(key_type arti
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
-void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::erase(SimpleTrieTemplate::iterator pos) {
+void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::erase(SimpleTrieTemplate::iterator& pos) {
+    eraser(pos);
+}
+
+template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::erase(SimpleTrieTemplate::iterator &&pos) {
     eraser(pos);
 }
 
@@ -143,9 +158,9 @@ void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::swap(SimpleTrieTemp
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
-Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::find(const key_type &article) {
+Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::find(key_type article) {
     auto couple = scout(article);
-    return (couple.first) ? couple.second : end();
+    return (couple.first) ? *(couple.second) : end();
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
@@ -159,7 +174,7 @@ SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::scout(const key_type &ar
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
-bool SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::contains(const key_type &article) {
+bool SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::contains(key_type article) {
     return scout(article).first;
 }
 

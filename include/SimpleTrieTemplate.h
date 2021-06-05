@@ -123,6 +123,8 @@ public:
      * @param value - the value being stored at element
      * @return - an iterator to the node that holds value
      */
+    iterator insert(std::pair<key_type,mapped_type>& p);
+    iterator insert(std::pair<key_type,mapped_type>&& p);
     iterator insert(key_type article, mapped_type&& value);
     iterator insert(key_type article, std::forward_list<mapped_type>&& value);
     iterator insert(key_type article, mapped_type& value);
@@ -139,7 +141,8 @@ public:
      * calles eraser on iterator at the end of the article's node sequence
      * @param pos - the iterator at the end of the article's node sequence
      */
-    void erase(iterator pos);
+    void erase(iterator& pos);
+    void erase(iterator&& pos);
 
     /**
      * swaps the contents
@@ -155,7 +158,7 @@ public:
      * @param article - the article being searched for
      * @return - an iterator at the last node in sequence for the article, else returns .end()
      */
-    iterator find(const key_type& article);
+    iterator find(key_type article);
 
     /**
      * finds the last viable node in sequence for the article. The returned pair contains, first, a boolean which holds
@@ -175,7 +178,7 @@ public:
      * @param element - the key being searched for
      * @return - true if in container, else false
      */
-    bool contains(const key_type& article);
+    bool contains(key_type article);
 
 //////////////////////////////////////////////////////
 //// COMPARERS
