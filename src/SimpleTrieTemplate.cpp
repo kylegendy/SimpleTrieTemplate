@@ -181,16 +181,16 @@ bool SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::operator==(const Si
     if (this == &rhs)
         return true;
 
-    bool first = numberArticles == rhs.numberArticles;
-    if (root.get() == nullptr) {
-        return rhs.root.get() == nullptr;
+    if (size() == rhs.size()) {
+        if (root.get() == nullptr) {
+            return rhs.root.get() == nullptr;
+        }
+        else if (rhs.root.get() != nullptr) {
+            return *root == *(rhs.root);
+        }
     }
-    else {
-        if (rhs.root.get() == nullptr)
-            return false;
-        bool sec = *root == *(rhs.root);
-        return first && sec;
-    }
+
+    return false;
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
