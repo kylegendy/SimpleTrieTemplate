@@ -45,9 +45,17 @@ bool Iterator<K, T, S>::isArticleEnd() {
 }
 
 template<typename K, typename T, uint32_t S>
+void Iterator<K, T, S>::swap(Iterator &rhs) {
+    int32_t ph(rhs.prevIndex);
+    std::swap(curNode,rhs.curNode);
+    rhs.prevIndex = prevIndex;
+    prevIndex = ph;
+}
+
+template<typename K, typename T, uint32_t S>
 Iterator<K,T,S> &Iterator<K, T, S>::operator=(Iterator &rhs) {
     Iterator ph(rhs);
-    std::swap(*this,rhs);
+    swap(rhs);
     return *this;
 }
 

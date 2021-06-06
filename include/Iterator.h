@@ -66,6 +66,8 @@ public:
     /////////////////////////////////////////////////////////////////////////
     /// MODIFIERS
 
+    void swap(Iterator& rhs);
+
     // assignment op
     Iterator &operator=(Iterator &rhs);
 
