@@ -65,7 +65,7 @@ public:
 template <typename K, typename Value, uint32_t S>
 class Awful_Eraser {
 public:
-    void operator()(Iterator<K,Value,S>) {
+    void operator()(Iterator<K,Value,S>& ancestor, Iterator<K,Value,S>& descendant) {
     }
 };
 
@@ -123,27 +123,27 @@ public:
      * @param value - the value being stored at element
      * @return - an iterator to the node that holds value
      */
-    iterator insert(std::pair<key_type,mapped_type>& p, iterator pos = iterator());
-    iterator insert(std::pair<key_type,mapped_type>&& p, iterator pos = iterator());
+    iterator insert(std::pair<key_type,mapped_type>& p, iterator ancestor = iterator());
+    iterator insert(std::pair<key_type,mapped_type>&& p, iterator ancestor = iterator());
 
-    iterator insert(std::pair<key_type,std::forward_list<mapped_type>>& p, iterator pos = iterator());
-    iterator insert(std::pair<key_type,std::forward_list<mapped_type>>&& p, iterator pos = iterator());
+    iterator insert(std::pair<key_type,std::forward_list<mapped_type>>& p, iterator ancestor = iterator());
+    iterator insert(std::pair<key_type,std::forward_list<mapped_type>>&& p, iterator ancestor = iterator());
 
-    iterator insert(key_type article, mapped_type& value, iterator pos = iterator());
-    iterator insert(key_type article, mapped_type&& value, iterator pos = iterator());
+    iterator insert(key_type article, mapped_type& value, iterator ancestor = iterator());
+    iterator insert(key_type article, mapped_type&& value, iterator ancestor = iterator());
 
-    iterator insert(key_type article, std::forward_list<mapped_type>& value, iterator pos = iterator());
-    iterator insert(key_type article, std::forward_list<mapped_type>&& value, iterator pos = iterator());
+    iterator insert(key_type article, std::forward_list<mapped_type>& value, iterator ancestor = iterator());
+    iterator insert(key_type article, std::forward_list<mapped_type>&& value, iterator ancestor = iterator());
 
     /**
      * erases articles within trie
      * @param article - the key being deleted
      */
-    void erase(key_type article,iterator pos = iterator());
+    void erase(key_type article,iterator ancestor = iterator());
 
     // erase all articles in between iterators
-    void erase(iterator& lastNode, iterator firstNode = iterator());
-    void erase(iterator&& lastNode, iterator firstNode = iterator());
+    void erase(iterator& descendant, iterator ancestor = iterator());
+    void erase(iterator&& descendant, iterator ancestor = iterator());
 
     /**
      * swaps the contents
@@ -172,14 +172,14 @@ public:
      * @param article - the article being searched for
      * @return - returns a pair of a boolean and an iterator at the last viable node for the article's node sequence
      */
-    std::pair<bool,std::unique_ptr<iterator>> scout(key_type article,iterator pos = iterator());
+    std::pair<bool,std::unique_ptr<iterator>> scout(key_type article,iterator ancestor = iterator());
 
     /**
      * checks if the container contains element
      * @param element - the key being searched for
      * @return - true if in container, else false
      */
-    bool contains(key_type article,iterator pos = iterator());
+    bool contains(key_type article,iterator ancestor = iterator());
 
 //////////////////////////////////////////////////////
 //// COMPARERS
