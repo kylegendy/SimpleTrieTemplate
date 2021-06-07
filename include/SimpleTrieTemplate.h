@@ -66,7 +66,13 @@ template <typename K, typename Value, uint32_t S>
 class Awful_Eraser {
 public:
     void operator()(Iterator<K,Value,S>& ancestor, Iterator<K,Value,S>& descendant) {
+        // create pointer that points to merged children
+
+        // find index of descendant in parent's child
+
+        // reset child at index with new merged pointer
     }
+
 };
 
 template <typename K, typename T, uint32_t S = 2, typename Indexer = Awful_Indexer<K,T,S>, typename Modifier =
