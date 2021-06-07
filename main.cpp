@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <map>
 #include "./include/SimpleTrieTemplate.h"
 
 void run_tests();
@@ -77,6 +78,7 @@ void insert_tests();
 
 void erase_tests();
     std::string erase_key();
+    std::string erase_key_diffCases(SimpleTrieTemplate<int,char> &trie, std::map<int,char> &map, int key, bool validKey, int32_t cnt);
 
     std::string erase_iterators();
 
@@ -93,6 +95,9 @@ void contains_tests();
     std::string contains_keyInTrie(SimpleTrieTemplate<int,char> &trie, int key, bool valid, int32_t cnt);
 
 void iterator_tests();
+    std::string iterator_empty();
+    std::string iterator_empty_beginIsEnd();
+    std::string iterator_filled_diffCases(SimpleTrieTemplate<int,char> &trie, std::map<int,char> &map, int32_t cnt);
 //endregion
 
 int main() {
@@ -108,7 +113,7 @@ void run_tests() {
     size_tests();
     clear_tests();
     insert_tests();
-//    erase_tests();
+    erase_tests();
     swap_tests();
     find_tests();
     scout_tests();
@@ -1067,7 +1072,7 @@ void erase_tests() {
     s += erase_key();
 
     // erase via iterator
-    s += erase_iterators();
+    //s += erase_iterators();
 
     // called on empty trie
         // changes number appropriately
@@ -1085,15 +1090,37 @@ std::string erase_key() {
     std::string out;
     // called on empty trie
         // changes number appropriately
+        SimpleTrieTemplate<int,char> trie;
+        std::map<int,char> map;
+        out += erase_key_diffCases(trie,map,3,false,1);
 
     // non-existent key
         // changes number appropriately
+        std::pair<int,char> p(3,'a');
+        trie.insert(p);
+        map.insert(p);
+        out += erase_key_diffCases(trie,map,2,false,2);
 
     // actual key
 
     return out;
 }
-std::string erase_key_diffCases(SimpleTrieTemplate<int,char> &trie, char key, bool validKey)
+std::string erase_key_diffCases(SimpleTrieTemplate<int,char> &trie, std::map<int,char> &map, int key, bool validKey, int32_t cnt) {
+    std::string out("\t- key diffCases (" + std::to_string(cnt) + "): ");
+    try {
+        SimpleTrieTemplate<int,char> copy(trie);
+        int32_t ogSize(copy.size());
+        copy.erase(key);
+
+        int trieCnt = std::distance(copy.begin(),copy.end());
+        int mapCnt = std::distance(map.begin(),map.end());
+
+        return (((mapCnt == trieCnt + 1) == validKey) && ( (ogSize == copy.size() + 1) == validKey) && !(trie.contains(key))) ? "" : out + "fail\n";
+    }
+    catch(...) {
+        return out + "UNKNOWN ERROR\n";
+    }
+}
 
 std::string erase_iterators() {
     std::string out;
@@ -1273,6 +1300,43 @@ void iterator_tests() {
     std::cout << "iterator test(s): ";
     std::string s;
 
+    // empty trie
+    s += iterator_empty_beginIsEnd();
+
+    // filled trie
+
     print_message(s);
 }
+std::string iterator_empty_beginIsEnd() {
+    std::string out("\t- empty begin is end: ");
+    try {
+        SimpleTrieTemplate<int,char> trie;
+        return (trie.begin() == trie.end() && trie.begin().operator->() == nullptr) ? "" : out + "fail\n";
+    }
+    catch(...) {
+        return out + "UNKNOWN ERROR\n";
+    }
+}
+
+std::string iterator_filled_diffCases(SimpleTrieTemplate<int,char> &trie, std::map<int,char> &map, int32_t cnt) {
+    std::string out("\t- iterator filled (" + std::to_string(cnt) + "): ");
+    try {
+        SimpleTrieTemplate<int,char> copy(trie);
+
+        bool allEqual(true);
+        auto mapIt(map.begin());
+        for (auto trieIt(trie.begin()); trieIt != trie.end() && mapIt != map.end(); ++trieIt, ++mapIt) {
+                if (trieIt.first() != mapIt->first) {
+                    allEqual = false;
+                    break;
+                }
+        }
+
+        return (allEqual) ? "" : out + "fail\n";
+    }
+    catch(...) {
+        return out + "UNKNOWN ERROR\n";
+    }
+}
+
 //endregion
