@@ -43,8 +43,42 @@ void clear_tests();
     std::string clear_filled_filled();
 
 void insert_tests();
+    std::string insert_pairTypeRef();
+    std::string insert_pairTypeRef_empty();
+    std::string insert_pairTypeRef_filled(SimpleTrieTemplate<int,char> &trie, std::pair<int,char> p, bool newVal);
+
+    std::string insert_pairTypeVal();
+    std::string insert_pairTypeVal_empty();
+    std::string insert_pairTypeVal_filled(SimpleTrieTemplate<int,char> &trie, std::pair<int,char> p, bool newVal);
+
+    std::string insert_pairListRef();
+    std::string insert_pairListRef_empty();
+    std::string insert_pairListRef_filled(SimpleTrieTemplate<int,char> &trie, std::pair<int,std::forward_list<char>> p, bool newVal);
+
+    std::string insert_pairListVal();
+    std::string insert_pairListVal_empty();
+    std::string insert_pairListVal_filled(SimpleTrieTemplate<int,char> &trie, std::pair<int,std::forward_list<char>> p, bool newVal);
+
+    std::string insert_typeRef();
+    std::string insert_typeRef_empty();
+    std::string insert_typeRef_filled(SimpleTrieTemplate<int,char> &trie, char p, bool newVal);
+
+    std::string insert_typeVal();
+    std::string insert_typeVal_empty();
+    std::string insert_typeVal_filled(SimpleTrieTemplate<int,char> &trie, char p, bool newVal);
+
+    std::string insert_listRef();
+    std::string insert_listRef_empty();
+    std::string insert_listRef_filled(SimpleTrieTemplate<int,char> &trie, std::forward_list<char> p, bool newVal);
+
+    std::string insert_listVal();
+    std::string insert_listVal_empty();
+    std::string insert_listVal_filled(SimpleTrieTemplate<int,char> &trie, std::forward_list<char> p, bool newVal);
 
 void erase_tests();
+    std::string erase_key();
+
+    std::string erase_iterators();
 
 void swap_tests();
     std::string swap_oneAndOther(SimpleTrieTemplate<int,char> &one, SimpleTrieTemplate<int,char> &other, int32_t cnt);
@@ -73,7 +107,7 @@ void run_tests() {
     empty_tests();
     size_tests();
     clear_tests();
-//    insert_tests();
+    insert_tests();
 //    erase_tests();
     swap_tests();
     find_tests();
@@ -504,27 +538,540 @@ void insert_tests() {
     std::cout << "insert test(s): ";
     std::string s;
 
-    // pair&
+    // pairType&
+    s += insert_pairTypeRef();
 
-    // pair&&
+    // pairType&&
+    s += insert_pairTypeVal();
 
-    // mapped_type&
+    // pairList&
+    s += insert_pairListRef();
 
-    // mapped_type&&
+    // pairList&&
+    s += insert_pairListVal();
 
-    // forward_list&
+    // type&
+    s += insert_typeRef();
 
-    // forward_list&&
+    // type&&
+    s += insert_typeVal();
+
+    // list&
+    s += insert_listRef();
+
+    // list&&
+    s += insert_listVal();
 
     print_message(s);
 }
+//region //INSERT
+std::string insert_pairTypeRef() {
+    std::string out;
+
+    // new key in empty trie
+        // size change
+        // trie has new key and its node has new value
+    out += insert_pairTypeRef_empty();
+
+    // old key in trie
+    SimpleTrieTemplate<int,char> trie;
+    std::pair<int,char> p(3,'a');
+    trie.insert(p);
+
+        // no size change
+        // old val
+            // no new value at key
+            out += insert_pairTypeRef_filled(trie,p,false);
+        // new val
+            // new value at key
+            p.second = 'b';
+            out += insert_pairTypeRef_filled(trie,p,true);
+
+    return out;
+}
+std::string insert_pairTypeRef_empty() {
+    std::string out("\t- pairTypeRef empty: ");
+    try {
+        SimpleTrieTemplate<int,char> trie;
+        std::pair<int,char> p(3,'a');
+        auto it = trie.insert(p);
+        auto found = std::find(it.second().begin(),it.second().end(),'a');
+        return (trie.size() == 1 && it.first() == 3 && found != it.second().end()) ? "" : out + "fail\n";
+    }
+    catch(...) {
+        return out + "UNKNOWN ERROR\n";
+    }
+}
+std::string insert_pairTypeRef_filled(SimpleTrieTemplate<int,char> &trie, std::pair<int,char> p, bool newVal) {
+    std::string out("\t- pairTypeRef filled: ");
+    try {
+        int prevSize = trie.size();
+        int prevValCnt(0);
+        if (trie.contains(p.first)) {
+            auto it = trie.find(p.first);
+            prevValCnt = std::distance(it.second().begin(), it.second().end());
+        }
+        trie.insert(p);
+
+        auto it = trie.find(p.first);
+        int postValCnt = std::distance(it.second().begin(),it.second().end());
+
+        bool incArtCnt(trie.size() == prevSize), incValCnt(postValCnt == prevValCnt + 1);
+        return (incArtCnt && (incValCnt == newVal)) ? "" : out + "fail\n";
+    }
+    catch(...) {
+        return out + "UNKNOWN ERROR\n";
+    }
+}
+
+std::string insert_pairTypeVal() {
+    std::string out;
+
+    // new key in empty trie
+        // size change
+        // trie has new key and its node has new value
+    out += insert_pairTypeVal_empty();
+
+    // old key in trie
+    SimpleTrieTemplate<int,char> trie;
+    std::pair<int,char> p(3,'a');
+    trie.insert(p);
+
+        // no size change
+        // old val
+            // no new value at key
+            out += insert_pairTypeVal_filled(trie,p,false);
+        // new val
+            // new value at key
+            p.second = 'b';
+            out += insert_pairTypeVal_filled(trie,p,true);
+
+    return out;
+}
+std::string insert_pairTypeVal_empty() {
+    std::string out("\t- pairTypeVal empty: ");
+    try {
+        SimpleTrieTemplate<int,char> trie;
+        std::pair<int,char> p(3,'a');
+        auto it = trie.insert(std::pair<int,char>(3,'a'));
+        auto found = std::find(it.second().begin(),it.second().end(),'a');
+        return (trie.size() == 1 && it.first() == 3 && found != it.second().end()) ? "" : out + "fail\n";
+    }
+    catch(...) {
+        return out + "UNKNOWN ERROR\n";
+    }
+}
+std::string insert_pairTypeVal_filled(SimpleTrieTemplate<int,char> &trie, std::pair<int,char> p, bool newVal) {
+    std::string out("\t- pairTypeVal filled: ");
+    try {
+        int prevSize = trie.size();
+        int prevValCnt(0);
+        if (trie.contains(p.first)) {
+            auto it = trie.find(p.first);
+            prevValCnt = std::distance(it.second().begin(), it.second().end());
+        }
+        trie.insert(std::pair<int,char>(p));
+
+        auto it = trie.find(p.first);
+        int postValCnt = std::distance(it.second().begin(),it.second().end());
+
+        bool incArtCnt(trie.size() == prevSize), incValCnt(postValCnt == prevValCnt + 1);
+        return (incArtCnt && (incValCnt == newVal)) ? "" : out + "fail\n";
+    }
+    catch(...) {
+        return out + "UNKNOWN ERROR\n";
+    }
+}
+
+std::string insert_pairListRef() {
+    std::string out;
+
+    // new key in empty trie
+    // size change
+    // trie has new key and its node has new value
+    out += insert_pairListRef_empty();
+
+    // old key in trie
+    SimpleTrieTemplate<int,char> trie;
+    std::forward_list<char> lst;
+    lst.push_front('a');
+    std::pair<int,std::forward_list<char>> p(3,lst);
+    trie.insert(p);
+
+    // no size change
+    // old val
+    // no new value at key
+    out += insert_pairListRef_filled(trie,p,false);
+    // new val
+    // new value at key
+    std::forward_list<char> list;
+    list.push_front('b');
+    p.second = list;
+    out += insert_pairListRef_filled(trie,p,true);
+
+    return out;
+}
+std::string insert_pairListRef_empty() {
+    std::string out("\t- pairListRef empty: ");
+    try {
+        SimpleTrieTemplate<int,char> trie;
+        std::forward_list<char> lst;
+        lst.push_front('a');
+        std::pair<int,std::forward_list<char>> p(3,lst);
+        auto it = trie.insert(p);
+        auto found = std::find(it.second().begin(),it.second().end(),'a');
+        return (trie.size() == 1 && it.first() == 3 && found != it.second().end()) ? "" : out + "fail\n";
+    }
+    catch(...) {
+        return out + "UNKNOWN ERROR\n";
+    }
+}
+std::string insert_pairListRef_filled(SimpleTrieTemplate<int,char> &trie, std::pair<int,std::forward_list<char>> p, bool newVal) {
+    std::string out("\t- pairListRef filled: ");
+    try {
+        int prevSize = trie.size();
+        int prevValCnt(0);
+        if (trie.contains(p.first)) {
+            auto it = trie.find(p.first);
+            prevValCnt = std::distance(it.second().begin(), it.second().end());
+        }
+        trie.insert(std::pair<int,std::forward_list<char>>(p));
+
+        auto it = trie.find(p.first);
+        int postValCnt = std::distance(it.second().begin(),it.second().end());
+
+        bool incArtCnt(trie.size() == prevSize), incValCnt(postValCnt == prevValCnt + 1);
+        return (incArtCnt && (incValCnt == newVal)) ? "" : out + "fail\n";
+    }
+    catch(...) {
+        return out + "UNKNOWN ERROR\n";
+    }
+}
+
+std::string insert_pairListVal() {
+    std::string out;
+
+    // new key in empty trie
+    // size change
+    // trie has new key and its node has new value
+    out += insert_pairListVal_empty();
+
+    // old key in trie
+    SimpleTrieTemplate<int,char> trie;
+    std::forward_list<char> lst;
+    lst.push_front('a');
+    std::pair<int,std::forward_list<char>> p(3,lst);
+    trie.insert(p);
+
+    // no size change
+    // old val
+    // no new value at key
+    out += insert_pairListVal_filled(trie,p,false);
+    // new val
+    // new value at key
+    std::forward_list<char> list;
+    list.push_front('b');
+    p.second = list;
+    out += insert_pairListVal_filled(trie,p,true);
+
+    return out;
+}
+std::string insert_pairListVal_empty() {
+    std::string out("\t- pairListVal empty: ");
+    try {
+        SimpleTrieTemplate<int,char> trie;
+        std::forward_list<char> lst;
+        lst.push_front('a');
+        auto it = trie.insert(std::pair<int,std::forward_list<char>>(3,lst));
+        auto found = std::find(it.second().begin(),it.second().end(),'a');
+        return (trie.size() == 1 && it.first() == 3 && found != it.second().end()) ? "" : out + "fail\n";
+    }
+    catch(...) {
+        return out + "UNKNOWN ERROR\n";
+    }
+}
+std::string insert_pairListVal_filled(SimpleTrieTemplate<int,char> &trie, std::pair<int,std::forward_list<char>> p, bool newVal) {
+    std::string out("\t- pairListVal filled: ");
+    try {
+        int prevSize = trie.size();
+        int prevValCnt(0);
+        if (trie.contains(p.first)) {
+            auto it = trie.find(p.first);
+            prevValCnt = std::distance(it.second().begin(), it.second().end());
+        }
+        trie.insert(std::pair<int,std::forward_list<char>>(p));
+
+        auto it = trie.find(p.first);
+        int postValCnt = std::distance(it.second().begin(),it.second().end());
+
+        bool incArtCnt(trie.size() == prevSize), incValCnt(postValCnt == prevValCnt + 1);
+        return (incArtCnt && (incValCnt == newVal)) ? "" : out + "fail\n";
+    }
+    catch(...) {
+        return out + "UNKNOWN ERROR\n";
+    }
+}
+
+std::string insert_typeRef() {
+    std::string out;
+
+    // new key in empty trie
+    // size change
+    // trie has new key and its node has new value
+    out += insert_typeRef_empty();
+
+    // old key in trie
+    SimpleTrieTemplate<int,char> trie;
+    std::forward_list<char> lst;
+    lst.push_front('a');
+    std::pair<int,std::forward_list<char>> p(3,lst);
+    trie.insert(p);
+
+    // no size change
+    // old val
+    // no new value at key
+    out += insert_typeRef_filled(trie,'a',false);
+    // new val
+    // new value at key
+    out += insert_typeRef_filled(trie,'b',true);
+
+    return out;
+}
+std::string insert_typeRef_empty() {
+    std::string out("\t- typeRef empty: ");
+    try {
+        SimpleTrieTemplate<int,char> trie;
+        char val('a');
+        auto it = trie.insert(3,val);
+        auto found = std::find(it.second().begin(),it.second().end(),'a');
+        return (trie.size() == 1 && it.first() == 3 && found != it.second().end()) ? "" : out + "fail\n";
+    }
+    catch(...) {
+        return out + "UNKNOWN ERROR\n";
+    }
+}
+std::string insert_typeRef_filled(SimpleTrieTemplate<int,char> &trie, char p, bool newVal) {
+    std::string out("\t- typeRef filled: ");
+    try {
+        int prevSize = trie.size();
+        int prevValCnt(0);
+        if (trie.contains(3)) {
+            auto it = trie.find(3);
+            prevValCnt = std::distance(it.second().begin(), it.second().end());
+        }
+        trie.insert(3,p);
+
+        auto it = trie.find(3);
+        int postValCnt = std::distance(it.second().begin(),it.second().end());
+
+        bool incArtCnt(trie.size() == prevSize), incValCnt(postValCnt == prevValCnt + 1);
+        return (incArtCnt && (incValCnt == newVal)) ? "" : out + "fail\n";
+    }
+    catch(...) {
+        return out + "UNKNOWN ERROR\n";
+    }
+}
+
+std::string insert_typeVal() {
+    std::string out;
+
+    // new key in empty trie
+    // size change
+    // trie has new key and its node has new value
+    out += insert_typeVal_empty();
+
+    // old key in trie
+    SimpleTrieTemplate<int,char> trie;
+    std::forward_list<char> lst;
+    lst.push_front('a');
+    std::pair<int,std::forward_list<char>> p(3,lst);
+    trie.insert(p);
+
+    // no size change
+    // old val
+    // no new value at key
+    out += insert_typeVal_filled(trie,'a',false);
+    // new val
+    // new value at key
+    out += insert_typeVal_filled(trie,'b',true);
+
+    return out;
+}
+std::string insert_typeVal_empty() {
+    std::string out("\t- typeVal empty: ");
+    try {
+        SimpleTrieTemplate<int,char> trie;
+        auto it = trie.insert(3,'a');
+        auto found = std::find(it.second().begin(),it.second().end(),'a');
+        return (trie.size() == 1 && it.first() == 3 && found != it.second().end()) ? "" : out + "fail\n";
+    }
+    catch(...) {
+        return out + "UNKNOWN ERROR\n";
+    }
+}
+std::string insert_typeVal_filled(SimpleTrieTemplate<int,char> &trie, char p, bool newVal) {
+    std::string out("\t- typeVal filled: ");
+    try {
+        int prevSize = trie.size();
+        int prevValCnt(0);
+        if (trie.contains(3)) {
+            auto it = trie.find(3);
+            prevValCnt = std::distance(it.second().begin(), it.second().end());
+        }
+        trie.insert(3,char(p));
+
+        auto it = trie.find(3);
+        int postValCnt = std::distance(it.second().begin(),it.second().end());
+
+        bool incArtCnt(trie.size() == prevSize), incValCnt(postValCnt == prevValCnt + 1);
+        return (incArtCnt && (incValCnt == newVal)) ? "" : out + "fail\n";
+    }
+    catch(...) {
+        return out + "UNKNOWN ERROR\n";
+    }
+}
+
+std::string insert_listRef() {
+    std::string out;
+
+    // new key in empty trie
+    // size change
+    // trie has new key and its node has new value
+    out += insert_listRef_empty();
+
+    // old key in trie
+    SimpleTrieTemplate<int,char> trie;
+    std::forward_list<char> lst;
+    lst.push_front('a');
+    std::pair<int,std::forward_list<char>> p(3,lst);
+    trie.insert(p);
+
+    // no size change
+    // old val
+    // no new value at key
+    out += insert_listRef_filled(trie,lst,false);
+    // new val
+    // new value at key
+    std::forward_list<char> list;
+    list.push_front('b');
+    out += insert_listRef_filled(trie,list,true);
+
+    return out;
+}
+std::string insert_listRef_empty() {
+    std::string out("\t- listRef empty: ");
+    try {
+        SimpleTrieTemplate<int,char> trie;
+        std::forward_list<char> lst;
+        lst.push_front('a');
+        auto it = trie.insert(3,lst);
+        auto found = std::find(it.second().begin(),it.second().end(),'a');
+        return (trie.size() == 1 && it.first() == 3 && found != it.second().end()) ? "" : out + "fail\n";
+    }
+    catch(...) {
+        return out + "UNKNOWN ERROR\n";
+    }
+}
+std::string insert_listRef_filled(SimpleTrieTemplate<int,char> &trie, std::forward_list<char> p, bool newVal) {
+    std::string out("\t- listRef filled: ");
+    try {
+        int prevSize = trie.size();
+        int prevValCnt(0);
+        if (trie.contains(3)) {
+            auto it = trie.find(3);
+            prevValCnt = std::distance(it.second().begin(), it.second().end());
+        }
+        trie.insert(3,p);
+
+        auto it = trie.find(3);
+        int postValCnt = std::distance(it.second().begin(),it.second().end());
+
+        bool incArtCnt(trie.size() == prevSize), incValCnt(postValCnt == prevValCnt + 1);
+        return (incArtCnt && (incValCnt == newVal)) ? "" : out + "fail\n";
+    }
+    catch(...) {
+        return out + "UNKNOWN ERROR\n";
+    }
+}
+
+std::string insert_listVal() {
+    std::string out;
+
+    // new key in empty trie
+    // size change
+    // trie has new key and its node has new value
+    out += insert_listVal_empty();
+
+    // old key in trie
+    SimpleTrieTemplate<int,char> trie;
+    std::forward_list<char> lst;
+    lst.push_front('a');
+    std::pair<int,std::forward_list<char>> p(3,lst);
+    trie.insert(p);
+
+    // no size change
+    // old val
+    // no new value at key
+    out += insert_listVal_filled(trie,lst,false);
+    // new val
+    // new value at key
+    std::forward_list<char> list;
+    list.push_front('b');
+    out += insert_listVal_filled(trie,list,true);
+
+    return out;
+}
+std::string insert_listVal_empty() {
+    std::string out("\t- listVal empty: ");
+    try {
+        SimpleTrieTemplate<int,char> trie;
+        std::forward_list<char> lst;
+        lst.push_front('a');
+        auto it = trie.insert(3,std::forward_list<char>(lst));
+        auto found = std::find(it.second().begin(),it.second().end(),'a');
+        return (trie.size() == 1 && it.first() == 3 && found != it.second().end()) ? "" : out + "fail\n";
+    }
+    catch(...) {
+        return out + "UNKNOWN ERROR\n";
+    }
+}
+std::string insert_listVal_filled(SimpleTrieTemplate<int,char> &trie, std::forward_list<char> p, bool newVal) {
+    std::string out("\t- listVal filled: ");
+    try {
+        int prevSize = trie.size();
+        int prevValCnt(0);
+        if (trie.contains(3)) {
+            auto it = trie.find(3);
+            prevValCnt = std::distance(it.second().begin(), it.second().end());
+        }
+        trie.insert(3,std::forward_list<char>(p));
+
+        auto it = trie.find(3);
+        int postValCnt = std::distance(it.second().begin(),it.second().end());
+
+        bool incArtCnt(trie.size() == prevSize), incValCnt(postValCnt == prevValCnt + 1);
+        return (incArtCnt && (incValCnt == newVal)) ? "" : out + "fail\n";
+    }
+    catch(...) {
+        return out + "UNKNOWN ERROR\n";
+    }
+}
+
+//endregion
 
 void erase_tests() {
     std::cout << "erase test(s): ";
     std::string s;
 
+    // erase via key
+    s += erase_key();
+
+    // erase via iterator
+    s += erase_iterators();
+
     // called on empty trie
         // changes number appropriately
+
 
     // non-existent key
         // changes number appropriately
@@ -533,6 +1080,35 @@ void erase_tests() {
 
     print_message(s);
 }
+//region //ERASE
+std::string erase_key() {
+    std::string out;
+    // called on empty trie
+        // changes number appropriately
+
+    // non-existent key
+        // changes number appropriately
+
+    // actual key
+
+    return out;
+}
+std::string erase_key_diffCases(SimpleTrieTemplate<int,char> &trie, char key, bool validKey)
+
+std::string erase_iterators() {
+    std::string out;
+    // called on empty trie
+        // changes number appropriately
+
+
+    // non-existent key
+        // changes number appropriately
+
+    // actual key
+    return out;
+}
+
+//endregion
 
 void swap_tests() {
     std::cout << "swap test(s): ";

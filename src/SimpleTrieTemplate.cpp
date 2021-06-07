@@ -316,7 +316,7 @@ SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert_recursive(Node* &
         modifier(key,curNode,parentNode,signal);
 
         // insert values
-        curNode->value.merge(value);
+        handleValueMerge(curNode->value, value);
 
         return Iterator<K,T,S>(*curNode,int32_t(signal - 1));
     }
@@ -346,6 +346,27 @@ void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::valid_childAccess_h
     // do some basic checks
     if (signal >= S) { // check if within range
         throw std::out_of_range("key_indexer signaled for child access greater than S\n");
+    }
+}
+
+template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::handleValueMerge(std::forward_list<mapped_type> &nodeList,
+                                                                              std::forward_list<mapped_type> &inputValue) {
+    auto inputEnd(inputValue.end()), nodeEnd(nodeList.end());
+    bool found(false);
+    for (auto inputIt(inputValue.begin()); inputIt != inputEnd; ++inputIt) { // iterate through inputList
+        for (auto nodeIt(nodeList.begin()); nodeIt != nodeEnd; ++nodeIt) { // iterator through nodeList
+            if (*inputIt == *nodeIt) {
+                found = true;
+                *nodeIt = *inputIt;
+                break;
+            }
+        }
+        if (!found) {
+            nodeList.push_front(*inputIt);
+            nodeEnd = nodeList.end();
+        }
+        found = false;
     }
 }
 

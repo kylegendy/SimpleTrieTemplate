@@ -223,6 +223,8 @@ private:
     iterator insert_recursive(Node* &curNode,Node* parentNode,key_type& key, std::forward_list<mapped_type>& value);
 
     void valid_childAccess_helper(const Node& node, const uint32_t& signal);
+
+    void handleValueMerge(std::forward_list<mapped_type>& nodeList, std::forward_list<mapped_type>& inputValue);
 };
 
 #include "../src/SimpleTrieTemplate.cpp"
