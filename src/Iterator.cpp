@@ -60,6 +60,11 @@ Iterator<K,T,S> &Iterator<K, T, S>::operator=(Iterator &rhs) {
 }
 
 template<typename K, typename T, uint32_t S>
+Iterator<K,T,S> &Iterator<K, T, S>::operator=(Iterator &&rhs) {
+    return *this = rhs;
+}
+
+template<typename K, typename T, uint32_t S>
 Iterator<K,T,S> &Iterator<K, T, S>::moveUp() {
     // todo deal with root
     int32_t index = findChildsIndex(curNode->getParent(), *curNode);
@@ -72,37 +77,37 @@ Iterator<K,T,S> &Iterator<K, T, S>::moveUp() {
 template<typename K, typename T, uint32_t S>
 Iterator<K,T,S> &Iterator<K, T, S>::operator++() {
 
-    Iterator nextIter;
-
-    // now check the node-type, if its a component check for next child
-    int nextIndex = findValidSucceedingChildIndex(*curNode,prevIndex);
-    if (nextIndex < S) {
-        nextIter = iterator(curNode->child.at(nextIndex), -1, (curNode->child.at(nextIndex)).begin());
-        swap(*this, nextIter);
+    // if node* points to null
+    if (curNode == nullptr) {
+        ++prevIndex;
         return *this;
     }
 
-    // at this point:
-    // either node is leaf or has no valid child to go to next
+    // instantiate common iterator
+    Iterator nextIter;
+    // find next valid child to go to
+    int nextIndex = findValidSucceedingChildIndex(*curNode,prevIndex);
 
-    // check to see if curNode is not root node, ie its parent will not be nullptr
-    if (curNode->getParent() != nullptr) {
+    // if valid child
+    if (nextIndex < S) {
+        nextIter = Iterator(curNode->child.at(nextIndex).get(), -1);
+    }
+    // at this point: no valid child to go to next
+
+    // if parent not null, go up to get to next node
+    else if (curNode->parent != nullptr) {
         // find curNode's index as child in parent's children
-        int parentsPrevIndex = findChildsIndex(curNode->getParent(), *curNode);
-        nextIter = iterator(curNode->getParent(), parentsPrevIndex);
-        ++nextIter; // increment for next node
+        int parentsPrevIndex = findChildsIndex(*(curNode->parent), *curNode);
+        nextIter = Iterator(curNode->parent, parentsPrevIndex);
+        ++nextIter;
     }
-        // else its the root node, its parent is nullptr
+
+    // else return end iterator
     else {
-        nextIter = iterator(curNode, S-1);
+        nextIter = Iterator(curNode, S-1);
     }
 
-    swap(*this, nextIter);
-
-    // ensure your at an article
-    if (!isArticleEnd())
-        ++(*this);
-
+    swap(nextIter);
     return *this;
 }
 
@@ -137,7 +142,7 @@ int32_t Iterator<K, T, S>::findValidSucceedingChildIndex(const Node<K, T, S> &pa
 template<typename K, typename T, uint32_t S>
 int32_t Iterator<K, T, S>::findChildsIndex(const Node<K, T, S> &parent, const Node<K, T, S> &child) {
     for (uint32_t i(0); i < S; ++i) {
-        if (parent.child.at(i) == &child)
+        if (parent.child.at(i).get() == &child)
             return i;
     }
     return -1;

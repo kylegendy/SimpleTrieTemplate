@@ -20,6 +20,11 @@
 template <typename K, typename T, uint32_t S>
 class Iterator  {
 public:
+    using iterator_category     = std::bidirectional_iterator_tag;
+    using value_type            = Node<K,T,S>;
+    using difference_type       = std::ptrdiff_t;
+    using pointer               = Node<K,T,S>*;
+    using reference             = Node<K,T,S>&;
 
     // default ctor is no more
     Iterator(Node<K,T,S> *currentNode = nullptr, int32_t previousIndex = -1);
@@ -70,6 +75,7 @@ public:
 
     // assignment op
     Iterator &operator=(Iterator &rhs);
+    Iterator &operator=(Iterator &&rhs);
 
     /**
      * turns curNode into its parent, and prevNode into curNode
