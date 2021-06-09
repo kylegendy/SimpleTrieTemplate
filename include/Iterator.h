@@ -50,7 +50,7 @@ public:
     /**
      * @return a pointer to the node pointed to by this
      */
-    Node<K,T,S> *operator->();
+    Node<K,T,S>* operator->();
 
     /**
      * @return the key
@@ -66,6 +66,14 @@ public:
      * @return true if an end to an article, false otherwise
      */
     bool isArticleEnd();
+
+    /**
+     * looks for child node within parent's vector of children and returns the child's index.  if not found returns -1
+     * @param parent - the parent whos vector of children is being searched through
+     * @param child - the child that's being searched for
+     * @return - the index of the child or -1 if not found
+     */
+    static int32_t findChildsIndex(const Node<K,T,S> &parent, const Node<K,T,S> &child);
 
 
     /////////////////////////////////////////////////////////////////////////
@@ -134,19 +142,13 @@ private:
     // current node being looked at
     int32_t prevIndex;
 
+    Node<K,T,S> basicNode;
+
     /**
      * looks for the next valid child after prevIndex and returns its index number, if none available then returns S
      * @return index of next valid child after prev, else S if none
      */
     static int32_t findValidSucceedingChildIndex(const Node<K,T,S> &parent, int32_t previousIndex);
-
-    /**
-     * looks for child node within parent's vector of children and returns the child's index.  if not found returns -1
-     * @param parent - the parent whos vector of children is being searched through
-     * @param child - the child that's being searched for
-     * @return - the index of the child or -1 if not found
-     */
-    static int32_t findChildsIndex(const Node<K,T,S> &parent, const Node<K,T,S> &child);
 };
 
 #include "../src/Iterator.cpp"

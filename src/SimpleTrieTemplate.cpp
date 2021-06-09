@@ -50,8 +50,7 @@ Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(s
     std::forward_list<mapped_type> val;
     val.push_front(p.second);
     if (ancestor == iterator()) {
-        iterator theBegin(begin());
-        ancestor = theBegin;
+        ancestor = begin();
     }
     return insert(ancestor,p.first,val);
 }
@@ -61,8 +60,7 @@ Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(s
     std::forward_list<mapped_type> val;
     val.push_front(p.second);
     if (ancestor == iterator()) {
-        iterator theBegin(begin());
-        ancestor = theBegin;
+        ancestor = begin();
     }
     return insert(ancestor,p.first,val);
 }
@@ -70,8 +68,7 @@ Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(s
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(std::pair<key_type, std::forward_list<mapped_type>> &p, iterator ancestor) {
     if (ancestor == iterator()) {
-        iterator theBegin(begin());
-        ancestor = theBegin;
+        ancestor = begin();
     }
     return insert(ancestor,p.first,p.second);
 }
@@ -79,8 +76,7 @@ Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(s
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(std::pair<key_type, std::forward_list<mapped_type>> &&p, iterator ancestor) {
     if (ancestor == iterator()) {
-        iterator theBegin(begin());
-        ancestor = theBegin;
+        ancestor = begin();
     }
     return insert(ancestor,p.first,p.second);
 }
@@ -91,8 +87,7 @@ SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(key_type article,
     std::forward_list<mapped_type> val;
     val.push_front(value);
     if (ancestor == iterator()) {
-        iterator theBegin(begin());
-        ancestor = theBegin;
+        ancestor = begin();
     }
     return insert(ancestor,article,val);
 }
@@ -103,8 +98,7 @@ SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(key_type article,
     std::forward_list<mapped_type> val;
     val.push_front(value);
     if (ancestor == iterator()) {
-        iterator theBegin(begin());
-        ancestor = theBegin;
+        ancestor = begin();
     }
     return insert(ancestor,article,val);
 }
@@ -113,8 +107,7 @@ template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier
 Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(key_type article,
                                                                                std::forward_list<mapped_type> &value, iterator ancestor) {
     if (ancestor == iterator()) {
-        iterator theBegin(begin());
-        ancestor = theBegin;
+        ancestor = begin();
     }
     return insert(ancestor,article,value);
 }
@@ -123,8 +116,7 @@ template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier
 Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(key_type article,
                                                                                             std::forward_list<mapped_type> &&value, iterator ancestor) {
     if (ancestor == iterator()) {
-        iterator theBegin(begin());
-        ancestor = theBegin;
+        ancestor = begin();
     }
     return insert(ancestor,article,value);
 }
@@ -135,10 +127,14 @@ SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(iterator ancestor
     if (!contains(article,ancestor))
         ++numberArticles;
 
-    Node* ptr(root.get());
-    auto it = insert_recursive(ptr, nullptr, article, value);
-    if (root.get() == nullptr)
-        root.reset(ptr);
+    bool isBegin(ancestor == begin());
+    Node* ptr = (isBegin ? root.get() : ancestor.operator->());
+    auto it = insert_recursive(ptr, article, value);
+
+    if (isBegin) {
+        if (root.get() == nullptr)
+            root.reset(ptr);
+    }
 
     return it;
 }
@@ -146,8 +142,7 @@ SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(iterator ancestor
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::erase(key_type article,iterator ancestor) {
     if (ancestor == iterator()) {
-        iterator theBegin(begin());
-        ancestor = theBegin;
+        ancestor = begin();
     }
 
     auto p(scout(article,ancestor));
@@ -159,7 +154,9 @@ void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::erase(key_type arti
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::erase(SimpleTrieTemplate::iterator &descendant,
                                                                    SimpleTrieTemplate::iterator ancestor) {
-    eraser(ancestor,descendant);
+    uint32_t curSize(size());
+    eraser(ancestor,descendant,*this);
+    numberArticles = --curSize;
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
@@ -172,25 +169,18 @@ template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier
 void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::swap(SimpleTrieTemplate &rhs) {
     if (this != &rhs) {
         // numberArticles
-        uint32_t ph_int(rhs.numberArticles);
-        rhs.numberArticles = numberArticles;
-        numberArticles = ph_int;
+        std::swap(numberArticles,rhs.numberArticles);
 
         // indexer
-        key_indexer ph_dex(rhs.indexer);
-        rhs.indexer = indexer;
-        indexer = ph_dex;
+        std::swap(indexer,rhs.indexer);
 
         // modifier
-        key_modifier ph_mod(rhs.modifier);
-        rhs.modifier = modifier;
-        modifier = ph_mod;
+        std::swap(modifier,rhs.modifier);
 
         // eraser
-        key_eraser ph_rase(rhs.eraser);
-        rhs.eraser = eraser;
-        eraser = ph_rase;
+        std::swap(eraser,rhs.eraser);
 
+        // root
         root.swap(rhs.root);
     }
 }
@@ -205,10 +195,9 @@ template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier
 std::pair<bool, std::unique_ptr<Iterator<K,T,S>>>
 SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::scout(key_type article,iterator ancestor) {
     if (ancestor == iterator()) {
-        iterator theBegin(begin());
-        ancestor = theBegin;
+        ancestor = begin();
     }
-    if (ancestor.operator->() == nullptr) {
+    if (ancestor == end()) {
         return std::pair<bool, std::unique_ptr<iterator>>(false,nullptr);
     }
     return scout_helper(article, ancestor.operator->());
@@ -216,7 +205,7 @@ SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::scout(key_type article,i
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 bool SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::contains(key_type article,iterator ancestor) {
-    return scout(article).first;
+    return scout(article,ancestor).first;
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
@@ -255,42 +244,33 @@ Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::end() {
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 std::pair<bool, std::unique_ptr<Iterator<K,T,S>>>
 SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::scout_helper(key_type &key,
-                                                                      const Node *node) {
+                                                                     Node* node) {
     // call indexer and get signal
     int32_t signal(indexer(key,node));
 
     if (signal == -1) { // check if you found the node!!
-        return scout_helper_foundTarget(key,const_cast<Node*>(node));
+        modifier(key,node,-1); // call modifier
+        return std::pair<bool,std::unique_ptr<iterator>>(true,std::unique_ptr<iterator>(new iterator(node,-1)));
     }
     else if (signal > -1) { // check if there's a next node in sequence
-        return scout_helper_childAccess(key,const_cast<Node*>(node),signal);
+        valid_childAccess_helper(signal);
+        return scout_helper_childAccess(key,node,signal);
     }
     else { // the signal shows we need to return previous node in sequence
         if (node->parent == nullptr) // check if previous node is nullptr
             return std::pair<bool, std::unique_ptr<iterator>>(false,nullptr);
 
         // else return iterator at previous node in sequence
-        return std::pair<bool, std::unique_ptr<iterator>>(false,std::unique_ptr<iterator>(new iterator(const_cast<Node*>(node),-1)));
+        return std::pair<bool, std::unique_ptr<iterator>>(false,std::unique_ptr<iterator>(new iterator(node,-1)));
     }
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 std::pair<bool, std::unique_ptr<Iterator<K,T,S>>>
-SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::scout_helper_foundTarget(key_type &key,
-                                                                                         Node *node) {
-    // call modifier everytime
-    modifier(key,node,node->parent,-1);
-    return std::pair<bool,std::unique_ptr<iterator>>(true,std::unique_ptr<iterator>(new iterator(node,-1)));
-}
-
-template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
-std::pair<bool, std::unique_ptr<Iterator<K,T,S>>>
-SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::scout_helper_childAccess(key_type &key, Node *node,
-                                                                                         uint32_t signal) {
-    // basic validation checking
-    valid_childAccess_helper(*node,signal);
-
-    modifier(key,node,node->parent,signal);
+SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::scout_helper_childAccess(key_type &key, Node* &node,
+                                                                                 int32_t &signal) {
+    // call modifier
+    modifier(key,node,signal);
 
     // if next node is nullptr then target can't be found and this is last node in sequence
     if (node->child.at(signal) == nullptr) {
@@ -304,7 +284,7 @@ SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::scout_helper_childAccess
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 Iterator<K,T,S>
-SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert_recursive(Node* &curNode, Node* parentNode, key_type& key,
+SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert_recursive(Node* &curNode, key_type& key,
                                                                          std::forward_list<mapped_type>& value) {
 
     // call indexer and get signal
@@ -313,36 +293,42 @@ SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert_recursive(Node* &
     if (signal == -1) { // then we have found the last node in sequence for the article
 
         // call modifier everytime
-        modifier(key,curNode,parentNode,signal);
+        modifier(key,curNode,signal);
 
         // insert values
         handleValueMerge(curNode->value, value);
 
-        return Iterator<K,T,S>(*curNode,int32_t(signal - 1));
+        return iterator(curNode,signal);
     }
     else if (signal > -1) {
         // basic validation checking
-        valid_childAccess_helper(*curNode,signal);
+        valid_childAccess_helper(signal);
 
         // call modifier everytime
-        modifier(key,curNode,parentNode,signal);
+        modifier(key,curNode,signal);
+
+        // make a copy of a pointer in case it points to a nullptr
+        Node* ptr(curNode->child.at(signal).get());
 
         // recursive call
-        Node* ptr(curNode->child.at(signal).get());
-        auto it = insert_recursive(ptr,curNode,key,value);
-        if (curNode->child.at(signal).get() == nullptr)
+        auto it = insert_recursive(ptr,key,value);
+
+        // if it was equal to nullptr, can now reset
+        if (curNode->child.at(signal) == nullptr)
             curNode->child.at(signal).reset(ptr);
+
+        // assign parent
         ptr->parent = curNode;
         return it;
     }
     else {
-        modifier(key,curNode,parentNode,signal); // should fix error
-        return insert_recursive(curNode,parentNode,key,value); // call the exact same value again
+        modifier(key,curNode,signal); // fixes whatever error that was noted by signal
+        return insert_recursive(curNode,key,value); // call the exact same value again
     }
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
-void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::valid_childAccess_helper(const Node &node, const uint32_t& signal) {
+void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::valid_childAccess_helper(const uint32_t& signal) {
     // do some basic checks
     if (signal >= S) { // check if within range
         throw std::out_of_range("key_indexer signaled for child access greater than S\n");

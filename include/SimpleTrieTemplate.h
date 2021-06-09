@@ -28,7 +28,7 @@
 template <typename K, typename Value, uint32_t S>
 class Awful_Indexer {
 public:
-    int32_t operator()(K& input, const Node<K,Value,S>* node) {
+    int32_t operator()(const K& input, const Node<K,Value,S>* node) {
         if (node != nullptr) {
             if (input == node->key)
                 return -1;
@@ -48,35 +48,80 @@ public:
 template <typename K, typename Value, uint32_t S>
 class Awful_KeyModif {
 public:
-    K operator()(K& input, Node<K,Value,S>* &curNode, Node<K,Value,S>* &parentNode, int32_t signal) {
+    K operator()(K& input, Node<K,Value,S>* &curNode, const int32_t &signal) {
         if (signal == -2)
-            curNode = new Node<K,Value,S>(parentNode,input);
+            curNode = new Node<K,Value,S>( ((curNode == nullptr) ? nullptr : curNode->parent) ,input);
         return input;
     }
 
-    K operator()(K& input, const Node<K,Value,S>* const &curNode, const Node<K,Value,S>* const &parentNode, int32_t signal) {
+    K operator()(K& input, const Node<K,Value,S>* const &curNode, const int32_t &signal) {
         return input;
     }
 };
 
+// forward declarations
+template<typename K, typename Value, uint32_t S, typename Indexer, typename Modifier>
+class Awful_Eraser;
+
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+class SimpleTrieTemplate;
+
 /**
  *
  */
-template <typename K, typename Value, uint32_t S>
+template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier>
 class Awful_Eraser {
 public:
-    void operator()(Iterator<K,Value,S>& ancestor, Iterator<K,Value,S>& descendant) {
+    void operator()(Iterator<K,T,S> &ancestor, Iterator<K,T,S> &descendant, SimpleTrieTemplate<K,T,S,Indexer,Modifier,Awful_Eraser<K,T,S,Indexer,Modifier>> &trie) {
         // create pointer that points to merged children
+        Node<K,T,S>* mergedChild;
+        std::forward_list<std::pair<K,std::forward_list<T>>> list, other;
 
-        // find index of descendant in parent's child
+        list.merge(makeList(descendant->child.at(0).get()));
+        list.merge(makeList(descendant->child.at(1).get()));
 
-        // reset child at index with new merged pointer
+        if (descendant->parent == nullptr) {
+            trie.clear();
+
+            while (!list.empty()) {
+                trie.insert(list.front());
+                list.pop_front();
+            }
+        }
+        else {
+            // find index of descendant in parent's child
+            int index = Iterator<K,T,S>::findChildsIndex(*(descendant->parent),*descendant);
+
+            descendant.moveUp();
+            // reset child at index with new merged pointer
+            descendant->child.at(index).reset();
+
+            while (!list.empty()) {
+                trie.insert(list.front(),descendant);
+                list.pop_front();
+            }
+        }
+
+
+    }
+
+    std::forward_list<std::pair<K,std::forward_list<T>>> makeList(Node<K,T,S>* node) {
+        std::forward_list<std::pair<K,std::forward_list<T>>> lst;
+        if (node == nullptr) {
+            return lst;
+        }
+
+        lst.merge(makeList(node->child.at(0).get()));
+        lst.merge(makeList(node->child.at(1).get()));
+
+        lst.push_front(std::pair<K,std::forward_list<T>>(node->key,node->value));
+        return lst;
     }
 
 };
 
 template <typename K, typename T, uint32_t S = 2, typename Indexer = Awful_Indexer<K,T,S>, typename Modifier =
-Awful_KeyModif<K,T,S>, typename Eraser = Awful_Eraser<K,T,S>>
+Awful_KeyModif<K,T,S>, typename Eraser = Awful_Eraser<K,T,S,Indexer,Modifier>>
 class SimpleTrieTemplate {
 public:
 
@@ -218,17 +263,15 @@ private:
 //////////////////////////////////////////////////////
 //// PRIVATE HELPER METHODS
 
-    std::pair<bool,std::unique_ptr<iterator>> scout_helper(key_type& key, const Node* node);
+    std::pair<bool,std::unique_ptr<iterator>> scout_helper(key_type& key, Node* node);
 
-    std::pair<bool,std::unique_ptr<iterator>> scout_helper_foundTarget(key_type& key, Node* node);
-
-    std::pair<bool,std::unique_ptr<iterator>> scout_helper_childAccess(key_type& key, Node* node, uint32_t signal);
+    std::pair<bool,std::unique_ptr<iterator>> scout_helper_childAccess(key_type& key, Node* &node, int32_t& signal);
 
     iterator insert(iterator pos, key_type article, std::forward_list<mapped_type>& value);
 
-    iterator insert_recursive(Node* &curNode,Node* parentNode,key_type& key, std::forward_list<mapped_type>& value);
+    iterator insert_recursive(Node* &curNode,key_type& key, std::forward_list<mapped_type>& value);
 
-    void valid_childAccess_helper(const Node& node, const uint32_t& signal);
+    void valid_childAccess_helper(const uint32_t& signal);
 
     void handleValueMerge(std::forward_list<mapped_type>& nodeList, std::forward_list<mapped_type>& inputValue);
 };

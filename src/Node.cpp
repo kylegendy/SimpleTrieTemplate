@@ -22,10 +22,18 @@ Node<K, T, S>::Node(const Node &rhs) : parent(nullptr), key(rhs.key), value(rhs.
 }
 
 template<typename K, typename T, uint32_t S>
+void Node<K, T, S>::swap(Node &rhs) {
+    std::swap(parent,rhs.parent);
+    std::swap(key,rhs.key);
+    std::swap(value,rhs.value);
+    std::swap(child,rhs.child);
+}
+
+template<typename K, typename T, uint32_t S>
 Node<K,T,S> &Node<K, T, S>::operator=(const Node &rhs) {
     if (this != &rhs) {
-        Node ph(rhs);
-        std::swap(*this,ph);
+        Node* ph(new Node<K,T,S>(rhs));
+        swap(*ph);
     }
     return *this;
 }

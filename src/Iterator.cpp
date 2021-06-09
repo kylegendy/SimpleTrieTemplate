@@ -9,23 +9,31 @@
 
 template<typename K, typename T, uint32_t S>
 Iterator<K, T, S>::Iterator(Node<K, T, S> *currentNode, int32_t previousIndex) : curNode(currentNode), prevIndex(previousIndex) {
+    basicNode = Node<K,T,S>();
 }
 
 template<typename K, typename T, uint32_t S>
 Iterator<K, T, S>::Iterator(Node<K, T, S> &currentNode, int32_t previousIndex) : curNode(&currentNode), prevIndex(previousIndex) {
+    basicNode = Node<K,T,S>();
 }
 
 template<typename K, typename T, uint32_t S>
 Iterator<K, T, S>::Iterator(const Iterator &rhs) : curNode((rhs.curNode)), prevIndex(rhs.prevIndex) {
+    basicNode = Node<K,T,S>();
 }
 
 template<typename K, typename T, uint32_t S>
 Node<K, T, S> &Iterator<K, T, S>::operator*() {
-    return (curNode == nullptr) ? nullptr : *curNode;
+    if (curNode == nullptr) {
+        return basicNode;
+    }
+    else {
+        return *curNode;
+    }
 }
 
 template<typename K, typename T, uint32_t S>
-Node<K, T, S> *Iterator<K, T, S>::operator->() {
+Node<K, T, S>* Iterator<K, T, S>::operator->() {
     return curNode;
 }
 
@@ -67,10 +75,10 @@ Iterator<K,T,S> &Iterator<K, T, S>::operator=(Iterator &&rhs) {
 template<typename K, typename T, uint32_t S>
 Iterator<K,T,S> &Iterator<K, T, S>::moveUp() {
     // todo deal with root
-    int32_t index = findChildsIndex(curNode->getParent(), *curNode);
+    int32_t index = findChildsIndex(*(curNode->parent), *curNode);
     assert(index > -1 && index < S);
-    Iterator ph(curNode->getParent(), index);
-    std::swap(*this, ph);
+    Iterator ph(curNode->parent, index);
+    swap(ph);
     return *this;
 }
 
@@ -120,7 +128,17 @@ Iterator<K,T,S> Iterator<K, T, S>::operator++(int) {
 
 template<typename K, typename T, uint32_t S>
 bool Iterator<K, T, S>::operator==(const Iterator &rhs) const {
-    return curNode == rhs.curNode;
+    // if root holds nullptr, then rhs.root must hold nullptr to be equal
+    if (curNode == nullptr) {
+        return rhs.curNode == nullptr;
+    }
+        // else root does not hold nullptr, and rhs.root must hold equivalent node as root to be equivalent
+    else if (rhs.curNode != nullptr) {
+        if (curNode->parent == nullptr && rhs.curNode->parent == nullptr)
+            return *curNode == *(rhs.curNode) && prevIndex == rhs.prevIndex;
+        return *curNode == *(rhs.curNode);
+    }
+    return false;
 }
 
 template<typename K, typename T, uint32_t S>

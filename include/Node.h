@@ -17,6 +17,8 @@ struct Node {
 
     ~Node() = default;
 
+    void swap(Node &rhs);
+
     Node& operator=(const Node& rhs);
 
     bool operator==(const Node& rhs);

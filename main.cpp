@@ -118,7 +118,7 @@ void run_tests() {
     find_tests();
     scout_tests();
     contains_tests();
-//    iterator_tests();
+    iterator_tests();
 }
 
 void print_message(const std::string& s) {
@@ -1102,6 +1102,39 @@ std::string erase_key() {
         out += erase_key_diffCases(trie,map,2,false,2);
 
     // actual key
+    p = std::pair<int,char>(2,'b');
+    trie.insert(p);
+    map.insert(p);
+
+    p = std::pair<int,char>(1,'c');
+    trie.insert(p);
+    map.insert(p);
+
+    p = std::pair<int,char>(7,'d');
+    trie.insert(p);
+    map.insert(p);
+
+    p = std::pair<int,char>(5,'e');
+    trie.insert(p);
+    map.insert(p);
+
+    p = std::pair<int,char>(4,'f');
+    trie.insert(p);
+    map.insert(p);
+
+    p = std::pair<int,char>(6,'g');
+    trie.insert(p);
+    map.insert(p);
+
+    p = std::pair<int,char>(12,'h');
+    trie.insert(p);
+    map.insert(p);
+
+    out += erase_key_diffCases(trie,map,2,true,3);
+
+    out += erase_key_diffCases(trie,map,3,true,4);
+
+    out += erase_key_diffCases(trie,map,7,true,5);
 
     return out;
 }
@@ -1115,7 +1148,7 @@ std::string erase_key_diffCases(SimpleTrieTemplate<int,char> &trie, std::map<int
         int trieCnt = std::distance(copy.begin(),copy.end());
         int mapCnt = std::distance(map.begin(),map.end());
 
-        return (((mapCnt == trieCnt + 1) == validKey) && ( (ogSize == copy.size() + 1) == validKey) && !(trie.contains(key))) ? "" : out + "fail\n";
+        return (((mapCnt == trieCnt + 1) == validKey) && ( (ogSize == copy.size() + 1) == validKey) && !(copy.contains(key))) ? "" : out + "fail\n";
     }
     catch(...) {
         return out + "UNKNOWN ERROR\n";
@@ -1304,6 +1337,29 @@ void iterator_tests() {
     s += iterator_empty_beginIsEnd();
 
     // filled trie
+    SimpleTrieTemplate<int,char> trie;
+    std::map<int,char> map;
+    std::pair<int,char> p(3,'a');
+    trie.insert(p);
+    map.insert(p);
+
+    p = std::pair<int,char>(2,'b');
+    trie.insert(p);
+    map.insert(p);
+
+    p = std::pair<int,char>(5,'c');
+    trie.insert(p);
+    map.insert(p);
+
+    p = std::pair<int,char>(4,'d');
+    trie.insert(p);
+    map.insert(p);
+
+    p = std::pair<int,char>(6,'e');
+    trie.insert(p);
+    map.insert(p);
+
+    s += iterator_filled_diffCases(trie,map,1);
 
     print_message(s);
 }
@@ -1324,9 +1380,9 @@ std::string iterator_filled_diffCases(SimpleTrieTemplate<int,char> &trie, std::m
         SimpleTrieTemplate<int,char> copy(trie);
 
         bool allEqual(true);
-        auto mapIt(map.begin());
-        for (auto trieIt(trie.begin()); trieIt != trie.end() && mapIt != map.end(); ++trieIt, ++mapIt) {
-                if (trieIt.first() != mapIt->first) {
+        int val;
+        for (auto trieIt(trie.begin()); trieIt != trie.end(); ++trieIt) {
+                if (map.find(trieIt.first()) == map.end()) {
                     allEqual = false;
                     break;
                 }
