@@ -22,7 +22,7 @@ The indexer and modifier is part of the template parameters, the indexer returns
 
 #### Node Class Template
 ##### Description:
-Node<typename K, typename T, uint32_t S> : the node structure used by SimpleTrieTemplate
+Node\<typename K, typename T, uint32_t S\> : the node structure used by SimpleTrieTemplate
 
 ##### Member Variables:
 variable | description
@@ -35,7 +35,7 @@ std::vector\<std::unique_ptr\<Node\>\> child; | a vector of Node type smart poin
 ##### Member Functions:
 signature | description
 ----------|-----------
-explicit Node(Node* parentPtr = nullptr, K key = K(), std::forward_list<T> value = std::forward_list<T>()); | default constructor with defaulted parameters
+explicit Node(Node* parentPtr = nullptr, K key = K(), std::forward_list\<T\> value = std::forward_list\<T\>()); | default constructor with defaulted parameters
 explicit Node(const Node& rhs); | copy constructor, copies all descendants, but not ancestor nodes
 void swap(Node &rhs); | swap function, swaps all values of *this and rhs
 Node& operator=(const Node& rhs); | assignment operator, calls swap on a copy constructor with rhs as a parameter
