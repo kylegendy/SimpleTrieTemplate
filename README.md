@@ -29,8 +29,8 @@ variable | description
 ---------|---------
 Node* parent; | a raw pointer to the parent Node of *this
 K key; | the key held at *this
-std::forward_list<T> value; | a list of mapped value types, T
-std::vector<std::unique_ptr<Node>> child; | a vector of Node type smart pointers that holds S number of children
+std::forward_list\<T\> value; | a list of mapped value types, T
+std::vector\<std::unique_ptr\<Node\>\> child; | a vector of Node type smart pointers that holds S number of children
 
 ##### Member Functions:
 signature | description
