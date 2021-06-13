@@ -46,10 +46,32 @@ bool operator!=(const Node& rhs); | returns the opposite of operator==()
 
 #### Iterator Class Template
 ##### Description:
+Iterator\<typename K, typename T, uin32_t S\> : a forwards iterator used to iterate through the nodes of the trie
 
 ##### Member Variables:
+Nothing public, but describing the private variables might prove useful.
+First, a node pointer to the node currently at.  Second, an integer value valled prevIndex, which serves the purpose of navigating through nodes with varying S values.  prevIndex tells where the iterator comes from, if its -1 its comes from the parent, if greater then it comes from a child at the index of prevIndex.
 
 ##### Member Functions:
+signature | description
+----------|-----------
+Iterator(Node\<K,T,S\>* currentNode = nullptr, int32_t previousIndex = -1); | default constructor, paramaters hold default values
+Iterator(Node\<K,T,S\> &currentNode, int32_t previousIndex); | alternative constructor, the same as the default except that it takes a node by reference instead of address
+Iterator(const Iterator &rhs); | copy constructor
+Node\<K,T,S\> &operator*(); | dereference operator, returns the node pointed to by the iterator
+Node\<K,T,S\>* operator->(); | accessor operator, returns the address of the node pointed to by the iterator
+K &first(); | returns the key held by the node
+std::forward_list\<T\> &second(); | returns the list of values held by the node
+bool isArticleEnd(); | checks if the node is the end of an article, ie if its list is not empty
+static int32_t findChildsIndex(const Node\<K,T,S\> &parent, const Node\<K,T,S\> &child); | returns the index of child within the children of parent, else -1 if not found
+void swap(Iterator& rhs); | swaps the values of *this and rhs
+Iterator &operator=(Iterator &rhs); | assignment operator by reference, makes logically equivalent from itself onwards through the descendents, but does not assign parents
+Iterator &operator=(Iterator &&rhs); | assignment operator by move, does the exact same as the assignment operator by reference
+Iterator &moveUp(); | moves iterator up to its parent
+Iterator &operator++(); | prefix incrementor, increments *this forwards onto the next node in order, and then returns *this
+Iterator operator++(int); | postfix incrementor, increments *this forwards onto the next node in order, and returns a copy of *this prior to incrementing
+bool operator==(const Iterator &rhs) const; | compares *this to rhs by logical equivalence by checking the nodes logical equivalence and then the prevIndexes: true if equivalent, false otherwise
+bool operator!=(const Iterator &rhs) const; | returns the opposite of operator==()
 
 
 
