@@ -77,7 +77,34 @@ bool operator!=(const Iterator &rhs) const; | returns the opposite of operator==
 
 #### SimpleTrieTemplate Class Template
 ##### Description:
+SimpleTrieTemplate\<K,T,S,Indexer,Modifier,Eraser\> : a template for a trie data structure that stores T values, aka mapped_types (that's right, multiple, in a forward_list) at a specific K value, ie key values, ie key_types, within the trie.  The trie's nodes' all have S number of children.  The trie can be navigated through either by iterators (ie in sequential order), or via the cooperation of the indexer and modifier classes (ie via a direct node sequence).
 
 ##### Member Variables:
+variable | description
+---------|---------
+uint32_t numberArticles; | an integer value that's number represents the number of articles inputted to the trie
+std::unique_ptr\<Node\> root; | a pointer to the first node of the trie
+key_indexer indexer; | the instance of Indexer used by the trie, a functor
+key_modifier modifier; | the instance of Modifier used by the trie, a functor
+key_eraser eraser; | the instance of Eraser used by the trie, a functor
 
 ##### Member Functions:
+signature | description
+----------|-----------
+explicit SimpleTrieTemplate(); | default constructor
+explicit SimpleTrieTemplate(const SimpleTrieTemplate& rhs); | copy constructor
+SimpleTrieTemplate &operator=(const SimpleTrieTemplate& rhs); | assignment operator
+bool empty() const noexcept; | returns true if size() returns 0, else false
+uint32_t size() const noexcept; | returns numberArticles
+void clear() noexcept; | empties the trie such that empty() will return true
+iterator insert(parameters); | So there's a lot of inserts... and they all basically do the same thing, just with different types of parameters.  In the end, they insert values at the specified article, and return an iterator at the end of the node sequence
+void erase(key_type article,iterator ancestor = iterator()); | erases the article from the trie starting at ancestor.  If no ancestor is given, it assumes the root of the trie.
+void erase(iterator& descendant, iterator ancestor = iterator()); | erases all articles between iterators
+void swap(SimpleTrieTemplate& rhs); | swaps all values between *this and rhs
+iterator find(key_type article); | returns an iterator at the end of the node sequence of the article within the trie, else returns end()
+std::pair\<bool,std::unique_ptr\<iterator\>\> scout(key_type article,iterator ancestor = iterator()); | looks for the article, if found returns a pair where its first equals true, and second equals an iterator at the end of the article's node sequence.  Else, it returns false and an iterator at the last node in sequence that still follows the article.
+bool contains(key_type article,iterator ancestor = iterator()); | returns true if the trie contains the article at ancestor, else false
+bool operator==(const SimpleTrieTemplate& rhs) const; | checks for logical equivalence between *this and rhs, excluding that of indexer, modifier, and eraser
+bool operator!=(const SimpleTrieTemplate& rhs) const; | returns the opposite of operator==()
+iterator begin(); | returns an iterator at the first node
+iterator end(); | returns an iterator one after the last node
