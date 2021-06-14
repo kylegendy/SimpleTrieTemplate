@@ -30,6 +30,11 @@ Node<K, T, S>* Iterator<K, T, S>::operator->() {
 }
 
 template<typename K, typename T, uint32_t S>
+Node<K, T, S> *&Iterator<K, T, S>::get() {
+    return curNode;
+}
+
+template<typename K, typename T, uint32_t S>
 K &Iterator<K, T, S>::first() {
     return curNode->key;
 }

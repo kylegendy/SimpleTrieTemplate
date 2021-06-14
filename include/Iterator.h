@@ -53,7 +53,10 @@ public:
      */
     Node<K,T,S>* operator->();
 
-    //todo implement a .get()
+    /**
+     * @return a pointer to the node pointed to by this
+     */
+    Node<K,T,S>* &get();
 
     /**
      * @return the key
