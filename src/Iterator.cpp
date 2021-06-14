@@ -9,27 +9,19 @@
 
 template<typename K, typename T, uint32_t S>
 Iterator<K, T, S>::Iterator(Node<K, T, S> *currentNode, int32_t previousIndex) : curNode(currentNode), prevIndex(previousIndex) {
-    basicNode = Node<K,T,S>();
 }
 
 template<typename K, typename T, uint32_t S>
 Iterator<K, T, S>::Iterator(Node<K, T, S> &currentNode, int32_t previousIndex) : curNode(&currentNode), prevIndex(previousIndex) {
-    basicNode = Node<K,T,S>();
 }
 
 template<typename K, typename T, uint32_t S>
 Iterator<K, T, S>::Iterator(const Iterator &rhs) : curNode((rhs.curNode)), prevIndex(rhs.prevIndex) {
-    basicNode = Node<K,T,S>();
 }
 
 template<typename K, typename T, uint32_t S>
 Node<K, T, S> &Iterator<K, T, S>::operator*() {
-    if (curNode == nullptr) {
-        return basicNode;
-    }
-    else {
-        return *curNode;
-    }
+    return *curNode;
 }
 
 template<typename K, typename T, uint32_t S>
@@ -132,10 +124,10 @@ bool Iterator<K, T, S>::operator==(const Iterator &rhs) const {
     if (curNode == nullptr) {
         return rhs.curNode == nullptr;
     }
-        // else root does not hold nullptr, and rhs.root must hold equivalent node as root to be equivalent
+    // else root does not hold nullptr, and rhs.root must hold equivalent node as root to be equivalent
     else if (rhs.curNode != nullptr) {
         if (curNode->parent == nullptr && rhs.curNode->parent == nullptr)
-            return *curNode == *(rhs.curNode) && prevIndex == rhs.prevIndex;
+            return *curNode == *(rhs.curNode) && prevIndex == rhs.prevIndex; //todo why this again?
         return *curNode == *(rhs.curNode);
     }
     return false;

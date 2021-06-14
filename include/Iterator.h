@@ -27,9 +27,10 @@ public:
     using reference             = Node<K,T,S>&;
 
     // default ctor is no more
+    //todo get rid of previousIndex
     Iterator(Node<K,T,S> *currentNode = nullptr, int32_t previousIndex = -1);
 
-    // alt ctor
+    // todo necessary? alt ctor
     Iterator(Node<K,T,S> &currentNode, int32_t previousIndex);
 
     // copy ctor
@@ -51,6 +52,8 @@ public:
      * @return a pointer to the node pointed to by this
      */
     Node<K,T,S>* operator->();
+
+    //todo implement a .get()
 
     /**
      * @return the key
@@ -139,10 +142,8 @@ private:
     // current node being looked at
     Node<K,T,S>* curNode;
 
-    // current node being looked at
+    //todo get rid of this? current node being looked at
     int32_t prevIndex;
-
-    Node<K,T,S> basicNode;
 
     /**
      * looks for the next valid child after prevIndex and returns its index number, if none available then returns S

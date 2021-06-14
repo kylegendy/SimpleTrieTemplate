@@ -144,6 +144,7 @@ public:
 
     // assignment op
     SimpleTrieTemplate &operator=(const SimpleTrieTemplate& rhs);
+    //todo SimpleTrieTemplate &operator=(const SimpleTrieTemplate&& rhs);
 
 //////////////////////////////////////////////////////
 //// CAPACITY
@@ -174,6 +175,7 @@ public:
      * @param value - the value being stored at element
      * @return - an iterator to the node that holds value
      */
+     //todo replace ancestor param with pointer and defualt to nullptr?
     iterator insert(std::pair<key_type,mapped_type>& p, iterator ancestor = iterator());
     iterator insert(std::pair<key_type,mapped_type>&& p, iterator ancestor = iterator());
 
@@ -190,6 +192,7 @@ public:
      * erases articles within trie
      * @param article - the key being deleted
      */
+    //todo replace ancestor param with pointer and defualt to nullptr?
     void erase(key_type article,iterator ancestor = iterator());
 
     // erase all articles in between iterators
@@ -223,6 +226,7 @@ public:
      * @param article - the article being searched for
      * @return - returns a pair of a boolean and an iterator at the last viable node for the article's node sequence
      */
+    //todo replace ancestor param with pointer and defualt to nullptr?
     std::pair<bool,std::unique_ptr<iterator>> scout(key_type article,iterator ancestor = iterator());
 
     /**
@@ -230,6 +234,7 @@ public:
      * @param element - the key being searched for
      * @return - true if in container, else false
      */
+    //todo replace ancestor param with pointer and defualt to nullptr?
     bool contains(key_type article,iterator ancestor = iterator());
 
 //////////////////////////////////////////////////////
