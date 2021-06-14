@@ -46,85 +46,93 @@ void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::clear() noexcept {
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
-Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(std::pair<key_type, mapped_type> &p, iterator ancestor) {
+Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(std::pair<key_type, mapped_type> &p, iterator* ancestor) {
     std::forward_list<mapped_type> val;
     val.push_front(p.second);
-    if (ancestor == iterator()) {
-        ancestor = begin();
+    if (ancestor == nullptr) {
+        iterator it(begin());
+        ancestor = &it;
     }
-    return insert(ancestor,p.first,val);
+    return insert(*ancestor,p.first,val);
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
-Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(std::pair<key_type, mapped_type> &&p, iterator ancestor) {
+Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(std::pair<key_type, mapped_type> &&p, iterator* ancestor) {
     std::forward_list<mapped_type> val;
     val.push_front(p.second);
-    if (ancestor == iterator()) {
-        ancestor = begin();
+    if (ancestor == nullptr) {
+        iterator it(begin());
+        ancestor = &it;
     }
-    return insert(ancestor,p.first,val);
+    return insert(*ancestor,p.first,val);
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
-Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(std::pair<key_type, std::forward_list<mapped_type>> &p, iterator ancestor) {
-    if (ancestor == iterator()) {
-        ancestor = begin();
+Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(std::pair<key_type, std::forward_list<mapped_type>> &p, iterator* ancestor) {
+    if (ancestor == nullptr) {
+        iterator it(begin());
+        ancestor = &it;
     }
-    return insert(ancestor,p.first,p.second);
+    return insert(*ancestor,p.first,p.second);
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
-Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(std::pair<key_type, std::forward_list<mapped_type>> &&p, iterator ancestor) {
-    if (ancestor == iterator()) {
-        ancestor = begin();
+Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(std::pair<key_type, std::forward_list<mapped_type>> &&p, iterator* ancestor) {
+    if (ancestor == nullptr) {
+        iterator it(begin());
+        ancestor = &it;
     }
-    return insert(ancestor,p.first,p.second);
+    return insert(*ancestor,p.first,p.second);
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 Iterator<K,T,S>
-SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(key_type article, mapped_type &value, iterator ancestor) {
+SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(key_type article, mapped_type &value, iterator* ancestor) {
     std::forward_list<mapped_type> val;
     val.push_front(value);
-    if (ancestor == iterator()) {
-        ancestor = begin();
+    if (ancestor == nullptr) {
+        iterator it(begin());
+        ancestor = &it;
     }
-    return insert(ancestor,article,val);
+    return insert(*ancestor,article,val);
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 Iterator<K,T,S>
-SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(key_type article, mapped_type &&value, iterator ancestor) {
+SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(key_type article, mapped_type &&value, iterator* ancestor) {
     std::forward_list<mapped_type> val;
     val.push_front(value);
-    if (ancestor == iterator()) {
-        ancestor = begin();
+    if (ancestor == nullptr) {
+        iterator it(begin());
+        ancestor = &it;
     }
-    return insert(ancestor,article,val);
+    return insert(*ancestor,article,val);
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(key_type article,
-                                                                               std::forward_list<mapped_type> &value, iterator ancestor) {
-    if (ancestor == iterator()) {
-        ancestor = begin();
+                                                                               std::forward_list<mapped_type> &value, iterator* ancestor) {
+    if (ancestor == nullptr) {
+        iterator it(begin());
+        ancestor = &it;
     }
-    return insert(ancestor,article,value);
+    return insert(*ancestor,article,value);
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(key_type article,
-                                                                                            std::forward_list<mapped_type> &&value, iterator ancestor) {
-    if (ancestor == iterator()) {
-        ancestor = begin();
+                                                                                            std::forward_list<mapped_type> &&value, iterator* ancestor) {
+    if (ancestor == nullptr) {
+        iterator it(begin());
+        ancestor = &it;
     }
-    return insert(ancestor,article,value);
+    return insert(*ancestor,article,value);
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 Iterator<K,T,S>
 SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(iterator ancestor, key_type article, std::forward_list<mapped_type> &value) {
-    if (!contains(article,ancestor))
+    if (!contains(article,&ancestor))
         ++numberArticles;
 
     bool isBegin(ancestor == begin());
@@ -140,9 +148,10 @@ SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(iterator ancestor
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
-void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::erase(key_type article,iterator ancestor) {
-    if (ancestor == iterator()) {
-        ancestor = begin();
+void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::erase(key_type article,iterator* ancestor) {
+    if (ancestor == nullptr) {
+        iterator it(begin());
+        ancestor = &it;
     }
 
     auto p(scout(article,ancestor));
@@ -152,17 +161,25 @@ void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::erase(key_type arti
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
-void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::erase(SimpleTrieTemplate::iterator &descendant,
-                                                                   SimpleTrieTemplate::iterator ancestor) {
+void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::erase(iterator &descendant,iterator* ancestor) {
     uint32_t curSize(size());
-    eraser(ancestor,descendant,*this);
+    if (ancestor == nullptr) {
+        iterator it(begin());
+        ancestor = &it;
+    }
+    eraser(*ancestor,descendant,*this);
     numberArticles = --curSize;
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
-void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::erase(SimpleTrieTemplate::iterator &&descendant,
-                                                                   SimpleTrieTemplate::iterator ancestor) {
-    erase(descendant,ancestor);
+void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::erase(iterator &&descendant,iterator* ancestor) {
+    uint32_t curSize(size());
+    if (ancestor == nullptr) {
+        iterator it(begin());
+        ancestor = &it;
+    }
+    eraser(*ancestor,descendant,*this);
+    numberArticles = --curSize;
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
@@ -193,18 +210,19 @@ Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::find(key
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 std::pair<bool, std::unique_ptr<Iterator<K,T,S>>>
-SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::scout(key_type article,iterator ancestor) {
-    if (ancestor == iterator()) {
-        ancestor = begin();
+SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::scout(key_type article,iterator* ancestor) {
+    if (ancestor == nullptr) {
+        iterator it(begin());
+        ancestor = &it;
     }
-    if (ancestor == end()) {
+    if (*ancestor == end()) {
         return std::pair<bool, std::unique_ptr<iterator>>(false,nullptr);
     }
-    return scout_helper(article, ancestor.operator->());
+    return scout_helper(article, ancestor->get());
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
-bool SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::contains(key_type article,iterator ancestor) {
+bool SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::contains(key_type article,iterator* ancestor) {
     return scout(article,ancestor).first;
 }
 

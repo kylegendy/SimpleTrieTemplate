@@ -97,7 +97,7 @@ public:
             descendant->child.at(index).reset();
 
             while (!list.empty()) {
-                trie.insert(list.front(),descendant);
+                trie.insert(list.front(),&descendant);
                 list.pop_front();
             }
         }
@@ -117,7 +117,6 @@ public:
         lst.push_front(std::pair<K,std::forward_list<T>>(node->key,node->value));
         return lst;
     }
-
 };
 
 template <typename K, typename T, uint32_t S = 2, typename Indexer = Awful_Indexer<K,T,S>, typename Modifier =
@@ -176,28 +175,28 @@ public:
      * @return - an iterator to the node that holds value
      */
      //todo replace ancestor param with pointer and defualt to nullptr?
-    iterator insert(std::pair<key_type,mapped_type>& p, iterator ancestor = iterator());
-    iterator insert(std::pair<key_type,mapped_type>&& p, iterator ancestor = iterator());
+    iterator insert(std::pair<key_type,mapped_type>& p, iterator* ancestor = nullptr);
+    iterator insert(std::pair<key_type,mapped_type>&& p, iterator* ancestor = nullptr);
 
-    iterator insert(std::pair<key_type,std::forward_list<mapped_type>>& p, iterator ancestor = iterator());
-    iterator insert(std::pair<key_type,std::forward_list<mapped_type>>&& p, iterator ancestor = iterator());
+    iterator insert(std::pair<key_type,std::forward_list<mapped_type>>& p, iterator* ancestor = nullptr);
+    iterator insert(std::pair<key_type,std::forward_list<mapped_type>>&& p, iterator* ancestor = nullptr);
 
-    iterator insert(key_type article, mapped_type& value, iterator ancestor = iterator());
-    iterator insert(key_type article, mapped_type&& value, iterator ancestor = iterator());
+    iterator insert(key_type article, mapped_type& value, iterator* ancestor = nullptr);
+    iterator insert(key_type article, mapped_type&& value, iterator* ancestor = nullptr);
 
-    iterator insert(key_type article, std::forward_list<mapped_type>& value, iterator ancestor = iterator());
-    iterator insert(key_type article, std::forward_list<mapped_type>&& value, iterator ancestor = iterator());
+    iterator insert(key_type article, std::forward_list<mapped_type>& value, iterator* ancestor = nullptr);
+    iterator insert(key_type article, std::forward_list<mapped_type>&& value, iterator* ancestor = nullptr);
 
     /**
      * erases articles within trie
      * @param article - the key being deleted
      */
     //todo replace ancestor param with pointer and defualt to nullptr?
-    void erase(key_type article,iterator ancestor = iterator());
+    void erase(key_type article,iterator* ancestor = nullptr);
 
     // erase all articles in between iterators
-    void erase(iterator& descendant, iterator ancestor = iterator());
-    void erase(iterator&& descendant, iterator ancestor = iterator());
+    void erase(iterator& descendant, iterator* ancestor = nullptr);
+    void erase(iterator&& descendant, iterator* ancestor = nullptr);
 
     /**
      * swaps the contents
@@ -227,7 +226,7 @@ public:
      * @return - returns a pair of a boolean and an iterator at the last viable node for the article's node sequence
      */
     //todo replace ancestor param with pointer and defualt to nullptr?
-    std::pair<bool,std::unique_ptr<iterator>> scout(key_type article,iterator ancestor = iterator());
+    std::pair<bool,std::unique_ptr<iterator>> scout(key_type article,iterator* ancestor = nullptr);
 
     /**
      * checks if the container contains element
@@ -235,7 +234,7 @@ public:
      * @return - true if in container, else false
      */
     //todo replace ancestor param with pointer and defualt to nullptr?
-    bool contains(key_type article,iterator ancestor = iterator());
+    bool contains(key_type article,iterator* ancestor = nullptr);
 
 //////////////////////////////////////////////////////
 //// COMPARERS
