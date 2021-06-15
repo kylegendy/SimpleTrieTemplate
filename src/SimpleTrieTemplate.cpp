@@ -28,6 +28,11 @@ SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser> &SimpleTrieTemplate<K, T,
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser> &SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::operator=(const SimpleTrieTemplate &&rhs) {
+    return *this = rhs;
+}
+
+template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 bool SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::empty() const noexcept {
     return size() == 0;
 }
@@ -149,11 +154,6 @@ SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(iterator ancestor
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 void SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::erase(key_type article,iterator* ancestor) {
-    if (ancestor == nullptr) {
-        iterator it(begin());
-        ancestor = &it;
-    }
-
     auto p(scout(article,ancestor));
     if (p.first) {
         erase(*(p.second),ancestor);
