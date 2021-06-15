@@ -20,7 +20,8 @@ struct Node {
     void swap(Node &rhs);
 
     Node& operator=(const Node& rhs);
-    //todo Node& operator=(const Node&& rhs);
+
+    Node& operator=(const Node&& rhs);
 
     bool operator==(const Node& rhs);
 

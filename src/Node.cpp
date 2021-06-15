@@ -39,6 +39,12 @@ Node<K,T,S> &Node<K, T, S>::operator=(const Node &rhs) {
 }
 
 template<typename K, typename T, uint32_t S>
+Node<K,T,S> &Node<K, T, S>::operator=(const Node &&rhs) {
+    *this = rhs;
+    return *this;
+}
+
+template<typename K, typename T, uint32_t S>
 bool Node<K, T, S>::operator==(const Node &rhs) {
     if (this == &rhs || ((key == rhs.key) && (value == rhs.value))) {
         for (uint32_t i(0); i < S; ++i) {
