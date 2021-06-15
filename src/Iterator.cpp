@@ -46,15 +46,13 @@ std::forward_list<T> &Iterator<K, T, S>::second() {
 
 template<typename K, typename T, uint32_t S>
 bool Iterator<K, T, S>::isArticleEnd() {
-    return curNode == nullptr;
+    return (curNode != nullptr) ? !curNode->value.empty() : false;
 }
 
 template<typename K, typename T, uint32_t S>
 void Iterator<K, T, S>::swap(Iterator &rhs) {
-    int32_t ph(rhs.prevIndex);
     std::swap(curNode,rhs.curNode);
-    rhs.prevIndex = prevIndex;
-    prevIndex = ph;
+    std::swap(prevIndex,rhs.prevIndex);
 }
 
 template<typename K, typename T, uint32_t S>
@@ -71,7 +69,7 @@ Iterator<K,T,S> &Iterator<K, T, S>::operator=(Iterator &&rhs) {
 
 template<typename K, typename T, uint32_t S>
 Iterator<K,T,S> &Iterator<K, T, S>::moveUp() {
-    // todo deal with root
+    // todo deal with root? if it goes wrong then it will assert for you
     int32_t index = findChildsIndex(*(curNode->parent), *curNode);
     assert(index > -1 && index < S);
     Iterator ph(curNode->parent, index);
@@ -91,7 +89,7 @@ Iterator<K,T,S> &Iterator<K, T, S>::operator++() {
     // instantiate common iterator
     Iterator nextIter;
     // find next valid child to go to
-    int nextIndex = findValidSucceedingChildIndex(*curNode,prevIndex);
+    int32_t nextIndex = findValidSucceedingChildIndex(*curNode,prevIndex);
 
     // if valid child
     if (nextIndex < S) {
@@ -132,7 +130,7 @@ bool Iterator<K, T, S>::operator==(const Iterator &rhs) const {
     // else root does not hold nullptr, and rhs.root must hold equivalent node as root to be equivalent
     else if (rhs.curNode != nullptr) {
         if (curNode->parent == nullptr && rhs.curNode->parent == nullptr)
-            return *curNode == *(rhs.curNode) && prevIndex == rhs.prevIndex; //todo why this again?
+            return *curNode == *(rhs.curNode) && prevIndex == rhs.prevIndex;
         return *curNode == *(rhs.curNode);
     }
     return false;
