@@ -20,7 +20,7 @@
 template <typename K, typename T, uint32_t S>
 class Iterator  {
 public:
-    using iterator_category     = std::bidirectional_iterator_tag;
+    using iterator_category     = std::forward_iterator_tag;
     using value_type            = Node<K,T,S>;
     using difference_type       = std::ptrdiff_t;
     using pointer               = Node<K,T,S>*;
