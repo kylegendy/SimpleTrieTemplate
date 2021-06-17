@@ -6,118 +6,248 @@
 #include <map>
 #include "./include/SimpleTrieTemplate.h"
 
-void run_tests();
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+void run_standard_tests(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser>& trie);
+
+std::list<std::pair<int32_t,char32_t>> generate_default_inputs(uint32_t num);
+
+void run_default_tests();
 
 void print_message(const std::string& s);
 
-//region //FUNCTION DECLARATION
+//region //STANDARD FUNCTION DECLARATION
+
+//region //CONSTRUCTOR
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 void constructor_default_tests();
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
     std::string constructor_default_empty();
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
     std::string constructor_default_beginIsEnd();
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
     std::string constructor_default_equalInstants();
 
-void constructor_copy_tests();
-    std::string constructor_copy_equal(SimpleTrieTemplate<int,char,2>& og, uint32_t count);
-    std::string constructor_copy_diffOGs();
-    std::string constructor_copy_notByRef();
+//endregion
 
-void assignment_tests();
-    std::string assign_diffOnesAndDiffOthers();
-    std::string assign_oneEqualOther(SimpleTrieTemplate<int,char,2>& one, SimpleTrieTemplate<int,char,2>& other, int32_t cnt);
-    std::string assign_notByRef();
+//region //COPY CONST
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+void constructor_copy_tests(const std::list<std::pair<K,T>>& inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string constructor_copy_equal(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser>& og, uint32_t count);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string constructor_copy_diffOGs(std::list<std::pair<K,T>> inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string constructor_copy_notByRef(std::list<std::pair<K,T>> inserts);
 
-void empty_tests();
-    std::string empty_checksValid_cases();
-    std::string empty_checksValid(SimpleTrieTemplate<int,char> &trie, bool isEmpty,int32_t cnt);
+//endregion
 
-void size_tests();
-    std::string size_checksValid_cases();
-    std::string size_checkValid(SimpleTrieTemplate<int,char> &trie, uint32_t correctCnt, uint32_t cnt);
+//region //ASSIGN
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+void assignment_tests(const std::list<std::pair<K,T>>& inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string assign_diffOnesAndDiffOthers(const std::list<std::pair<K,T>>& inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string assign_oneEqualOther(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser>& one, SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser>& other, uint32_t cnt);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string assign_notByRef(const std::list<std::pair<K,T>>& inserts);
+//endregion
 
-void clear_tests();
-    std::string clear_diffCases();
-    std::string clear_properOut(SimpleTrieTemplate<int,char> &trie, uint32_t cnt);
-    std::string clear_multiple();
+//region //EMPTY
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+void empty_tests(const std::list<std::pair<K,T>>& inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string empty_checksValid_cases(std::list<std::pair<K,T>> inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string empty_checksValid(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, bool isEmpty, uint32_t cnt);
+
+//endregion
+
+//region //SIZE
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+void size_tests(const std::list<std::pair<K,T>>& inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string size_checksValid_cases(std::list<std::pair<K,T>> inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string size_checkValid(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, uint32_t correctCnt, uint32_t cnt);
+
+//endregion
+
+//region //CLEAR
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+void clear_tests(const std::list<std::pair<K,T>>& inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string clear_diffCases(std::list<std::pair<K,T>> inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string clear_properOut(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, uint32_t cnt);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string clear_multiple(const std::list<std::pair<K,T>>& inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
     std::string clear_empty_empty();
-    std::string clear_filled_empty();
-    std::string clear_empty_filled();
-    std::string clear_filled_filled();
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string clear_filled_empty(std::list<std::pair<K,T>> inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string clear_empty_filled(std::list<std::pair<K,T>> inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string clear_filled_filled(std::list<std::pair<K,T>> inserts);
 
-void insert_tests();
-    std::string insert_pairTypeRef();
-    std::string insert_pairTypeRef_empty();
-    std::string insert_pairTypeRef_filled(SimpleTrieTemplate<int,char> &trie, std::pair<int,char> p, bool newVal);
+//endregion
 
-    std::string insert_pairTypeVal();
-    std::string insert_pairTypeVal_empty();
-    std::string insert_pairTypeVal_filled(SimpleTrieTemplate<int,char> &trie, std::pair<int,char> p, bool newVal);
+//region //INSERT
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+void insert_tests(const std::list<std::pair<K,T>>& inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string insert_pairTypeRef(std::list<std::pair<K,T>> inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string insert_pairTypeRef_empty(std::pair<K,T> p);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string insert_pairTypeRef_filled(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, std::pair<K,T> p, bool newVal);
 
-    std::string insert_pairListRef();
-    std::string insert_pairListRef_empty();
-    std::string insert_pairListRef_filled(SimpleTrieTemplate<int,char> &trie, std::pair<int,std::forward_list<char>> p, bool newVal);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string insert_pairTypeVal(std::list<std::pair<K,T>> inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string insert_pairTypeVal_empty(std::pair<K,T> p);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string insert_pairTypeVal_filled(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, std::pair<K,std::forward_list<T>> p, bool newVal);
 
-    std::string insert_pairListVal();
-    std::string insert_pairListVal_empty();
-    std::string insert_pairListVal_filled(SimpleTrieTemplate<int,char> &trie, std::pair<int,std::forward_list<char>> p, bool newVal);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string insert_pairListRef(std::list<std::pair<K,T>> inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string insert_pairListRef_empty(std::pair<K,T> p);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string insert_pairListRef_filled(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, std::pair<K,T> p, bool newVal);
 
-    std::string insert_typeRef();
-    std::string insert_typeRef_empty();
-    std::string insert_typeRef_filled(SimpleTrieTemplate<int,char> &trie, char p, bool newVal);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string insert_pairListVal(std::list<std::pair<K,T>> inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string insert_pairListVal_empty(std::pair<K,T> p);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string insert_pairListVal_filled(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, std::pair<K,std::forward_list<T>> p, bool newVal);
 
-    std::string insert_typeVal();
-    std::string insert_typeVal_empty();
-    std::string insert_typeVal_filled(SimpleTrieTemplate<int,char> &trie, char p, bool newVal);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string insert_typeRef(std::list<std::pair<K,T>> inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string insert_typeRef_empty(std::pair<K,T> p);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string insert_typeRef_filled(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, std::pair<K,T> p, bool newVal);
 
-    std::string insert_listRef();
-    std::string insert_listRef_empty();
-    std::string insert_listRef_filled(SimpleTrieTemplate<int,char> &trie, std::forward_list<char> p, bool newVal);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string insert_typeVal(std::list<std::pair<K,T>> inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string insert_typeVal_empty(std::pair<K,T> p);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string insert_typeVal_filled(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, std::pair<K,T> p, bool newVal);
 
-    std::string insert_listVal();
-    std::string insert_listVal_empty();
-    std::string insert_listVal_filled(SimpleTrieTemplate<int,char> &trie, std::forward_list<char> p, bool newVal);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string insert_listRef(std::list<std::pair<K,T>> inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string insert_listRef_empty(std::pair<K,T> p);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string insert_listRef_filled(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, std::pair<K,std::forward_list<T>> p, bool newVal);
 
-void erase_tests();
-    std::string erase_key();
-    std::string erase_key_diffCases(SimpleTrieTemplate<int,char> &trie, std::map<int,char> &map, int key, bool validKey, int32_t cnt);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string insert_listVal(std::list<std::pair<K,T>> inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string insert_listVal_empty(std::pair<K,T> p);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string insert_listVal_filled(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, std::pair<K,std::forward_list<T>> p, bool newVal);
 
-    std::string erase_iterators();
+//endregion
 
-void swap_tests();
-    std::string swap_oneAndOther(SimpleTrieTemplate<int,char> &one, SimpleTrieTemplate<int,char> &other, int32_t cnt);
+//region //ERASE
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+void erase_tests(const std::list<std::pair<K,T>>& inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string erase_key(std::list<std::pair<K,T>> inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string erase_key_diffCases(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, K key, bool validKey, uint32_t cnt);
 
-void find_tests();
-    std::string find_keyInTrie(SimpleTrieTemplate<int,char> &trie, int key, bool valid, int32_t cnt);
+//endregion
 
-void scout_tests();
-    std::string scout_keyInTrie(SimpleTrieTemplate<int,char> &trie, int key, bool valid, int32_t cnt);
+//region //SWAP
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+void swap_tests(const std::list<std::pair<K,T>>& inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string swap_oneAndOther(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &one, SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &other, uint32_t cnt);
 
-void contains_tests();
-    std::string contains_keyInTrie(SimpleTrieTemplate<int,char> &trie, int key, bool valid, int32_t cnt);
+//endregion
 
+//region //FIND
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+void find_tests(std::list<std::pair<K,T>> inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string find_keyInTrie(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, K key, bool valid, uint32_t cnt);
+
+//endregion
+
+//region //SCOUT
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+void scout_tests(std::list<std::pair<K,T>> inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string scout_keyInTrie(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, K key, bool valid, uint32_t cnt);
+
+//endregion
+
+//region //CONTAINS
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+void contains_tests(std::list<std::pair<K,T>> inserts);
+    template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+    std::string contains_keyInTrie(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, K key, bool valid, uint32_t cnt);
+
+//endregion
+
+//region //ITERATOR
 void iterator_tests();
     std::string iterator_empty();
     std::string iterator_empty_beginIsEnd();
-    std::string iterator_filled_diffCases(SimpleTrieTemplate<int,char> &trie, std::map<int,char> &map, int32_t cnt);
+    std::string iterator_filled_diffCases(SimpleTrieTemplate<int32_t,char32_t> &trie, std::map<int32_t,char32_t> &map, int32_t cnt);
+
+//endregion
+
 //endregion
 
 int main() {
-    run_tests();
+    run_default_tests();
     return 0;
 }
 
-void run_tests() {
-    constructor_default_tests();
-    constructor_copy_tests();
-    assignment_tests();
-    empty_tests();
-    size_tests();
-    clear_tests();
-    insert_tests();
-    erase_tests();
-    swap_tests();
-    find_tests();
-    scout_tests();
-    contains_tests();
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+void run_standard_tests(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser>& trie, std::list<std::pair<K,T>>& inserts) {
+    constructor_default_tests<K,T,S,Indexer,Modifier,Eraser>();
+    constructor_copy_tests<K,T,S,Indexer,Modifier,Eraser>(inserts);
+    assignment_tests<K,T,S,Indexer,Modifier,Eraser>(inserts);
+    empty_tests<K,T,S,Indexer,Modifier,Eraser>(inserts);
+    size_tests<K,T,S,Indexer,Modifier,Eraser>(inserts);
+    clear_tests<K,T,S,Indexer,Modifier,Eraser>(inserts);
+    insert_tests<K,T,S,Indexer,Modifier,Eraser>(inserts);
+    erase_tests<K,T,S,Indexer,Modifier,Eraser>(inserts);
+    swap_tests<K,T,S,Indexer,Modifier,Eraser>(inserts);
+    find_tests<K,T,S,Indexer,Modifier,Eraser>(inserts);
+    scout_tests<K,T,S,Indexer,Modifier,Eraser>(inserts);
+    contains_tests<K,T,S,Indexer,Modifier,Eraser>(inserts);
+}
+
+std::list<std::pair<int32_t,char32_t>> generate_default_inputs(uint32_t num) {
+    std::list<std::pair<int32_t,char32_t>> list;
+    std::pair<int32_t,char32_t> p;
+    char32_t val('a');
+    int32_t ph(12);
+    for (uint32_t i(0); i < num; ++i) {
+        if (i % 2 == 0) { // if even
+            p = std::pair<int32_t,char32_t>(ph - i, char(val + i));
+        }
+        else {
+            p = std::pair<int32_t,char32_t>(ph + i, char(val + i));
+        }
+        list.push_front(p);
+    }
+    return list;
+}
+
+void run_default_tests() {
+    SimpleTrieTemplate<int32_t,char32_t> trie;
+    std::list<std::pair<int32_t,char32_t>> inputs(generate_default_inputs(25));
+
+    run_standard_tests(trie,inputs);
     iterator_tests();
 }
 
@@ -131,21 +261,23 @@ void print_message(const std::string& s) {
 }
 
 //region //FUNCTION DEFINITIONS
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 void constructor_default_tests() {
     std::cout << "default constructor test(s): ";
     std::string s;
 
-    s += constructor_default_empty();
-    s += constructor_default_beginIsEnd();
-    s += constructor_default_equalInstants();
+    s += constructor_default_empty<K,T,S,Indexer,Modifier,Eraser>();
+    s += constructor_default_beginIsEnd<K,T,S,Indexer,Modifier,Eraser>();
+    s += constructor_default_equalInstants<K,T,S,Indexer,Modifier,Eraser>();
 
     print_message(s);
 }
 //region //DEF CONSTRUCTOR
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 std::string constructor_default_empty() {
     std::string out("\t- is empty: ");
     try {
-        SimpleTrieTemplate<int,char,2> trie;
+        SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie;
         return (!trie.empty()) ? out + "fail\n" : "";
     }
     catch(...) {
@@ -153,10 +285,11 @@ std::string constructor_default_empty() {
     }
 }
 
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 std::string constructor_default_beginIsEnd() {
     std::string out("\t- begin()==end(): ");
     try {
-        SimpleTrieTemplate<int,char,2> trie;
+        SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie;
         return (trie.begin() != trie.end()) ? out + "fail\n" : "";
     }
     catch(...) {
@@ -164,11 +297,12 @@ std::string constructor_default_beginIsEnd() {
     }
 }
 
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 std::string constructor_default_equalInstants() {
     std::string out("\t- def()==def(): ");
     try {
-        SimpleTrieTemplate<int,char,2> firstTrie;
-        SimpleTrieTemplate<int,char,2> secondTrie;
+        SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> firstTrie;
+        SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> secondTrie;
         out = (firstTrie != secondTrie) ? out + "fail -- != " : "";
         out = (firstTrie == secondTrie) ? "" : out + "fail -- == ";
         return (out.empty()) ? out : out + "\n";
@@ -180,20 +314,22 @@ std::string constructor_default_equalInstants() {
 
 //endregion
 
-void constructor_copy_tests() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+void constructor_copy_tests(const std::list<std::pair<K,T>>& inserts) {
     std::cout << "copy constructor test(s): ";
     std::string s;
 
-    s += constructor_copy_diffOGs();
-    s += constructor_copy_notByRef();
+    s += constructor_copy_diffOGs<K,T,S,Indexer,Modifier,Eraser>(inserts);
+    s += constructor_copy_notByRef<K,T,S,Indexer,Modifier,Eraser>(inserts);
 
     print_message(s);
 }
 //region //COPY CONSTRUCTOR
-std::string constructor_copy_equal(SimpleTrieTemplate<int,char,2>& og, uint32_t count) {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string constructor_copy_equal(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser>& og, uint32_t count) {
     std::string out("\t- is equal(" + std::to_string(count) + "): ");
     try {
-        SimpleTrieTemplate<int,char,2> trie(og);
+        SimpleTrieTemplate<int32_t,char32_t,2> trie(og);
         return (trie == og) ? "" : out + "fail\n";
     }
     catch(...) {
@@ -201,22 +337,23 @@ std::string constructor_copy_equal(SimpleTrieTemplate<int,char,2>& og, uint32_t 
     }
 }
 
-std::string constructor_copy_diffOGs() {
-    SimpleTrieTemplate<int,char,2> tr_one; // empty
-    SimpleTrieTemplate<int,char,2> tr_two; // one item
-    SimpleTrieTemplate<int,char,2> tr_three; // three items
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string constructor_copy_diffOGs(std::list<std::pair<K,T>> inserts) {
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> tr_one; // empty
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> tr_two; // one item
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> tr_three; // three items
 
-    std::forward_list<char> lst;
-    lst.push_front('d');
-    lst.push_front('e');
-    lst.push_front('f');
+    int32_t ratio(int32_t(inserts.size() * 0.45));
 
-    char val('z');
+    for (uint32_t i(0); i < ratio; ++i) {
+        tr_two.insert(inserts.front());
+        inserts.pop_front();
+    }
 
-    tr_two.insert(3,'c');
-    tr_three.insert(3,'c');
-    tr_three.insert(5,lst);
-    tr_three.insert(8,val);
+    while (!inserts.empty()) {
+        tr_three.insert(inserts.front());
+        inserts.pop_front();
+    }
 
     std::string out;
 
@@ -227,20 +364,26 @@ std::string constructor_copy_diffOGs() {
     return out;
 }
 
-std::string constructor_copy_notByRef() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string constructor_copy_notByRef(std::list<std::pair<K,T>> inserts) {
     std::string out("\t- copy by value: ");
     try {
-        SimpleTrieTemplate<int,char,2> trie_one;
-        SimpleTrieTemplate<int,char,2> trie_two(trie_one);
-        trie_one.insert(1,'a');
-        trie_one.insert(2,'b');
-        trie_one.insert(3,'d');
+        int32_t ratio(int32_t(inserts.size() * 0.45));
 
-        SimpleTrieTemplate<int,char,2> trie_three;
-        trie_three.insert(1,'a');
-        trie_three.insert(2,'b');
-        trie_three.insert(3,'d');
-        SimpleTrieTemplate<int,char,2> trie_four(trie_one);
+        SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie_one;
+        SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie_two(trie_one);
+
+        for (uint32_t i(0); i < ratio; ++i) {
+            trie_one.insert(inserts.front());
+            inserts.pop_front();
+        }
+
+        SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie_three;
+        while (!inserts.empty()) {
+            trie_three.insert(inserts.front());
+            inserts.pop_front();
+        }
+        SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie_four(trie_three);
 
         std::string moreOut;
 
@@ -256,18 +399,20 @@ std::string constructor_copy_notByRef() {
 
 //endregion
 
-void assignment_tests() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+void assignment_tests(const std::list<std::pair<K,T>>& inserts) {
     std::cout << "assignment operator test(s): ";
     std::string s;
 
-    s += assign_diffOnesAndDiffOthers();
-    s += assign_notByRef();
+    s += assign_diffOnesAndDiffOthers<K,T,S,Indexer,Modifier,Eraser>(inserts);
+    s += assign_notByRef<K,T,S,Indexer,Modifier,Eraser>(inserts);
 
     print_message(s);
 }
 //region //ASSIGNMENT
-std::string assign_diffOnesAndDiffOthers() {
-    SimpleTrieTemplate<int,char> trie_one, trie_two, trie_three, trie_four,
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string assign_diffOnesAndDiffOthers(const std::list<std::pair<K,T>>& inserts) {
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie_one, trie_two, trie_three, trie_four,
     trie_five, trie_six, trie_seven, trie_eight, trie_nine, trie_ten;
 
     std::string out;
@@ -276,46 +421,68 @@ std::string assign_diffOnesAndDiffOthers() {
     out += assign_oneEqualOther(trie_one,trie_two,1);
 
     // filled to empty
-    trie_one.insert(3,'a');
-    trie_one.insert(2,'b');
-    trie_one.insert(5,'c');
+    std::list<std::pair<K,T>> ph_one(inserts);
+    while (!ph_one.empty()) {
+        trie_one.insert(ph_one.front());
+        ph_one.pop_front();
+    }
     out += assign_oneEqualOther(trie_one,trie_two,2);
 
     // empty to filled
-    trie_three.insert(3,'a');
-    trie_three.insert(2,'b');
-    trie_three.insert(5,'c');
+    std::list<std::pair<K,T>> ph_two(inserts);
+    while (!ph_two.empty()) {
+        trie_three.insert(ph_two.front());
+        ph_two.pop_front();
+    }
     out += assign_oneEqualOther(trie_four,trie_three,3);
 
     // filled to filled (same size)
-    trie_six.insert(3,'a');
-    trie_six.insert(2,'b');
-    trie_six.insert(5,'c');
-    trie_five.insert(6,'a');
-    trie_five.insert(3,'b');
-    trie_five.insert(7,'c');
+    int32_t ratio(int32_t(inserts.size() * 0.5));
+    std::list<std::pair<K,T>> ph_three(inserts);
+    for (uint32_t i(0); i < ratio; ++i) {
+        trie_six.insert(ph_three.front());
+        ph_three.pop_front();
+    }
+
+    while (!ph_three.empty()) {
+        trie_five.insert(ph_three.front());
+        ph_three.pop_front();
+    }
     out += assign_oneEqualOther(trie_six,trie_five,4);
 
     // filled to filled (less to large -- ie 2 to 3)
-    trie_seven.insert(3,'a');
-    trie_seven.insert(2,'b');
-    trie_eight.insert(6,'a');
-    trie_eight.insert(3,'b');
-    trie_eight.insert(7,'c');
+    ratio = inserts.size() * 0.4;
+    std::list<std::pair<K,T>> ph_four(inserts);
+    for (uint32_t i(0); i < ratio; ++i) {
+        trie_seven.insert(ph_four.front());
+        ph_four.pop_front();
+    }
+
+    while (!ph_four.empty()) {
+        trie_eight.insert(ph_four.front());
+        ph_four.pop_front();
+    }
     out += assign_oneEqualOther(trie_seven,trie_eight,5);
 
     // filled to filled (large to less -- ie 3 to 2)
-    trie_nine.insert(3,'a');
-    trie_nine.insert(2,'b');
-    trie_ten.insert(6,'a');
-    trie_ten.insert(3,'b');
-    trie_ten.insert(7,'c');
+    ratio = inserts.size() * 0.7;
+    std::list<std::pair<K,T>> ph_five(inserts);
+    for (uint32_t i(0); i < ratio; ++i) {
+        trie_nine.insert(ph_five.front());
+        ph_five.pop_front();
+    }
+
+    while (!ph_five.empty()) {
+        trie_ten.insert(ph_five.front());
+        ph_five.pop_front();
+    }
     out += assign_oneEqualOther(trie_ten,trie_nine,6);
 
     return out;
 }
 
-std::string assign_oneEqualOther(SimpleTrieTemplate<int,char,2>& one, SimpleTrieTemplate<int,char>& other, int32_t cnt) {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string assign_oneEqualOther(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser>& one, SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser>& other, uint32_t cnt) {
     std::string out("\t- one assigned to other(" + std::to_string(cnt) + "): ");
     try {
         one = other;
@@ -326,21 +493,23 @@ std::string assign_oneEqualOther(SimpleTrieTemplate<int,char,2>& one, SimpleTrie
     }
 }
 
-std::string assign_notByRef() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string assign_notByRef(const std::list<std::pair<K,T>>& inserts) {
     std::string out("\t- copied by value: ");
     try {
-        SimpleTrieTemplate<int,char,2> trie_one;
-        SimpleTrieTemplate<int,char,2> trie_two;
+        SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie_one, trie_two, trie_three, trie_four;
         trie_two = trie_one;
-        trie_one.insert(1,'a');
-        trie_one.insert(2,'b');
-        trie_one.insert(3,'d');
+        std::list<std::pair<K,T>> ph_one(inserts);
+        while (!ph_one.empty()) {
+            trie_one.insert(ph_one.front());
+            ph_one.pop_front();
+        }
 
-        SimpleTrieTemplate<int,char,2> trie_three;
-        SimpleTrieTemplate<int,char,2> trie_four;
-        trie_three.insert(1,'a');
-        trie_three.insert(2,'b');
-        trie_three.insert(3,'d');
+        std::list<std::pair<K,T>> ph_two(inserts);
+        while (!ph_two.empty()) {
+            trie_three.insert(ph_two.front());
+            ph_two.pop_front();
+        }
         trie_four = trie_three;
 
         std::string moreOut;
@@ -357,34 +526,39 @@ std::string assign_notByRef() {
 
 //endregion
 
-void empty_tests() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+void empty_tests(const std::list<std::pair<K,T>>& inserts) {
     std::cout << "empty test(s): ";
     std::string s;
 
-    s += empty_checksValid_cases();
+    s += empty_checksValid_cases<K,T,S,Indexer,Modifier,Eraser>(inserts);
 
     print_message(s);
 }
 //region //EMPTY
-std::string empty_checksValid_cases() {
-    SimpleTrieTemplate<int,char> trie_one, trie_two;
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string empty_checksValid_cases(std::list<std::pair<K,T>> inserts) {
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie_one;
     std::string out;
 
     // proper return when actually empty
     out += empty_checksValid(trie_one,true,1);
 
     // proper return when not empty (contains one item)
-    trie_two.insert(3,'a');
-    out += empty_checksValid(trie_two,false,2);
+    trie_one.insert(inserts.front());
+    inserts.pop_front();
+    out += empty_checksValid(trie_one,false,2);
 
     // proper return when not empty (contains two item)
-    trie_two.insert(4,'b');
-    out += empty_checksValid(trie_two,false,2);
+    trie_one.insert(inserts.front());
+    inserts.pop_front();
+    out += empty_checksValid(trie_one,false,2);
 
     return out;
 }
 
-std::string empty_checksValid(SimpleTrieTemplate<int,char> &trie, bool isEmpty, int32_t cnt) {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string empty_checksValid(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, bool isEmpty, uint32_t cnt) {
     std::string out("\t- proper return(" + std::to_string(cnt) + "): ");
     try {
         return (trie.empty() == isEmpty) ? "" : out + "fail\n";
@@ -396,32 +570,34 @@ std::string empty_checksValid(SimpleTrieTemplate<int,char> &trie, bool isEmpty, 
 
 //endregion
 
-void size_tests() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+void size_tests(const std::list<std::pair<K,T>>& inserts) {
     std::cout << "size test(s): ";
     std::string s;
 
-    s += size_checksValid_cases();
+    s += size_checksValid_cases<K,T,S,Indexer,Modifier,Eraser>(inserts);
 
     print_message(s);
 }
 //region //SIZE
-std::string size_checksValid_cases() {
-    SimpleTrieTemplate<int,char> trie_one, trie_two;
-    std::string out;
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string size_checksValid_cases(std::list<std::pair<K,T>> inserts) {
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie;
+    std::string out("");
 
-    SimpleTrieTemplate<int,char> trie;
-
-    int32_t input;
-    for (uint32_t i(0); i < 10; ++i) {
-        size_checkValid(trie,i,i+1);
-        input = (i % 2 == 0) ? 5 - i : 5 + i;
-        trie.insert(input,char('a' + i));
+    int32_t i(0);
+    while (!inserts.empty()) {
+        out += size_checkValid(trie,i,i+1);
+        trie.insert(inserts.front());
+        inserts.pop_front();
+        ++i;
     }
 
     return out;
 }
 
-std::string size_checkValid(SimpleTrieTemplate<int,char> &trie, uint32_t correctCnt, uint32_t cnt) {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string size_checkValid(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, uint32_t correctCnt, uint32_t cnt) {
     std::string out("\t- proper return(" + std::to_string(cnt) + "): ");
     try {
         return (trie.size() == correctCnt) ? "" : out + "fail\n";
@@ -433,43 +609,45 @@ std::string size_checkValid(SimpleTrieTemplate<int,char> &trie, uint32_t correct
 
 //endregion
 
-void clear_tests() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+void clear_tests(const std::list<std::pair<K,T>>& inserts) {
     std::cout << "clear test(s): ";
     std::string s;
 
     // when empty and not empty
-    s += clear_diffCases();
+    s += clear_diffCases<K,T,S,Indexer,Modifier,Eraser>(inserts);
 
     // called multiple times
-    s += clear_multiple();
+    s += clear_multiple<K,T,S,Indexer,Modifier,Eraser>(inserts);
 
     print_message(s);
 }
 //region //EMPTY
-std::string  clear_diffCases() {
-    SimpleTrieTemplate<int,char> trie_one, trie_two, trie_three;
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string clear_diffCases(std::list<std::pair<K,T>> inserts) {
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie_one, trie_two;
     std::string out;
 
     // when empty
     out += clear_properOut(trie_one, 1);
 
     // filled with one
-    trie_two.insert(3,'a');
+    trie_two.insert(inserts.front());
+    inserts.pop_front();
     out += clear_properOut(trie_two, 2);
 
     // filled with more than one
-    trie_three.insert(3,'a');
-    trie_three.insert(1,'b');
-    trie_three.insert(8,'c');
-    trie_three.insert(8,'u');
-    trie_three.insert(8,'n');
-    trie_three.insert(8,'t');
-    out += clear_properOut(trie_three,3);
+    while (!inserts.empty()) {
+        trie_two.insert(inserts.front());
+        inserts.pop_front();
+    }
+    out += clear_properOut(trie_two,3);
 
     return out;
 }
 
-std::string clear_properOut(SimpleTrieTemplate<int,char> &trie, uint32_t cnt) {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string clear_properOut(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, uint32_t cnt) {
     std::string out("\t- proper return(" + std::to_string(cnt) + "): ");
     try {
         trie.clear();
@@ -480,20 +658,22 @@ std::string clear_properOut(SimpleTrieTemplate<int,char> &trie, uint32_t cnt) {
     }
 }
 
-std::string clear_multiple() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string clear_multiple(const std::list<std::pair<K,T>>& inserts) {
 
     std::string out;
 
-    out += clear_empty_empty();
-    out += clear_filled_empty();
-    out += clear_empty_filled();
-    out += clear_filled_filled();
+    out += clear_empty_empty<K,T,S,Indexer,Modifier,Eraser>();
+    out += clear_filled_empty<K,T,S,Indexer,Modifier,Eraser>(inserts);
+    out += clear_empty_filled<K,T,S,Indexer,Modifier,Eraser>(inserts);
+    out += clear_filled_filled<K,T,S,Indexer,Modifier,Eraser>(inserts);
 
     return out;
 }
 
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 std::string clear_empty_empty() {
-    SimpleTrieTemplate<int,char> trie_empty;
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie_empty;
     std::string out;
 
     out += clear_properOut(trie_empty, 4);
@@ -502,11 +682,13 @@ std::string clear_empty_empty() {
     return out;
 }
 
-std::string clear_filled_empty() {
-    SimpleTrieTemplate<int,char> trie;
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string clear_filled_empty(std::list<std::pair<K,T>> inserts) {
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie;
     std::string out;
 
-    trie.insert(3,'a');
+    trie.insert(inserts.front());
+    inserts.pop_front();
 
     out += clear_properOut(trie, 6);
     out += clear_properOut(trie,7);
@@ -514,24 +696,31 @@ std::string clear_filled_empty() {
     return out;
 }
 
-std::string clear_empty_filled() {
-    SimpleTrieTemplate<int,char> trie;
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string clear_empty_filled(std::list<std::pair<K,T>> inserts) {
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie;
     std::string out;
 
     out += clear_properOut(trie,8);
-    trie.insert(3,'a');
+
+    trie.insert(inserts.front());
+    inserts.pop_front();
+
     out += clear_properOut(trie,9);
 
     return out;
 }
 
-std::string clear_filled_filled() {
-    SimpleTrieTemplate<int,char> trie;
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string clear_filled_filled(std::list<std::pair<K,T>> inserts) {
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie;
     std::string out;
 
-    trie.insert(3,'a');
+    trie.insert(inserts.front());
+    inserts.pop_front();
     out += clear_properOut(trie,10);
-    trie.insert(4,'b');
+    trie.insert(inserts.front());
+    inserts.pop_front();
     out += clear_properOut(trie,11);
 
     return out;
@@ -539,79 +728,85 @@ std::string clear_filled_filled() {
 
 //endregion
 
-void insert_tests() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+void insert_tests(const std::list<std::pair<K,T>>& inserts) {
     std::cout << "insert test(s): ";
     std::string s;
 
     // pairType&
-    s += insert_pairTypeRef();
+    s += insert_pairTypeRef<K,T,S,Indexer,Modifier,Eraser>(inserts);
 
     // pairType&&
-    s += insert_pairTypeVal();
+    s += insert_pairTypeVal<K,T,S,Indexer,Modifier,Eraser>(inserts);
 
     // pairList&
-    s += insert_pairListRef();
+    s += insert_pairListRef<K,T,S,Indexer,Modifier,Eraser>(inserts);
 
     // pairList&&
-    s += insert_pairListVal();
+    s += insert_pairListVal<K,T,S,Indexer,Modifier,Eraser>(inserts);
 
     // type&
-    s += insert_typeRef();
+    s += insert_typeRef<K,T,S,Indexer,Modifier,Eraser>(inserts);
 
     // type&&
-    s += insert_typeVal();
+    s += insert_typeVal<K,T,S,Indexer,Modifier,Eraser>(inserts);
 
     // list&
-    s += insert_listRef();
+    s += insert_listRef<K,T,S,Indexer,Modifier,Eraser>(inserts);
 
     // list&&
-    s += insert_listVal();
+    s += insert_listVal<K,T,S,Indexer,Modifier,Eraser>(inserts);
 
     print_message(s);
 }
 //region //INSERT
-std::string insert_pairTypeRef() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string insert_pairTypeRef(std::list<std::pair<K,T>> inserts) {
     std::string out;
 
     // new key in empty trie
         // size change
         // trie has new key and its node has new value
-    out += insert_pairTypeRef_empty();
+    out += insert_pairTypeRef_empty<K,T,S,Indexer,Modifier,Eraser>(inserts.front());
+    inserts.pop_front();
 
     // old key in trie
-    SimpleTrieTemplate<int,char> trie;
-    std::pair<int,char> p(3,'a');
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie;
+    std::pair<K,T> p(inserts.front());
+    inserts.pop_front();
     trie.insert(p);
 
         // no size change
         // old val
             // no new value at key
-            out += insert_pairTypeRef_filled(trie,p,false);
+            out += insert_pairTypeRef_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,false);
         // new val
             // new value at key
-            p.second = 'b';
-            out += insert_pairTypeRef_filled(trie,p,true);
+            p.second = inserts.front().second;
+            inserts.pop_front();
+            out += insert_pairTypeRef_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,true);
 
     return out;
 }
-std::string insert_pairTypeRef_empty() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string insert_pairTypeRef_empty(std::pair<K,T> p) {
     std::string out("\t- pairTypeRef empty: ");
     try {
-        SimpleTrieTemplate<int,char> trie;
-        std::pair<int,char> p(3,'a');
+        SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie;
         auto it = trie.insert(p);
-        auto found = std::find(it.second().begin(),it.second().end(),'a');
-        return (trie.size() == 1 && it.first() == 3 && found != it.second().end()) ? "" : out + "fail\n";
+        auto found = std::find(it.second().begin(),it.second().end(),p.second);
+        return (trie.size() == 1 && it.first() == p.first && found != it.second().end()) ? "" : out + "fail\n";
     }
     catch(...) {
         return out + "UNKNOWN ERROR\n";
     }
 }
-std::string insert_pairTypeRef_filled(SimpleTrieTemplate<int,char> &trie, std::pair<int,char> p, bool newVal) {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string insert_pairTypeRef_filled(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, std::pair<K,T> p, bool newVal) {
     std::string out("\t- pairTypeRef filled: ");
     try {
-        int prevSize = trie.size();
-        int prevValCnt(0);
+        int32_t prevSize = trie.size();
+        int32_t prevValCnt(0);
         if (trie.contains(p.first)) {
             auto it = trie.find(p.first);
             prevValCnt = std::distance(it.second().begin(), it.second().end());
@@ -619,7 +814,7 @@ std::string insert_pairTypeRef_filled(SimpleTrieTemplate<int,char> &trie, std::p
         trie.insert(p);
 
         auto it = trie.find(p.first);
-        int postValCnt = std::distance(it.second().begin(),it.second().end());
+        int32_t postValCnt = std::distance(it.second().begin(),it.second().end());
 
         bool incArtCnt(trie.size() == prevSize), incValCnt(postValCnt == prevValCnt + 1);
         return (incArtCnt && (incValCnt == newVal)) ? "" : out + "fail\n";
@@ -629,17 +824,19 @@ std::string insert_pairTypeRef_filled(SimpleTrieTemplate<int,char> &trie, std::p
     }
 }
 
-std::string insert_pairTypeVal() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string insert_pairTypeVal(std::list<std::pair<K,T>> inserts) {
     std::string out;
 
     // new key in empty trie
         // size change
         // trie has new key and its node has new value
-    out += insert_pairTypeVal_empty();
+    out += insert_pairTypeVal_empty<K,T,S,Indexer,Modifier,Eraser>(inserts.front());
+    inserts.pop_front();
 
     // old key in trie
-    SimpleTrieTemplate<int,char> trie;
-    std::pair<int,char> p(3,'a');
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie;
+    std::pair<K,T> p(3,'a');
     trie.insert(p);
 
         // no size change
@@ -653,32 +850,33 @@ std::string insert_pairTypeVal() {
 
     return out;
 }
-std::string insert_pairTypeVal_empty() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string insert_pairTypeVal_empty(std::pair<K,T> p) {
     std::string out("\t- pairTypeVal empty: ");
     try {
-        SimpleTrieTemplate<int,char> trie;
-        std::pair<int,char> p(3,'a');
-        auto it = trie.insert(std::pair<int,char>(3,'a'));
-        auto found = std::find(it.second().begin(),it.second().end(),'a');
-        return (trie.size() == 1 && it.first() == 3 && found != it.second().end()) ? "" : out + "fail\n";
+        SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie;
+        auto it = trie.insert(std::pair<K,T>(p));
+        auto found = std::find(it.second().begin(),it.second().end(),p.second);
+        return (trie.size() == 1 && it.first() == p.first && found != it.second().end()) ? "" : out + "fail\n";
     }
     catch(...) {
         return out + "UNKNOWN ERROR\n";
     }
 }
-std::string insert_pairTypeVal_filled(SimpleTrieTemplate<int,char> &trie, std::pair<int,char> p, bool newVal) {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string insert_pairTypeVal_filled(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, std::pair<K,T> p, bool newVal) {
     std::string out("\t- pairTypeVal filled: ");
     try {
-        int prevSize = trie.size();
-        int prevValCnt(0);
+        int32_t prevSize = trie.size();
+        int32_t prevValCnt(0);
         if (trie.contains(p.first)) {
             auto it = trie.find(p.first);
             prevValCnt = std::distance(it.second().begin(), it.second().end());
         }
-        trie.insert(std::pair<int,char>(p));
+        trie.insert(std::pair<K,T>(p));
 
         auto it = trie.find(p.first);
-        int postValCnt = std::distance(it.second().begin(),it.second().end());
+        int32_t postValCnt = std::distance(it.second().begin(),it.second().end());
 
         bool incArtCnt(trie.size() == prevSize), incValCnt(postValCnt == prevValCnt + 1);
         return (incArtCnt && (incValCnt == newVal)) ? "" : out + "fail\n";
@@ -688,62 +886,68 @@ std::string insert_pairTypeVal_filled(SimpleTrieTemplate<int,char> &trie, std::p
     }
 }
 
-std::string insert_pairListRef() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string insert_pairListRef(std::list<std::pair<K,T>> inserts) {
     std::string out;
 
     // new key in empty trie
     // size change
     // trie has new key and its node has new value
-    out += insert_pairListRef_empty();
+    out += insert_pairListRef_empty<K,T,S,Indexer,Modifier,Eraser>(inserts.front());
+    inserts.pop_front();
 
     // old key in trie
-    SimpleTrieTemplate<int,char> trie;
-    std::forward_list<char> lst;
-    lst.push_front('a');
-    std::pair<int,std::forward_list<char>> p(3,lst);
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie;
+    std::forward_list<T> lst;
+    lst.push_front(inserts.front().second);
+    std::pair<K,std::forward_list<T>> p(inserts.front().first,lst);
+    inserts.pop_front();
     trie.insert(p);
 
     // no size change
     // old val
     // no new value at key
-    out += insert_pairListRef_filled(trie,p,false);
+    out += insert_pairListRef_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,false);
     // new val
     // new value at key
-    std::forward_list<char> list;
-    list.push_front('b');
+    std::forward_list<T> list;
+    list.push_front(inserts.front().second);
+    inserts.pop_front();
     p.second = list;
-    out += insert_pairListRef_filled(trie,p,true);
+    out += insert_pairListRef_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,true);
 
     return out;
 }
-std::string insert_pairListRef_empty() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string insert_pairListRef_empty(std::pair<K,T> p) {
     std::string out("\t- pairListRef empty: ");
     try {
-        SimpleTrieTemplate<int,char> trie;
-        std::forward_list<char> lst;
-        lst.push_front('a');
-        std::pair<int,std::forward_list<char>> p(3,lst);
-        auto it = trie.insert(p);
-        auto found = std::find(it.second().begin(),it.second().end(),'a');
-        return (trie.size() == 1 && it.first() == 3 && found != it.second().end()) ? "" : out + "fail\n";
+        SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie;
+        std::forward_list<T> lst;
+        lst.push_front(p.second);
+        std::pair<K,std::forward_list<T>> pair(p.first,lst);
+        auto it = trie.insert(pair);
+        auto found = std::find(it.second().begin(),it.second().end(),p.second);
+        return (trie.size() == 1 && it.first() == pair.first && found != it.second().end()) ? "" : out + "fail\n";
     }
     catch(...) {
         return out + "UNKNOWN ERROR\n";
     }
 }
-std::string insert_pairListRef_filled(SimpleTrieTemplate<int,char> &trie, std::pair<int,std::forward_list<char>> p, bool newVal) {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string insert_pairListRef_filled(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, std::pair<K,std::forward_list<T>> p, bool newVal) {
     std::string out("\t- pairListRef filled: ");
     try {
-        int prevSize = trie.size();
-        int prevValCnt(0);
+        int32_t prevSize = trie.size();
+        int32_t prevValCnt(0);
         if (trie.contains(p.first)) {
             auto it = trie.find(p.first);
             prevValCnt = std::distance(it.second().begin(), it.second().end());
         }
-        trie.insert(std::pair<int,std::forward_list<char>>(p));
+        trie.insert(std::pair<K,std::forward_list<T>>(p));
 
         auto it = trie.find(p.first);
-        int postValCnt = std::distance(it.second().begin(),it.second().end());
+        int32_t postValCnt = std::distance(it.second().begin(),it.second().end());
 
         bool incArtCnt(trie.size() == prevSize), incValCnt(postValCnt == prevValCnt + 1);
         return (incArtCnt && (incValCnt == newVal)) ? "" : out + "fail\n";
@@ -753,61 +957,67 @@ std::string insert_pairListRef_filled(SimpleTrieTemplate<int,char> &trie, std::p
     }
 }
 
-std::string insert_pairListVal() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string insert_pairListVal(std::list<std::pair<K,T>> inserts) {
     std::string out;
 
     // new key in empty trie
     // size change
     // trie has new key and its node has new value
-    out += insert_pairListVal_empty();
+    out += insert_pairListVal_empty<K,T,S,Indexer,Modifier,Eraser>(inserts.front());
+    inserts.pop_front();
 
     // old key in trie
-    SimpleTrieTemplate<int,char> trie;
-    std::forward_list<char> lst;
-    lst.push_front('a');
-    std::pair<int,std::forward_list<char>> p(3,lst);
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie;
+    std::forward_list<T> lst;
+    lst.push_front(inserts.front().second);
+    std::pair<K,std::forward_list<T>> p(inserts.front().first,lst);
     trie.insert(p);
 
     // no size change
     // old val
     // no new value at key
-    out += insert_pairListVal_filled(trie,p,false);
+    out += insert_pairListVal_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,false);
+    inserts.pop_front();
     // new val
     // new value at key
-    std::forward_list<char> list;
-    list.push_front('b');
+    std::forward_list<T> list;
+    list.push_front(inserts.front().second);
+    inserts.pop_front();
     p.second = list;
-    out += insert_pairListVal_filled(trie,p,true);
+    out += insert_pairListVal_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,true);
 
     return out;
 }
-std::string insert_pairListVal_empty() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string insert_pairListVal_empty(std::pair<K,T> p) {
     std::string out("\t- pairListVal empty: ");
     try {
-        SimpleTrieTemplate<int,char> trie;
-        std::forward_list<char> lst;
-        lst.push_front('a');
-        auto it = trie.insert(std::pair<int,std::forward_list<char>>(3,lst));
-        auto found = std::find(it.second().begin(),it.second().end(),'a');
-        return (trie.size() == 1 && it.first() == 3 && found != it.second().end()) ? "" : out + "fail\n";
+        SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie;
+        std::forward_list<T> lst;
+        lst.push_front(p.second);
+        auto it = trie.insert(std::pair<K,std::forward_list<T>>(p.first,lst));
+        auto found = std::find(it.second().begin(),it.second().end(),p.second);
+        return (trie.size() == 1 && it.first() == p.first && found != it.second().end()) ? "" : out + "fail\n";
     }
     catch(...) {
         return out + "UNKNOWN ERROR\n";
     }
 }
-std::string insert_pairListVal_filled(SimpleTrieTemplate<int,char> &trie, std::pair<int,std::forward_list<char>> p, bool newVal) {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string insert_pairListVal_filled(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, std::pair<K,std::forward_list<T>> p, bool newVal) {
     std::string out("\t- pairListVal filled: ");
     try {
-        int prevSize = trie.size();
-        int prevValCnt(0);
+        int32_t prevSize = trie.size();
+        int32_t prevValCnt(0);
         if (trie.contains(p.first)) {
             auto it = trie.find(p.first);
             prevValCnt = std::distance(it.second().begin(), it.second().end());
         }
-        trie.insert(std::pair<int,std::forward_list<char>>(p));
+        trie.insert(std::pair<K,std::forward_list<T>>(p));
 
         auto it = trie.find(p.first);
-        int postValCnt = std::distance(it.second().begin(),it.second().end());
+        int32_t postValCnt = std::distance(it.second().begin(),it.second().end());
 
         bool incArtCnt(trie.size() == prevSize), incValCnt(postValCnt == prevValCnt + 1);
         return (incArtCnt && (incValCnt == newVal)) ? "" : out + "fail\n";
@@ -817,57 +1027,61 @@ std::string insert_pairListVal_filled(SimpleTrieTemplate<int,char> &trie, std::p
     }
 }
 
-std::string insert_typeRef() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string insert_typeRef(std::list<std::pair<K,T>> inserts) {
     std::string out;
 
     // new key in empty trie
     // size change
     // trie has new key and its node has new value
-    out += insert_typeRef_empty();
+    out += insert_typeRef_empty<K,T,S,Indexer,Modifier,Eraser>(inserts.front());
+    inserts.pop_front();
 
     // old key in trie
-    SimpleTrieTemplate<int,char> trie;
-    std::forward_list<char> lst;
-    lst.push_front('a');
-    std::pair<int,std::forward_list<char>> p(3,lst);
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie;
+    std::pair<K,T> p(inserts.front().first,inserts.front().second);
     trie.insert(p);
 
     // no size change
     // old val
     // no new value at key
-    out += insert_typeRef_filled(trie,'a',false);
+    out += insert_typeRef_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,false);
+    inserts.pop_front();
     // new val
     // new value at key
-    out += insert_typeRef_filled(trie,'b',true);
+    p.second = inserts.front().second;
+    out += insert_typeRef_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,true);
 
     return out;
 }
-std::string insert_typeRef_empty() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string insert_typeRef_empty(std::pair<K,T> p) {
     std::string out("\t- typeRef empty: ");
     try {
-        SimpleTrieTemplate<int,char> trie;
-        char val('a');
-        auto it = trie.insert(3,val);
-        auto found = std::find(it.second().begin(),it.second().end(),'a');
-        return (trie.size() == 1 && it.first() == 3 && found != it.second().end()) ? "" : out + "fail\n";
+        SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie;
+        T val(p.second);
+        auto it = trie.insert(p.first,val);
+        auto found = std::find(it.second().begin(),it.second().end(),p.second);
+        return (trie.size() == 1 && it.first() == p.first && found != it.second().end()) ? "" : out + "fail\n";
     }
     catch(...) {
         return out + "UNKNOWN ERROR\n";
     }
 }
-std::string insert_typeRef_filled(SimpleTrieTemplate<int,char> &trie, char p, bool newVal) {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string insert_typeRef_filled(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, std::pair<K,T> p, bool newVal) {
     std::string out("\t- typeRef filled: ");
     try {
-        int prevSize = trie.size();
-        int prevValCnt(0);
-        if (trie.contains(3)) {
-            auto it = trie.find(3);
+        int32_t prevSize = trie.size();
+        int32_t prevValCnt(0);
+        if (trie.contains(p.first)) {
+            auto it = trie.find(p.first);
             prevValCnt = std::distance(it.second().begin(), it.second().end());
         }
-        trie.insert(3,p);
+        trie.insert(p.first,p.second);
 
-        auto it = trie.find(3);
-        int postValCnt = std::distance(it.second().begin(),it.second().end());
+        auto it = trie.find(p.first);
+        int32_t postValCnt = std::distance(it.second().begin(),it.second().end());
 
         bool incArtCnt(trie.size() == prevSize), incValCnt(postValCnt == prevValCnt + 1);
         return (incArtCnt && (incValCnt == newVal)) ? "" : out + "fail\n";
@@ -877,56 +1091,60 @@ std::string insert_typeRef_filled(SimpleTrieTemplate<int,char> &trie, char p, bo
     }
 }
 
-std::string insert_typeVal() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string insert_typeVal(std::list<std::pair<K,T>> inserts) {
     std::string out;
 
     // new key in empty trie
     // size change
     // trie has new key and its node has new value
-    out += insert_typeVal_empty();
+    out += insert_typeVal_empty<K,T,S,Indexer,Modifier,Eraser>(inserts.front());
+    inserts.pop_front();
 
     // old key in trie
-    SimpleTrieTemplate<int,char> trie;
-    std::forward_list<char> lst;
-    lst.push_front('a');
-    std::pair<int,std::forward_list<char>> p(3,lst);
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie;
+    std::pair<K,T> p(inserts.front().first,inserts.front().second);
     trie.insert(p);
 
     // no size change
     // old val
     // no new value at key
-    out += insert_typeVal_filled(trie,'a',false);
+    out += insert_typeVal_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,false);
+    inserts.pop_front();
     // new val
     // new value at key
-    out += insert_typeVal_filled(trie,'b',true);
+    p.second = inserts.front().second;
+    out += insert_typeVal_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,true);
 
     return out;
 }
-std::string insert_typeVal_empty() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string insert_typeVal_empty(std::pair<K,T> p) {
     std::string out("\t- typeVal empty: ");
     try {
-        SimpleTrieTemplate<int,char> trie;
-        auto it = trie.insert(3,'a');
-        auto found = std::find(it.second().begin(),it.second().end(),'a');
-        return (trie.size() == 1 && it.first() == 3 && found != it.second().end()) ? "" : out + "fail\n";
+        SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie;
+        auto it = trie.insert(p.first,p.second);
+        auto found = std::find(it.second().begin(),it.second().end(),p.second);
+        return (trie.size() == 1 && it.first() == p.first && found != it.second().end()) ? "" : out + "fail\n";
     }
     catch(...) {
         return out + "UNKNOWN ERROR\n";
     }
 }
-std::string insert_typeVal_filled(SimpleTrieTemplate<int,char> &trie, char p, bool newVal) {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string insert_typeVal_filled(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, std::pair<K,T> p, bool newVal) {
     std::string out("\t- typeVal filled: ");
     try {
-        int prevSize = trie.size();
-        int prevValCnt(0);
-        if (trie.contains(3)) {
-            auto it = trie.find(3);
+        int32_t prevSize = trie.size();
+        int32_t prevValCnt(0);
+        if (trie.contains(p.first)) {
+            auto it = trie.find(p.first);
             prevValCnt = std::distance(it.second().begin(), it.second().end());
         }
-        trie.insert(3,char(p));
+        trie.insert(p.first,p.second);
 
-        auto it = trie.find(3);
-        int postValCnt = std::distance(it.second().begin(),it.second().end());
+        auto it = trie.find(p.first);
+        int32_t postValCnt = std::distance(it.second().begin(),it.second().end());
 
         bool incArtCnt(trie.size() == prevSize), incValCnt(postValCnt == prevValCnt + 1);
         return (incArtCnt && (incValCnt == newVal)) ? "" : out + "fail\n";
@@ -936,60 +1154,66 @@ std::string insert_typeVal_filled(SimpleTrieTemplate<int,char> &trie, char p, bo
     }
 }
 
-std::string insert_listRef() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string insert_listRef(std::list<std::pair<K,T>> inserts) {
     std::string out;
 
     // new key in empty trie
     // size change
     // trie has new key and its node has new value
-    out += insert_listRef_empty();
+    out += insert_listRef_empty<K,T,S,Indexer,Modifier,Eraser>(inserts.front());
+    inserts.pop_front();
 
     // old key in trie
-    SimpleTrieTemplate<int,char> trie;
-    std::forward_list<char> lst;
-    lst.push_front('a');
-    std::pair<int,std::forward_list<char>> p(3,lst);
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie;
+    std::forward_list<T> lst;
+    lst.push_front(inserts.front().second);
+    std::pair<K,std::forward_list<T>> p(inserts.front().first,lst);
     trie.insert(p);
+    inserts.pop_front();
 
     // no size change
     // old val
     // no new value at key
-    out += insert_listRef_filled(trie,lst,false);
+    out += insert_listRef_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,false);
     // new val
     // new value at key
-    std::forward_list<char> list;
+    std::forward_list<char32_t> list;
     list.push_front('b');
-    out += insert_listRef_filled(trie,list,true);
+    p.second = list;
+    out += insert_listRef_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,true);
 
     return out;
 }
-std::string insert_listRef_empty() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string insert_listRef_empty(std::pair<K,T> p) {
     std::string out("\t- listRef empty: ");
     try {
-        SimpleTrieTemplate<int,char> trie;
-        std::forward_list<char> lst;
-        lst.push_front('a');
-        auto it = trie.insert(3,lst);
-        auto found = std::find(it.second().begin(),it.second().end(),'a');
-        return (trie.size() == 1 && it.first() == 3 && found != it.second().end()) ? "" : out + "fail\n";
+        SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie;
+        std::forward_list<T> lst;
+        lst.push_front(p.second);
+        auto it = trie.insert(p.first,lst);
+        auto found = std::find(it.second().begin(),it.second().end(),p.second);
+        return (trie.size() == 1 && it.first() == p.first && found != it.second().end()) ? "" : out + "fail\n";
     }
     catch(...) {
         return out + "UNKNOWN ERROR\n";
     }
 }
-std::string insert_listRef_filled(SimpleTrieTemplate<int,char> &trie, std::forward_list<char> p, bool newVal) {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string insert_listRef_filled(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, std::pair<K,std::forward_list<T>> p, bool newVal) {
     std::string out("\t- listRef filled: ");
     try {
-        int prevSize = trie.size();
-        int prevValCnt(0);
-        if (trie.contains(3)) {
-            auto it = trie.find(3);
+        int32_t prevSize = trie.size();
+        int32_t prevValCnt(0);
+        if (trie.contains(p.first)) {
+            auto it = trie.find(p.first);
             prevValCnt = std::distance(it.second().begin(), it.second().end());
         }
-        trie.insert(3,p);
+        trie.insert(p.first,p.second);
 
-        auto it = trie.find(3);
-        int postValCnt = std::distance(it.second().begin(),it.second().end());
+        auto it = trie.find(p.first);
+        int32_t postValCnt = std::distance(it.second().begin(),it.second().end());
 
         bool incArtCnt(trie.size() == prevSize), incValCnt(postValCnt == prevValCnt + 1);
         return (incArtCnt && (incValCnt == newVal)) ? "" : out + "fail\n";
@@ -999,60 +1223,66 @@ std::string insert_listRef_filled(SimpleTrieTemplate<int,char> &trie, std::forwa
     }
 }
 
-std::string insert_listVal() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string insert_listVal(std::list<std::pair<K,T>> inserts) {
     std::string out;
 
     // new key in empty trie
     // size change
     // trie has new key and its node has new value
-    out += insert_listVal_empty();
+    out += insert_listVal_empty<K,T,S,Indexer,Modifier,Eraser>(inserts.front());
+    inserts.pop_front();
 
     // old key in trie
-    SimpleTrieTemplate<int,char> trie;
-    std::forward_list<char> lst;
-    lst.push_front('a');
-    std::pair<int,std::forward_list<char>> p(3,lst);
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie;
+    std::forward_list<T> lst;
+    lst.push_front(inserts.front().second);
+    std::pair<K,std::forward_list<T>> p(inserts.front().first,lst);
+    inserts.pop_front();
     trie.insert(p);
 
     // no size change
     // old val
     // no new value at key
-    out += insert_listVal_filled(trie,lst,false);
+    out += insert_listVal_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,false);
     // new val
     // new value at key
-    std::forward_list<char> list;
-    list.push_front('b');
-    out += insert_listVal_filled(trie,list,true);
+    std::forward_list<T> list;
+    list.push_front(inserts.front().second);
+    p.second = list;
+    out += insert_listVal_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,true);
 
     return out;
 }
-std::string insert_listVal_empty() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string insert_listVal_empty(std::pair<K,T> p) {
     std::string out("\t- listVal empty: ");
     try {
-        SimpleTrieTemplate<int,char> trie;
-        std::forward_list<char> lst;
-        lst.push_front('a');
-        auto it = trie.insert(3,std::forward_list<char>(lst));
-        auto found = std::find(it.second().begin(),it.second().end(),'a');
-        return (trie.size() == 1 && it.first() == 3 && found != it.second().end()) ? "" : out + "fail\n";
+        SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie;
+        std::forward_list<T> lst;
+        lst.push_front(p.second);
+        auto it = trie.insert(p.first,std::forward_list<T>(lst));
+        auto found = std::find(it.second().begin(),it.second().end(),p.second);
+        return (trie.size() == 1 && it.first() == p.first && found != it.second().end()) ? "" : out + "fail\n";
     }
     catch(...) {
         return out + "UNKNOWN ERROR\n";
     }
 }
-std::string insert_listVal_filled(SimpleTrieTemplate<int,char> &trie, std::forward_list<char> p, bool newVal) {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string insert_listVal_filled(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, std::pair<K,std::forward_list<T>> p, bool newVal) {
     std::string out("\t- listVal filled: ");
     try {
-        int prevSize = trie.size();
-        int prevValCnt(0);
-        if (trie.contains(3)) {
-            auto it = trie.find(3);
+        int32_t prevSize = trie.size();
+        int32_t prevValCnt(0);
+        if (trie.contains(p.first)) {
+            auto it = trie.find(p.first);
             prevValCnt = std::distance(it.second().begin(), it.second().end());
         }
-        trie.insert(3,std::forward_list<char>(p));
+        trie.insert(p.first,std::forward_list<T>(p.second));
 
-        auto it = trie.find(3);
-        int postValCnt = std::distance(it.second().begin(),it.second().end());
+        auto it = trie.find(p.first);
+        int32_t postValCnt = std::distance(it.second().begin(),it.second().end());
 
         bool incArtCnt(trie.size() == prevSize), incValCnt(postValCnt == prevValCnt + 1);
         return (incArtCnt && (incValCnt == newVal)) ? "" : out + "fail\n";
@@ -1064,12 +1294,15 @@ std::string insert_listVal_filled(SimpleTrieTemplate<int,char> &trie, std::forwa
 
 //endregion
 
-void erase_tests() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+void erase_tests(const std::list<std::pair<K,T>>& inserts) {
     std::cout << "erase test(s): ";
     std::string s;
 
     // erase via key
-    s += erase_key();
+    s += erase_key<K,T,S,Indexer,Modifier,Eraser>(inserts);
+
+    //todo do erase test cases
 
     // erase via iterator
     //s += erase_iterators();
@@ -1086,130 +1319,121 @@ void erase_tests() {
     print_message(s);
 }
 //region //ERASE
-std::string erase_key() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string erase_key(std::list<std::pair<K,T>> inserts) {
     std::string out;
     // called on empty trie
         // changes number appropriately
-        SimpleTrieTemplate<int,char> trie;
-        std::map<int,char> map;
-        out += erase_key_diffCases(trie,map,3,false,1);
+        SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie;
+        out += erase_key_diffCases<K,T,S,Indexer,Modifier,Eraser>(trie,inserts.front().first,false,1);
 
     // non-existent key
         // changes number appropriately
-        std::pair<int,char> p(3,'a');
+        std::pair<K,T> p(inserts.front());
+        inserts.pop_front();
         trie.insert(p);
-        map.insert(p);
-        out += erase_key_diffCases(trie,map,2,false,2);
+        out += erase_key_diffCases(trie,inserts.front().first,false,2);
 
     // actual key
-    p = std::pair<int,char>(2,'b');
-    trie.insert(p);
-    map.insert(p);
+    std::pair<K,T> p_uniq_one(inserts.front());
+    inserts.pop_front();
+    trie.insert(p_uniq_one);
 
-    p = std::pair<int,char>(1,'c');
-    trie.insert(p);
-    map.insert(p);
+    std::pair<K,T> p_uniq_two(inserts.front());
+    inserts.pop_front();
+    trie.insert(p_uniq_two);
 
-    p = std::pair<int,char>(7,'d');
-    trie.insert(p);
-    map.insert(p);
+    std::pair<K,T> ph(inserts.front());
+    inserts.pop_front();
+    while (!inserts.empty()) {
+        trie.insert(ph);
 
-    p = std::pair<int,char>(5,'e');
-    trie.insert(p);
-    map.insert(p);
+        ph = inserts.front();
+        inserts.pop_front();
+    }
 
-    p = std::pair<int,char>(4,'f');
-    trie.insert(p);
-    map.insert(p);
+    std::pair<K,T> p_uniq_three(ph);
+    trie.insert(p_uniq_three);
 
-    p = std::pair<int,char>(6,'g');
-    trie.insert(p);
-    map.insert(p);
+    out += erase_key_diffCases(trie,p_uniq_one.first,true,3);
 
-    p = std::pair<int,char>(12,'h');
-    trie.insert(p);
-    map.insert(p);
+    out += erase_key_diffCases(trie,p_uniq_two.first,true,4);
 
-    out += erase_key_diffCases(trie,map,2,true,3);
-
-    out += erase_key_diffCases(trie,map,3,true,4);
-
-    out += erase_key_diffCases(trie,map,7,true,5);
+    out += erase_key_diffCases(trie,p_uniq_three.first,true,5);
 
     return out;
 }
-std::string erase_key_diffCases(SimpleTrieTemplate<int,char> &trie, std::map<int,char> &map, int key, bool validKey, int32_t cnt) {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string erase_key_diffCases(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, K key, bool validKey, uint32_t cnt) {
     std::string out("\t- key diffCases (" + std::to_string(cnt) + "): ");
     try {
-        SimpleTrieTemplate<int,char> copy(trie);
+        SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> copy(trie);
         int32_t ogSize(copy.size());
         copy.erase(key);
 
-        int trieCnt = std::distance(copy.begin(),copy.end());
-        int mapCnt = std::distance(map.begin(),map.end());
-
-        return (((mapCnt == trieCnt + 1) == validKey) && ( (ogSize == copy.size() + 1) == validKey) && !(copy.contains(key))) ? "" : out + "fail\n";
+        return (((ogSize == copy.size() + 1) == validKey) && !(copy.contains(key))) ? "" : out + "fail\n";
     }
     catch(...) {
         return out + "UNKNOWN ERROR\n";
     }
 }
 
-std::string erase_iterators() {
-    std::string out;
-    // called on empty trie
-        // changes number appropriately
-
-
-    // non-existent key
-        // changes number appropriately
-
-    // actual key
-    return out;
-}
-
 //endregion
 
-void swap_tests() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+void swap_tests(const std::list<std::pair<K,T>>& inserts) {
     std::cout << "swap test(s): ";
     std::string s;
 
     // empty to empty
-    SimpleTrieTemplate<int,char> trie_one, trie_two;
-    s += swap_oneAndOther(trie_one,trie_two,1);
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie_one, trie_two;
+    s += swap_oneAndOther<K,T,S,Indexer,Modifier,Eraser>(trie_one,trie_two,1);
 
     // empty to filled
-    SimpleTrieTemplate<int,char> trie_three, trie_four;
-    trie_four.insert(3,'a');
-    trie_four.insert(2,'b');
-    trie_four.insert(5,'c');
-    s += swap_oneAndOther(trie_three,trie_four,2);
+    std::list<std::pair<K,T>> ph_one(inserts);
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie_three, trie_four;
+    trie_four.insert(ph_one.front());
+    ph_one.pop_front();
+    trie_four.insert(ph_one.front());
+    ph_one.pop_front();
+    trie_four.insert(ph_one.front());
+    ph_one.pop_front();
+    s += swap_oneAndOther<K,T,S,Indexer,Modifier,Eraser>(trie_three,trie_four,2);
 
     // filled to empty
-    SimpleTrieTemplate<int,char> trie_five, trie_six;
-    trie_five.insert(3,'a');
-    trie_five.insert(2,'b');
-    trie_five.insert(5,'c');
-    s += swap_oneAndOther(trie_five,trie_six,3);
+    std::list<std::pair<K,T>> ph_two(inserts);
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie_five, trie_six;
+    trie_five.insert(ph_two.front());
+    ph_two.pop_front();
+    trie_five.insert(ph_two.front());
+    ph_two.pop_front();
+    trie_five.insert(ph_two.front());
+    ph_two.pop_front();
+    s += swap_oneAndOther<K,T,S,Indexer,Modifier,Eraser>(trie_five,trie_six,3);
 
     // filled to filled
-    SimpleTrieTemplate<int,char> trie_seven, trie_eight;
-    trie_seven.insert(3,'a');
-    trie_seven.insert(2,'b');
-    trie_seven.insert(5,'c');
-    trie_eight.insert(3,'a');
-    trie_eight.insert(2,'b');
-    trie_eight.insert(5,'c');
-    trie_eight.insert(6,'d');
-    s += swap_oneAndOther(trie_seven,trie_eight,4);
+    std::list<std::pair<K,T>> ph_three(inserts);
+    uint32_t ratio(int32_t(ph_three.size() * 0.45));
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie_seven, trie_eight;
+    for (uint32_t i(0); i < ratio; ++i) {
+        trie_seven.insert(ph_three.front());
+        ph_three.pop_front();
+    }
+
+    while (!ph_three.empty()) {
+        trie_eight.insert(ph_three.front());
+        ph_three.pop_front();
+    }
+    s += swap_oneAndOther<K,T,S,Indexer,Modifier,Eraser>(trie_seven,trie_eight,4);
 
     print_message(s);
 }
 //region //SWAP
-std::string swap_oneAndOther(SimpleTrieTemplate<int,char> &one, SimpleTrieTemplate<int,char> &other, int32_t cnt) {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string swap_oneAndOther(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &one, SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &other, uint32_t cnt) {
     std::string out("\t- proper swap(" + std::to_string(cnt) + "): ");
     try {
-        SimpleTrieTemplate<int,char> copy_one(one), copy_other(other);
+        SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> copy_one(one), copy_other(other);
         one.swap(other);
         return (one == copy_other && other == copy_one) ? "" : out + "fail\n";
     }
@@ -1220,36 +1444,38 @@ std::string swap_oneAndOther(SimpleTrieTemplate<int,char> &one, SimpleTrieTempla
 
 //endregion
 
-void find_tests() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+void find_tests(std::list<std::pair<K,T>> inserts) {
     std::cout << "find test(s): ";
     std::string s;
 
     // empty trie
-    SimpleTrieTemplate<int,char> empty;
-    s += find_keyInTrie(empty,3,false,1);
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> empty;
+    s += find_keyInTrie<K,T,S,Indexer,Modifier,Eraser>(empty,inserts.front().first,false,1);
 
     // filled trie, invalid key
-    SimpleTrieTemplate<int,char> filled;
-    filled.insert(3,'a');
-    filled.insert(2,'b');
-    filled.insert(5,'c');
-    s += find_keyInTrie(filled,7,false,2);
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> filled;
+    std::pair<K,T> ph_notWithin(inserts.front()), ph_within;
+    inserts.pop_front();
+    while (!inserts.empty()) {
+        ph_within = inserts.front();
+        inserts.pop_front();
+        filled.insert(ph_within);
+    }
+    s += find_keyInTrie<K,T,S,Indexer,Modifier,Eraser>(filled,ph_notWithin.first,false,2);
 
     // filled trie, valid key
-    s += find_keyInTrie(filled,5,true,2);
+    s += find_keyInTrie<K,T,S,Indexer,Modifier,Eraser>(filled,ph_within.first,true,2);
 
     print_message(s);
 }
 //region //FIND
-std::string find_keyInTrie(SimpleTrieTemplate<int,char> &trie, int key, bool valid, int32_t cnt) {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string find_keyInTrie(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, K key, bool valid, uint32_t cnt) {
     std::string out("\t- proper find(" + std::to_string(cnt) + "): ");
     try {
         auto it = trie.find(key);
-        bool found(true);
-        if (it != trie.end()) {
-            found = it.first() == key;
-        }
-        return ((it != trie.end()) == valid && found) ? "" : out + "fail\n";
+        return ((it != trie.end()) == valid) ? "" : out + "fail\n";
     }
     catch(...) {
         return out + "UNKNOWN ERROR\n";
@@ -1258,66 +1484,74 @@ std::string find_keyInTrie(SimpleTrieTemplate<int,char> &trie, int key, bool val
 
 //endregion
 
-void scout_tests() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+void scout_tests(std::list<std::pair<K,T>> inserts) {
     std::cout << "scout test(s): ";
     std::string s;
 
     // empty trie
-    SimpleTrieTemplate<int,char> empty;
-    s += scout_keyInTrie(empty,3,false,1);
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> empty;
+    s += scout_keyInTrie<K,T,S,Indexer,Modifier,Eraser>(empty,inserts.front().first,false,1);
 
     // filled trie, invalid key
-    SimpleTrieTemplate<int,char> trie;
-    trie.insert(3,'a');
-    trie.insert(2,'b');
-    trie.insert(5,'c');
-    s += scout_keyInTrie(trie,8,false,2);
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie;
+    std::pair<K,T> ph_notWithin(inserts.front()), ph_within;
+    inserts.pop_front();
+    while (!inserts.empty()) {
+        ph_within = inserts.front();
+        inserts.pop_front();
+        trie.insert(ph_within);
+    }
+    s += scout_keyInTrie<K,T,S,Indexer,Modifier,Eraser>(trie,ph_notWithin.first,false,2);
 
     // filled key, valid key
-    s += scout_keyInTrie(trie,5,true,3);
+    s += scout_keyInTrie<K,T,S,Indexer,Modifier,Eraser>(trie,ph_within.first,true,3);
 
     print_message(s);
 }
 //region //SCOUT
-std::string scout_keyInTrie(SimpleTrieTemplate<int,char> &trie, int key, bool valid, int32_t cnt) {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string scout_keyInTrie(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, K key, bool valid, uint32_t cnt) {
     std::string out("\t- proper scout(" + std::to_string(cnt) + "): ");
     try {
         auto it = trie.scout(key);
-        bool found(true);
-        if (it.first) {
-            found = it.second->first() == key;
-        }
-        return (it.first == valid && found) ? "" : out + "fail\n";
+        return (it.first == valid) ? "" : out + "fail\n";
     }
     catch(...) {
         return out + "UNKNOWN ERROR\n";
     }
 }
 
-//endregion
+//endregion,
 
-void contains_tests() {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+void contains_tests(std::list<std::pair<K,T>> inserts) {
     std::cout << "contains test(s): ";
     std::string s;
 
     // empty trie
-    SimpleTrieTemplate<int,char> empty;
-    s += contains_keyInTrie(empty,3,false,1);
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> empty;
+    s += contains_keyInTrie<K,T,S,Indexer,Modifier,Eraser>(empty,inserts.front().first,false,1);
 
     // filled trie, invalid key
-    SimpleTrieTemplate<int,char> trie;
-    trie.insert(3,'a');
-    trie.insert(2,'b');
-    trie.insert(5,'c');
-    s += contains_keyInTrie(trie,8,false,2);
+    SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie;
+    std::pair<K,T> ph_notWithin(inserts.front()), ph_within;
+    inserts.pop_front();
+    while (!inserts.empty()) {
+        ph_within = inserts.front();
+        inserts.pop_front();
+        trie.insert(ph_within);
+    }
+    s += contains_keyInTrie<K,T,S,Indexer,Modifier,Eraser>(trie,ph_notWithin.first,false,2);
 
     // filled key, valid key
-    s += contains_keyInTrie(trie,5,true,3);
+    s += contains_keyInTrie<K,T,S,Indexer,Modifier,Eraser>(trie,ph_within.first,true,3);
 
     print_message(s);
 }
 //region //CONTAINS
-std::string contains_keyInTrie(SimpleTrieTemplate<int,char> &trie, int key, bool valid, int32_t cnt) {
+template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+std::string contains_keyInTrie(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> &trie, K key, bool valid, uint32_t cnt) {
     std::string out("\t- proper contains(" + std::to_string(cnt) + "): ");
     try {
         return (trie.contains(key) == valid) ? "" : out + "fail\n";
@@ -1337,25 +1571,25 @@ void iterator_tests() {
     s += iterator_empty_beginIsEnd();
 
     // filled trie
-    SimpleTrieTemplate<int,char> trie;
-    std::map<int,char> map;
-    std::pair<int,char> p(3,'a');
+    SimpleTrieTemplate<int32_t,char32_t> trie;
+    std::map<int32_t,char32_t> map;
+    std::pair<int32_t,char32_t> p(3,'a');
     trie.insert(p);
     map.insert(p);
 
-    p = std::pair<int,char>(2,'b');
+    p = std::pair<int32_t,char32_t>(2,'b');
     trie.insert(p);
     map.insert(p);
 
-    p = std::pair<int,char>(5,'c');
+    p = std::pair<int32_t,char32_t>(5,'c');
     trie.insert(p);
     map.insert(p);
 
-    p = std::pair<int,char>(4,'d');
+    p = std::pair<int32_t,char32_t>(4,'d');
     trie.insert(p);
     map.insert(p);
 
-    p = std::pair<int,char>(6,'e');
+    p = std::pair<int32_t,char32_t>(6,'e');
     trie.insert(p);
     map.insert(p);
 
@@ -1366,7 +1600,7 @@ void iterator_tests() {
 std::string iterator_empty_beginIsEnd() {
     std::string out("\t- empty begin is end: ");
     try {
-        SimpleTrieTemplate<int,char> trie;
+        SimpleTrieTemplate<int32_t,char32_t> trie;
         return (trie.begin() == trie.end() && trie.begin().operator->() == nullptr) ? "" : out + "fail\n";
     }
     catch(...) {
@@ -1374,13 +1608,13 @@ std::string iterator_empty_beginIsEnd() {
     }
 }
 
-std::string iterator_filled_diffCases(SimpleTrieTemplate<int,char> &trie, std::map<int,char> &map, int32_t cnt) {
+std::string iterator_filled_diffCases(SimpleTrieTemplate<int32_t,char32_t> &trie, std::map<int32_t,char32_t> &map, int32_t cnt) {
     std::string out("\t- iterator filled (" + std::to_string(cnt) + "): ");
     try {
-        SimpleTrieTemplate<int,char> copy(trie);
+        SimpleTrieTemplate<int32_t,char32_t> copy(trie);
 
         bool allEqual(true);
-        int val;
+        int32_t val;
         for (auto trieIt(trie.begin()); trieIt != trie.end(); ++trieIt) {
                 if (map.find(trieIt.first()) == map.end()) {
                     allEqual = false;
