@@ -141,8 +141,8 @@ SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert(iterator ancestor
         ++numberArticles;
 
     bool isBegin(ancestor == begin());
-    Node* ptr = (isBegin ? root.get() : ancestor.operator->());
-    auto it = insert_recursive(ptr, article, value);
+    Node* ptr = (isBegin ? root.get() : ancestor.get());
+    auto it = insert_recursive(ptr, K(article), value);
 
     if (isBegin) {
         if (root.get() == nullptr)
@@ -261,7 +261,7 @@ Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::end() {
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 std::pair<bool, std::unique_ptr<Iterator<K,T,S>>>
-SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::scout_helper(key_type &key,
+SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::scout_helper(key_type key,
                                                                      Node* node) {
     // call indexer and get signal
     int32_t signal(indexer(key,node));
@@ -287,8 +287,6 @@ template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier
 std::pair<bool, std::unique_ptr<Iterator<K,T,S>>>
 SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::scout_helper_childAccess(key_type &key, Node* &node,
                                                                                  int32_t &signal) {
-    // call modifier
-    modifier(key,node,signal);
 
     // if next node is nullptr then target can't be found and this is last node in sequence
     if (node->child.at(signal) == nullptr) {
@@ -297,12 +295,12 @@ SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::scout_helper_childAccess
     }
 
     // else modify key/node and recurse
-    return scout_helper(key,node->child.at(signal).get());
+    return scout_helper(modifier(key,node,signal),node->child.at(signal).get());
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
 Iterator<K,T,S>
-SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert_recursive(Node* &curNode, key_type& key,
+SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert_recursive(Node* &curNode, key_type&& key,
                                                                          std::forward_list<mapped_type>& value) {
 
     // call indexer and get signal
@@ -322,14 +320,11 @@ SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert_recursive(Node* &
         // basic validation checking
         valid_childAccess_helper(signal);
 
-        // call modifier everytime
-        modifier(key,curNode,signal);
-
         // make a copy of a pointer in case it points to a nullptr
         Node* ptr(curNode->child.at(signal).get());
 
         // recursive call
-        auto it = insert_recursive(ptr,key,value);
+        auto it = insert_recursive(ptr,modifier(key,curNode,signal),value);
 
         // if it was equal to nullptr, can now reset
         if (curNode->child.at(signal) == nullptr)
@@ -340,8 +335,7 @@ SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser>::insert_recursive(Node* &
         return it;
     }
     else {
-        modifier(key,curNode,signal); // fixes whatever error that was noted by signal
-        return insert_recursive(curNode,key,value); // call the exact same value again
+        return insert_recursive(curNode,modifier(key,curNode,signal),value); // call the exact same value again
     }
 }
 

@@ -263,13 +263,13 @@ private:
 //////////////////////////////////////////////////////
 //// PRIVATE HELPER METHODS
 
-    std::pair<bool,std::unique_ptr<iterator>> scout_helper(key_type& key, Node* node);
+    std::pair<bool,std::unique_ptr<iterator>> scout_helper(key_type key, Node* node);
 
     std::pair<bool,std::unique_ptr<iterator>> scout_helper_childAccess(key_type& key, Node* &node, int32_t& signal);
 
     iterator insert(iterator pos, key_type article, std::forward_list<mapped_type>& value);
 
-    iterator insert_recursive(Node* &curNode,key_type& key, std::forward_list<mapped_type>& value);
+    iterator insert_recursive(Node* &curNode,key_type&& key, std::forward_list<mapped_type>& value);
 
     void valid_childAccess_helper(const uint32_t& signal);
 
