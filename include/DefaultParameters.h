@@ -63,7 +63,8 @@ public:
     std::string operator()(std::string& input, Node<std::string,bool,26>* &curNode, const int32_t &signal) {
         if (signal > -1) {
             // else it signals a child location, and thus part of input string fully overlaps node string
-            return input.substr(curNode->key.length());
+            int16_t dif(RadixIndexer::findDeviation(input,curNode->key));
+            return input.substr(dif);
         }
         else if (signal == -2) {
             // treat for nullptr
@@ -79,12 +80,14 @@ public:
                 Node<std::string,bool,26>* duplicate(new Node<std::string,bool,26>(*curNode));
                 duplicate->key = duplicate->key.substr(dif);
                 curNode->key = curNode->key.substr(0,dif);
-                curNode->child.clear();
+                for (uint32_t i(0); i<26; ++i) {
+                    curNode->child.at(i).reset();
+                }
                 int16_t childIndex(RadixIndexer::findChildIndex(duplicate->key.at(0)));
                 curNode->child[childIndex].reset(duplicate);
                 duplicate->parent = curNode;
 
-                return input.substr(dif);
+                return input;
             }
         }
         else if ( signal == -1) {
@@ -100,8 +103,12 @@ public:
         assert(curNode->parent == nullptr);
 
         // create new root node with empty string
-        Node<std::string,bool,26>* prevNode(curNode);
-        curNode = new Node<std::string,bool,26>(nullptr,"");
+        Node<std::string,bool,26>* prevNode(new Node<std::string,bool,26>(*curNode));
+        curNode->key = "";
+        curNode->value.clear();
+        for (uint32_t i(0); i<26; ++i) {
+            curNode->child.at(i).reset();
+        }
         curNode->child.at(RadixIndexer::findChildIndex(prevNode->key.at(0))).reset(prevNode);
         prevNode->parent = curNode;
     }
@@ -114,11 +121,11 @@ public:
             return;
         }
         else {
-            ancestor->value.clear();
+            descendant->value.clear();
             uint16_t numChild(getNumChild(descendant));
             // if child empty
             if (numChild == 0) {
-                handleAncestors(descendant);
+                handleAncestors(descendant.moveUp(), trie);
             }
             // if only one child
             else if (numChild == 1) {
@@ -141,19 +148,18 @@ public:
         return num;
     }
 
-    static void handleAncestors(Iterator<std::string,bool,26> &it) {
-        if (it->parent != nullptr) {
+    static void handleAncestors(Iterator<std::string,bool,26> &it,SimpleTrieTemplate<std::string,bool,26,RadixIndexer,RadixModifier,RadixEraser> &trie) { // todo this shit is fucked and breaks on erase tests
+        if (it->parent == nullptr) {
+            trie.clear();
+        }
+        else {
+            it.moveUp();
             it->child.at(it.getIndex()).reset();
             if (it->value.empty()) {
                 if (getNumChild(it) == 0) {
-                    handleAncestors(it.moveUp());
+                    handleAncestors(it,trie);
                 }
             }
-        }
-        else {
-            Iterator<std::string,bool,26> ph(it);
-            it.moveUp();
-            delete ph.get();
         }
     }
 
@@ -168,8 +174,10 @@ public:
             }
         }
         std::string prevStr(ancestor->key);
-        *ancestor = *(ancestor->child.at(index).get()); // todo this is awful
+        Node<std::string,bool,26>* prevParent(ancestor->parent);
+        *ancestor = *(ancestor->child.at(index).get());
         ancestor->key = prevStr + ancestor->key;
+        ancestor->parent = prevParent;
     }
 };
 
