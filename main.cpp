@@ -5,9 +5,10 @@
 #include <iostream>
 #include <map>
 #include "./include/SimpleTrieTemplate.h"
+#include "./include/DefaultParameters.h"
 
 template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
-void run_standard_tests(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser>& trie);
+void run_standard_tests(SimpleTrieTemplate<K, T, S, Indexer, Modifier, Eraser> &trie, std::list<std::pair<K,T>>& list);
 
 std::list<std::pair<int32_t,char32_t>> generate_default_inputs(uint32_t num);
 
@@ -206,6 +207,26 @@ void iterator_tests();
 //endregion
 
 int main() {
+    std::list<std::pair<std::string,bool>> list;
+    list.push_front(std::pair<std::string,bool>("HELLO",true));
+    list.push_front(std::pair<std::string,bool>("HELL",false));
+    list.push_front(std::pair<std::string,bool>("HI",true));
+    list.push_front(std::pair<std::string,bool>("HEIGHTS",false));
+    list.push_front(std::pair<std::string,bool>("HEIGHT",true));
+    list.push_front(std::pair<std::string,bool>("AY",false));
+    SimpleTrieTemplate<std::string,bool,26,RadixIndexer,RadixModifier,RadixEraser> text_trie;
+
+    //run_standard_tests(text_trie,list);
+
+//    while (!list.empty()) {
+//        text_trie.insert(list.front());
+//        list.pop_front();
+//    }
+//
+//    for (auto i(text_trie.begin()); i != text_trie.end(); ++i) {
+//        std::cout << i->key << std::endl;
+//    }
+
     run_default_tests();
     return 0;
 }
@@ -248,6 +269,7 @@ void run_default_tests() {
     std::list<std::pair<int32_t,char32_t>> inputs(generate_default_inputs(25));
 
     run_standard_tests(trie,inputs);
+    //int32_t,char32_t,2,Awful_Indexer<int32_t,char32_t,2>,Awful_KeyModif<int32_t,char32_t,2>,Awful_Eraser<int32_t,char32_t,2,Awful_Indexer<int32_t,char32_t,2>,Awful_KeyModif<int32_t,char32_t,2>>
     iterator_tests();
 }
 
@@ -329,7 +351,7 @@ template <typename K, typename T, uint32_t S, typename Indexer, typename Modifie
 std::string constructor_copy_equal(SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser>& og, uint32_t count) {
     std::string out("\t- is equal(" + std::to_string(count) + "): ");
     try {
-        SimpleTrieTemplate<int32_t,char32_t,2> trie(og);
+        SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie(og);
         return (trie == og) ? "" : out + "fail\n";
     }
     catch(...) {
@@ -782,9 +804,10 @@ std::string insert_pairTypeRef(std::list<std::pair<K,T>> inserts) {
             out += insert_pairTypeRef_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,false);
         // new val
             // new value at key
+            bool isNewVal(p.second != inserts.front().second);
             p.second = inserts.front().second;
             inserts.pop_front();
-            out += insert_pairTypeRef_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,true);
+            out += insert_pairTypeRef_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,isNewVal);
 
     return out;
 }
@@ -836,7 +859,8 @@ std::string insert_pairTypeVal(std::list<std::pair<K,T>> inserts) {
 
     // old key in trie
     SimpleTrieTemplate<K,T,S,Indexer,Modifier,Eraser> trie;
-    std::pair<K,T> p(3,'a');
+    std::pair<K,T> p(inserts.front().first,inserts.front().second);
+    inserts.pop_front();
     trie.insert(p);
 
         // no size change
@@ -845,8 +869,10 @@ std::string insert_pairTypeVal(std::list<std::pair<K,T>> inserts) {
             out += insert_pairTypeVal_filled(trie,p,false);
         // new val
             // new value at key
-            p.second = 'b';
-            out += insert_pairTypeVal_filled(trie,p,true);
+            bool isNewVal(p.second != inserts.front().second);
+            p.second = inserts.front().second;
+            inserts.pop_front();
+            out += insert_pairTypeVal_filled(trie,p,isNewVal);
 
     return out;
 }
@@ -913,8 +939,9 @@ std::string insert_pairListRef(std::list<std::pair<K,T>> inserts) {
     std::forward_list<T> list;
     list.push_front(inserts.front().second);
     inserts.pop_front();
+    bool isNewVal(p.second != list);
     p.second = list;
-    out += insert_pairListRef_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,true);
+    out += insert_pairListRef_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,isNewVal);
 
     return out;
 }
@@ -984,8 +1011,9 @@ std::string insert_pairListVal(std::list<std::pair<K,T>> inserts) {
     std::forward_list<T> list;
     list.push_front(inserts.front().second);
     inserts.pop_front();
+    bool isNewVal(p.second != list);
     p.second = list;
-    out += insert_pairListVal_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,true);
+    out += insert_pairListVal_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,isNewVal);
 
     return out;
 }
@@ -1049,8 +1077,9 @@ std::string insert_typeRef(std::list<std::pair<K,T>> inserts) {
     inserts.pop_front();
     // new val
     // new value at key
+    bool isNewVal(p.second != inserts.front().second);
     p.second = inserts.front().second;
-    out += insert_typeRef_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,true);
+    out += insert_typeRef_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,isNewVal);
 
     return out;
 }
@@ -1113,8 +1142,9 @@ std::string insert_typeVal(std::list<std::pair<K,T>> inserts) {
     inserts.pop_front();
     // new val
     // new value at key
+    bool isNewVal(p.second != inserts.front().second);
     p.second = inserts.front().second;
-    out += insert_typeVal_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,true);
+    out += insert_typeVal_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,isNewVal);
 
     return out;
 }
@@ -1178,10 +1208,12 @@ std::string insert_listRef(std::list<std::pair<K,T>> inserts) {
     out += insert_listRef_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,false);
     // new val
     // new value at key
-    std::forward_list<char32_t> list;
-    list.push_front('b');
+    std::forward_list<T> list;
+    list.push_front(inserts.front().second);
+    inserts.pop_front();
+    bool isNewVal(p.second != list);
     p.second = list;
-    out += insert_listRef_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,true);
+    out += insert_listRef_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,isNewVal);
 
     return out;
 }
@@ -1249,8 +1281,9 @@ std::string insert_listVal(std::list<std::pair<K,T>> inserts) {
     // new value at key
     std::forward_list<T> list;
     list.push_front(inserts.front().second);
+    bool isNewVal(p.second != list);
     p.second = list;
-    out += insert_listVal_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,true);
+    out += insert_listVal_filled<K,T,S,Indexer,Modifier,Eraser>(trie,p,isNewVal);
 
     return out;
 }
@@ -1331,17 +1364,17 @@ std::string erase_key(std::list<std::pair<K,T>> inserts) {
         // changes number appropriately
         std::pair<K,T> p(inserts.front());
         inserts.pop_front();
-        trie.insert(p);
+        auto it_ = trie.insert(p);
         out += erase_key_diffCases(trie,inserts.front().first,false,2);
 
     // actual key
     std::pair<K,T> p_uniq_one(inserts.front());
     inserts.pop_front();
-    trie.insert(p_uniq_one);
+    auto it__ = trie.insert(p_uniq_one);
 
     std::pair<K,T> p_uniq_two(inserts.front());
     inserts.pop_front();
-    trie.insert(p_uniq_two);
+    auto it___ = trie.insert(p_uniq_two);
 
     std::pair<K,T> ph(inserts.front());
     inserts.pop_front();
