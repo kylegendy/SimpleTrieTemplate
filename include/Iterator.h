@@ -6,7 +6,6 @@
 #define SIMPLETRIETEMPLATE_ITERATOR_H
 
 #include "Node.h"
-#include <iterator>
 #include <list>
 
 /**
@@ -72,6 +71,8 @@ public:
      * @return true if an end to an article, false otherwise
      */
     bool isArticleEnd();
+
+    int32_t& getIndex();
 
     /**
      * looks for child node within parent's vector of children and returns the child's index.  if not found returns -1

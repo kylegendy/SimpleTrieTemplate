@@ -50,6 +50,11 @@ bool Iterator<K, T, S>::isArticleEnd() {
 }
 
 template<typename K, typename T, uint32_t S>
+int32_t &Iterator<K, T, S>::getIndex() {
+    return prevIndex;
+}
+
+template<typename K, typename T, uint32_t S>
 void Iterator<K, T, S>::swap(Iterator &rhs) {
     std::swap(curNode,rhs.curNode);
     std::swap(prevIndex,rhs.prevIndex);
