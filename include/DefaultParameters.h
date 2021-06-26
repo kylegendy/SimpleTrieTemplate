@@ -80,6 +80,7 @@ public:
                 Node<std::string,bool,26>* duplicate(new Node<std::string,bool,26>(*curNode));
                 duplicate->key = duplicate->key.substr(dif);
                 curNode->key = curNode->key.substr(0,dif);
+                curNode->value.clear();
                 for (uint32_t i(0); i<26; ++i) {
                     curNode->child.at(i).reset();
                 }
