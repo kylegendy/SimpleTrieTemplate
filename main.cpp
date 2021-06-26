@@ -209,24 +209,35 @@ void iterator_tests();
 int main() {
     std::list<std::pair<std::string,bool>> list;
     list.push_front(std::pair<std::string,bool>("HELLO",true));
+    list.push_front(std::pair<std::string,bool>("BEE",false));
+    list.push_front(std::pair<std::string,bool>("BE",false));
+    list.push_front(std::pair<std::string,bool>("BEE",true));
+    list.push_front(std::pair<std::string,bool>("BIN",true));
     list.push_front(std::pair<std::string,bool>("HELL",false));
     list.push_front(std::pair<std::string,bool>("HI",true));
+    list.push_front(std::pair<std::string,bool>("AY",false));
     list.push_front(std::pair<std::string,bool>("HEIGHTS",false));
     list.push_front(std::pair<std::string,bool>("HEIGHT",true));
-    list.push_front(std::pair<std::string,bool>("AY",false));
+
     SimpleTrieTemplate<std::string,bool,26,RadixIndexer,RadixModifier,RadixEraser> text_trie;
 
-    //run_standard_tests(text_trie,list);
-
+    std::cout << "RADIX TRIE TESTS:\n";
+    run_standard_tests(text_trie,list);
+    std::cout << "\n\n";
 //    while (!list.empty()) {
+//        if (list.front().first == "BIN") {
+//            std::cout << "";
+//        }
 //        text_trie.insert(list.front());
 //        list.pop_front();
 //    }
 //
 //    for (auto i(text_trie.begin()); i != text_trie.end(); ++i) {
-//        std::cout << i->key << std::endl;
+//        if (i.isArticleEnd())
+//            std::cout << i->key << std::endl;
 //    }
 
+    std::cout << "DEFAULT TESTS:\n";
     run_default_tests();
     return 0;
 }
