@@ -176,6 +176,7 @@ public:
      * @param value - the value being stored at element
      * @return - an iterator to the node that holds value
      */
+     //region //insert();
     iterator insert(std::pair<key_type,mapped_type>& p, iterator* ancestor = nullptr);
     iterator insert(std::pair<key_type,mapped_type>&& p, iterator* ancestor = nullptr);
 
@@ -187,16 +188,19 @@ public:
 
     iterator insert(key_type article, std::forward_list<mapped_type>& value, iterator* ancestor = nullptr);
     iterator insert(key_type article, std::forward_list<mapped_type>&& value, iterator* ancestor = nullptr);
+    //endregion
 
     /**
      * erases articles within trie
      * @param article - the key being deleted
      */
+     //region //erase();
     void erase(key_type article,iterator* ancestor = nullptr);
 
     // erase article with descendant as end of its node sequence, must stop at ancestor
     void erase(iterator& descendant, iterator* ancestor = nullptr);
     void erase(iterator&& descendant, iterator* ancestor = nullptr);
+    //endregion
 
     /**
      * swaps the contents
