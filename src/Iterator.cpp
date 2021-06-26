@@ -56,14 +56,18 @@ int32_t &Iterator<K, T, S>::getIndex() {
 
 template<typename K, typename T, uint32_t S>
 void Iterator<K, T, S>::swap(Iterator &rhs) {
-    std::swap(curNode,rhs.curNode);
-    std::swap(prevIndex,rhs.prevIndex);
+    if (this != &rhs) {
+        std::swap(curNode, rhs.curNode);
+        std::swap(prevIndex, rhs.prevIndex);
+    }
 }
 
 template<typename K, typename T, uint32_t S>
 Iterator<K,T,S> &Iterator<K, T, S>::operator=(Iterator &rhs) {
-    Iterator ph(rhs);
-    swap(rhs);
+    if (this != &rhs) {
+        Iterator ph(rhs);
+        swap(rhs);
+    }
     return *this;
 }
 
@@ -128,6 +132,8 @@ Iterator<K,T,S> Iterator<K, T, S>::operator++(int) {
 
 template<typename K, typename T, uint32_t S>
 bool Iterator<K, T, S>::operator==(const Iterator &rhs) const {
+    if (this == &rhs)
+        return true;
     // if root holds nullptr, then rhs.root must hold nullptr to be equal
     if (curNode == nullptr) {
         return rhs.curNode == nullptr;

@@ -23,10 +23,12 @@ Node<K, T, S>::Node(const Node &rhs) : parent(nullptr), key(rhs.key), value(rhs.
 
 template<typename K, typename T, uint32_t S>
 void Node<K, T, S>::swap(Node &rhs) {
-    std::swap(parent,rhs.parent);
-    std::swap(key,rhs.key);
-    std::swap(value,rhs.value);
-    std::swap(child,rhs.child);
+    if (this != &rhs) {
+        std::swap(parent, rhs.parent);
+        std::swap(key, rhs.key);
+        std::swap(value, rhs.value);
+        std::swap(child, rhs.child);
+    }
 }
 
 template<typename K, typename T, uint32_t S>
@@ -40,13 +42,15 @@ Node<K,T,S> &Node<K, T, S>::operator=(const Node &rhs) {
 
 template<typename K, typename T, uint32_t S>
 Node<K,T,S> &Node<K, T, S>::operator=(const Node &&rhs) {
-    *this = rhs;
-    return *this;
+    return *this = rhs;
 }
 
 template<typename K, typename T, uint32_t S>
 bool Node<K, T, S>::operator==(const Node &rhs) {
-    if (this == &rhs || ((key == rhs.key) && (value == rhs.value))) {
+    if (this == &rhs)
+        return true;
+
+    if ((key == rhs.key) && (value == rhs.value)) {
         for (uint32_t i(0); i < S; ++i) {
             if (child.at(i).get() == nullptr) {
                 if (rhs.child.at(i).get() != nullptr)

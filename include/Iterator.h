@@ -26,10 +26,9 @@ public:
     using reference             = Node<K,T,S>&;
 
     // default ctor is no more
-    //todo get rid of previousIndex
     Iterator(Node<K,T,S> *currentNode = nullptr, int32_t previousIndex = -1);
 
-    // todo necessary? alt ctor
+
     Iterator(Node<K,T,S> &currentNode, int32_t previousIndex);
 
     // copy ctor
@@ -72,6 +71,9 @@ public:
      */
     bool isArticleEnd();
 
+    /**
+     * @return the prevIndex of the iterator
+     */
     int32_t& getIndex();
 
     /**
@@ -86,15 +88,23 @@ public:
     /////////////////////////////////////////////////////////////////////////
     /// MODIFIERS
 
+    /**
+     * swaps all values between *this and rhs
+     * @param rhs the object being swapped with *this
+     */
     void swap(Iterator& rhs);
 
-    // assignment op
+    /**
+     * assignment operator
+     * @param rhs the object *this is being assigned to
+     * @return *this after assignment
+     */
     Iterator &operator=(Iterator &rhs);
     Iterator &operator=(Iterator &&rhs);
 
     /**
-     * turns curNode into its parent, and prevNode into curNode
-     * @return modified Iterator
+     * turns curNode into its parent, from curNode
+     * @return moved Iterator
      */
     Iterator &moveUp();
 
@@ -146,7 +156,7 @@ private:
     // current node being looked at
     Node<K,T,S>* curNode;
 
-    //todo get rid of this? current node being looked at
+    // the previous index
     int32_t prevIndex;
 
     /**
