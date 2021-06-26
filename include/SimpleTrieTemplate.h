@@ -138,6 +138,8 @@ public:
     // copy ctor
     explicit SimpleTrieTemplate(const SimpleTrieTemplate& rhs);
 
+    explicit SimpleTrieTemplate(const SimpleTrieTemplate&& rhs);
+
     // dtor
     ~SimpleTrieTemplate() = default;
 
@@ -267,7 +269,7 @@ private:
 
     std::pair<bool,std::unique_ptr<iterator>> scout_helper_childAccess(key_type& key, Node* &node, int32_t& signal);
 
-    iterator insert(iterator pos, key_type article, std::forward_list<mapped_type>& value);
+    iterator insert_helper(iterator* pos, key_type article, std::forward_list<mapped_type>& value);
 
     iterator insert_recursive(Node* &curNode,key_type&& key, std::forward_list<mapped_type>& value);
 
