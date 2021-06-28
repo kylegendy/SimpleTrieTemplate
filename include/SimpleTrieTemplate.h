@@ -6,11 +6,10 @@
 #define SIMPLETRIETEMPLATE_SIMPLETRIETEMPLATE_H
 
 #include <algorithm>
+#include <string>
 #include "Iterator.h"
 
 /**
- * Although not all returns must be used or assumed to be encountered, these are the suggested values to handle
- *
  * -1 if cur node's key is equivalent to input,
  *      ie you have found the end of the node-sequence, and are now at the node that will hold the value for the article
  *
@@ -25,10 +24,24 @@
  *      ie something must be modded between curNode and its parent
  *      radix trie ex: the root node holds the letter "a", but you want to add "bee"
  */
-template <typename K, typename Value, uint32_t S>
+template <typename K, typename T, uint32_t S>
 class Awful_Indexer {
 public:
-    int32_t operator()(const K& input, const Node<K,Value,S>* node) {
+    // this is strictly for navigating
+    int32_t operator()(K& input, const Node<K,T,S>* &node) {
+        if (node != nullptr) {
+            if (input == node->key)
+                return -1;
+            else if (input < node->key)
+                return 0;
+            else
+                return 1;
+        }
+        return -2; // points to nullptr
+    }
+
+    // this allows for modification
+    int32_t operator()(K& input, Node<K,T,S>* &node) {
         if (node != nullptr) {
             if (input == node->key)
                 return -1;
@@ -41,93 +54,28 @@ public:
     }
 };
 
-/**
- * Modified the key as it goes through the trie, can be dependant on the node and signal (the signal is the
- * output from the Indexer)
- */
-template <typename K, typename Value, uint32_t S>
-class Awful_KeyModif {
-public:
-    K operator()(K& input, Node<K,Value,S>* &curNode, const int32_t &signal) {
-        if (signal == -2)
-            curNode = new Node<K,Value,S>( ((curNode == nullptr) ? nullptr : curNode->parent) ,input);
-        return input;
-    }
-
-    K operator()(K& input, const Node<K,Value,S>* const &curNode, const int32_t &signal) {
-        return input;
-    }
-};
-
-// forward declarations
-template<typename K, typename Value, uint32_t S, typename Indexer, typename Modifier>
-class Awful_Eraser;
-
-template <typename K, typename T, uint32_t S, typename Indexer, typename Modifier, typename Eraser>
+// forward declaration
+template <typename K, typename T, uint32_t S, typename Indexer, typename Eraser>
 class SimpleTrieTemplate;
 
 /**
  *
  */
-template<typename K, typename T, uint32_t S, typename Indexer, typename Modifier>
+template<typename K, typename T, uint32_t S, typename Indexer>
 class Awful_Eraser {
 public:
-    void operator()(Iterator<K,T,S> &ancestor, Iterator<K,T,S> &descendant, SimpleTrieTemplate<K,T,S,Indexer,Modifier,Awful_Eraser<K,T,S,Indexer,Modifier>> &trie) {
-        // create pointer that points to merged children
-        Node<K,T,S>* mergedChild;
-        std::forward_list<std::pair<K,std::forward_list<T>>> list, other;
+    void operator()(Iterator<K,T,S> &ancestor, Iterator<K,T,S> &descendant, SimpleTrieTemplate<K,T,S,Indexer,Awful_Eraser<K,T,S,Indexer>> &trie) {
 
-        list.merge(makeList(descendant->child.at(0).get()));
-        list.merge(makeList(descendant->child.at(1).get()));
-
-        if (descendant->parent == nullptr) {
-            trie.clear();
-
-            while (!list.empty()) {
-                trie.insert(list.front());
-                list.pop_front();
-            }
-        }
-        else {
-            // find index of descendant in parent's child
-            int index = Iterator<K,T,S>::findChildsIndex(*(descendant->parent),*descendant);
-
-            descendant.moveUp();
-            // reset child at index with new merged pointer
-            descendant->child.at(index).reset();
-
-            while (!list.empty()) {
-                trie.insert(list.front(),&descendant);
-                list.pop_front();
-            }
-        }
-
-
-    }
-
-    std::forward_list<std::pair<K,std::forward_list<T>>> makeList(Node<K,T,S>* node) {
-        std::forward_list<std::pair<K,std::forward_list<T>>> lst;
-        if (node == nullptr) {
-            return lst;
-        }
-
-        lst.merge(makeList(node->child.at(0).get()));
-        lst.merge(makeList(node->child.at(1).get()));
-
-        lst.push_front(std::pair<K,std::forward_list<T>>(node->key,node->value));
-        return lst;
     }
 };
 
-template <typename K, typename T, uint32_t S = 2, typename Indexer = Awful_Indexer<K,T,S>, typename Modifier =
-Awful_KeyModif<K,T,S>, typename Eraser = Awful_Eraser<K,T,S,Indexer,Modifier>>
+template <typename K, typename T, uint32_t S = 2, typename Indexer = Awful_Indexer<K,T,S>, typename Eraser = Awful_Eraser<K,T,S,Indexer>>
 class SimpleTrieTemplate {
 public:
 
     typedef K                                       key_type;
     typedef T                                       mapped_type;
     typedef Indexer                                 key_indexer;
-    typedef Modifier                                key_modifier;
     typedef Eraser                                  key_eraser;
     typedef Iterator<key_type,mapped_type,S>        iterator;
     typedef Node<key_type,mapped_type,S>            Node;
@@ -137,6 +85,7 @@ public:
 
     // copy ctor
     explicit SimpleTrieTemplate(const SimpleTrieTemplate& rhs);
+    explicit SimpleTrieTemplate(const SimpleTrieTemplate&& rhs);
 
     //DTOR
     ~SimpleTrieTemplate();
@@ -177,11 +126,11 @@ public:
      * @return - an iterator to the node that holds value
      */
      //region //insert();
-    iterator insert(std::pair<key_type,mapped_type>& p, iterator* ancestor = nullptr);
-    iterator insert(std::pair<key_type,mapped_type>&& p, iterator* ancestor = nullptr);
+    iterator insert(std::pair<key_type,mapped_type>& p, Node* ancestor = nullptr);
+    iterator insert(std::pair<key_type,mapped_type>&& p, Node* ancestor = nullptr);
 
-    iterator insert(key_type article, mapped_type& value, iterator* ancestor = nullptr);
-    iterator insert(key_type article, mapped_type&& value, iterator* ancestor = nullptr);
+    iterator insert(key_type article, mapped_type& value, Node* ancestor = nullptr);
+    iterator insert(key_type article, mapped_type&& value, Node* ancestor = nullptr);
     //endregion
 
     /**
@@ -223,7 +172,7 @@ public:
      * @param article - the article being searched for
      * @return - returns a pair of a boolean and an iterator at the last viable node for the article's node sequence
      */
-    std::pair<bool,std::unique_ptr<iterator>> scout(key_type article,iterator* ancestor = nullptr);
+    std::pair<bool,iterator> scout(key_type article,iterator* ancestor = nullptr);
 
     /**
      * checks if the container contains element
@@ -254,8 +203,6 @@ private:
 
     key_indexer indexer;
 
-    key_modifier modifier;
-
     key_eraser eraser;
 
     Node* root;
@@ -263,6 +210,11 @@ private:
 //////////////////////////////////////////////////////
 //// PRIVATE HELPER METHODS
 
+    std::pair<bool, iterator> scout_helper(key_type& key, const Node& curNode);
+
+    iterator insert_helper(Node* &curNode, key_type& article, mapped_type& value);
+
+    void checkIterPtr_helper(iterator* &ptr);
 
 };
 
