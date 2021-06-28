@@ -132,20 +132,20 @@ public:
     typedef Iterator<key_type,mapped_type,S>        iterator;
     typedef Node<key_type,mapped_type,S>            Node;
 
-    // default ctor
+    //default ctor
     explicit SimpleTrieTemplate();
 
     // copy ctor
     explicit SimpleTrieTemplate(const SimpleTrieTemplate& rhs);
 
-    explicit SimpleTrieTemplate(const SimpleTrieTemplate&& rhs);
+    //DTOR
+    ~SimpleTrieTemplate();
 
-    // dtor
-    ~SimpleTrieTemplate() = default;
-
-    // assignment op
+    //assignment op
+    //region //operator=()
     SimpleTrieTemplate &operator=(const SimpleTrieTemplate& rhs);
     SimpleTrieTemplate &operator=(const SimpleTrieTemplate&& rhs);
+    //endregion
 
 //////////////////////////////////////////////////////
 //// CAPACITY
@@ -180,14 +180,8 @@ public:
     iterator insert(std::pair<key_type,mapped_type>& p, iterator* ancestor = nullptr);
     iterator insert(std::pair<key_type,mapped_type>&& p, iterator* ancestor = nullptr);
 
-    iterator insert(std::pair<key_type,std::forward_list<mapped_type>>& p, iterator* ancestor = nullptr);
-    iterator insert(std::pair<key_type,std::forward_list<mapped_type>>&& p, iterator* ancestor = nullptr);
-
     iterator insert(key_type article, mapped_type& value, iterator* ancestor = nullptr);
     iterator insert(key_type article, mapped_type&& value, iterator* ancestor = nullptr);
-
-    iterator insert(key_type article, std::forward_list<mapped_type>& value, iterator* ancestor = nullptr);
-    iterator insert(key_type article, std::forward_list<mapped_type>&& value, iterator* ancestor = nullptr);
     //endregion
 
     /**
@@ -197,10 +191,10 @@ public:
      //region //erase();
     void erase(key_type article,iterator* ancestor = nullptr);
 
-    // erase article with descendant as end of its node sequence, must stop at ancestor
+     // erase article with descendant as end of its node sequence, must stop at ancestor
     void erase(iterator& descendant, iterator* ancestor = nullptr);
     void erase(iterator&& descendant, iterator* ancestor = nullptr);
-    //endregion
+     //endregion
 
     /**
      * swaps the contents
@@ -258,28 +252,18 @@ private:
 
     uint32_t numberArticles;
 
-    std::unique_ptr<Node> root;
-
     key_indexer indexer;
 
     key_modifier modifier;
 
     key_eraser eraser;
 
+    Node* root;
+
 //////////////////////////////////////////////////////
 //// PRIVATE HELPER METHODS
 
-    std::pair<bool,std::unique_ptr<iterator>> scout_helper(key_type key, Node* node);
 
-    std::pair<bool,std::unique_ptr<iterator>> scout_helper_childAccess(key_type& key, Node* &node, int32_t& signal);
-
-    iterator insert_helper(iterator* pos, key_type article, std::forward_list<mapped_type>& value);
-
-    iterator insert_recursive(Node* &curNode,key_type&& key, std::forward_list<mapped_type>& value);
-
-    void valid_childAccess_helper(const uint32_t& signal);
-
-    void handleValueMerge(std::forward_list<mapped_type>& nodeList, std::forward_list<mapped_type>& inputValue);
 };
 
 #include "../src/SimpleTrieTemplate.cpp"
