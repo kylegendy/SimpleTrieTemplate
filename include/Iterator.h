@@ -25,11 +25,7 @@ public:
     using pointer               = Node<K,T,S>*;
     using reference             = Node<K,T,S>&;
 
-    // default ctor is no more
-    Iterator(Node<K,T,S> *currentNode = nullptr, int32_t previousIndex = -1);
-
-
-    Iterator(Node<K,T,S> &currentNode, int32_t previousIndex);
+    Iterator(Node<K,T,S> &currentNode, int32_t previousIndex = -1);
 
     // copy ctor
     Iterator(const Iterator &rhs);
@@ -64,7 +60,7 @@ public:
     /**
      * @return the list of values
      */
-    std::forward_list<T> &second();
+    T &second();
 
     /**
      * @return true if an end to an article, false otherwise
@@ -154,10 +150,10 @@ public:
 
 private:
     // current node being looked at
-    Node<K,T,S>* curNode;
+    Node<K,T,S>* curNode_;
 
     // the previous index
-    int32_t prevIndex;
+    int32_t prevIndex_;
 
     /**
      * looks for the next valid child after prevIndex and returns its index number, if none available then returns S

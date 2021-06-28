@@ -8,57 +8,53 @@
 #include "../include/Iterator.h"
 
 template<typename K, typename T, uint32_t S>
-Iterator<K, T, S>::Iterator(Node<K, T, S> *currentNode, int32_t previousIndex) : curNode(currentNode), prevIndex(previousIndex) {
+Iterator<K, T, S>::Iterator(Node<K, T, S> &currentNode, int32_t previousIndex) : curNode_(&currentNode), prevIndex_(previousIndex) {
 }
 
 template<typename K, typename T, uint32_t S>
-Iterator<K, T, S>::Iterator(Node<K, T, S> &currentNode, int32_t previousIndex) : curNode(&currentNode), prevIndex(previousIndex) {
-}
-
-template<typename K, typename T, uint32_t S>
-Iterator<K, T, S>::Iterator(const Iterator &rhs) : curNode((rhs.curNode)), prevIndex(rhs.prevIndex) {
+Iterator<K, T, S>::Iterator(const Iterator &rhs) : curNode_((rhs.curNode)), prevIndex_(rhs.prevIndex) {
 }
 
 template<typename K, typename T, uint32_t S>
 Node<K, T, S> &Iterator<K, T, S>::operator*() {
-    return *curNode;
+    return *curNode_;
 }
 
 template<typename K, typename T, uint32_t S>
 Node<K, T, S>* Iterator<K, T, S>::operator->() {
-    return curNode;
+    return curNode_;
 }
 
 template<typename K, typename T, uint32_t S>
 Node<K, T, S> *&Iterator<K, T, S>::get() {
-    return curNode;
+    return curNode_;
 }
 
 template<typename K, typename T, uint32_t S>
 K &Iterator<K, T, S>::first() {
-    return curNode->key;
+    return curNode_->key_;
 }
 
 template<typename K, typename T, uint32_t S>
-std::forward_list<T> &Iterator<K, T, S>::second() {
-    return curNode->value;
+T &Iterator<K, T, S>::second() {
+    return curNode_->value_;
 }
 
 template<typename K, typename T, uint32_t S>
 bool Iterator<K, T, S>::isArticleEnd() {
-    return (curNode != nullptr) ? !curNode->value.empty() : false;
+    return bool(curNode_->value_);
 }
 
 template<typename K, typename T, uint32_t S>
 int32_t &Iterator<K, T, S>::getIndex() {
-    return prevIndex;
+    return prevIndex_;
 }
 
 template<typename K, typename T, uint32_t S>
 void Iterator<K, T, S>::swap(Iterator &rhs) {
     if (this != &rhs) {
-        std::swap(curNode, rhs.curNode);
-        std::swap(prevIndex, rhs.prevIndex);
+        std::swap(curNode_, rhs.curNode_);
+        std::swap(prevIndex_, rhs.prevIndex_);
     }
 }
 
@@ -79,9 +75,9 @@ Iterator<K,T,S> &Iterator<K, T, S>::operator=(Iterator &&rhs) {
 template<typename K, typename T, uint32_t S>
 Iterator<K,T,S> &Iterator<K, T, S>::moveUp() {
     // todo deal with root? if it goes wrong then it will assert for you
-    int32_t index = findChildsIndex(*(curNode->parent), *curNode);
+    int32_t index = findChildsIndex(*(curNode_->parent), *curNode_);
     assert(index > -1 && index < S);
-    Iterator ph(curNode->parent, index);
+    Iterator ph(curNode_->parent, index);
     swap(ph);
     return *this;
 }
@@ -89,34 +85,31 @@ Iterator<K,T,S> &Iterator<K, T, S>::moveUp() {
 template<typename K, typename T, uint32_t S>
 Iterator<K,T,S> &Iterator<K, T, S>::operator++() {
 
-    // if node* points to null
-    if (curNode == nullptr) {
-        ++prevIndex;
-        return *this;
-    }
+    // ensure curnode doesn't point to null
+    assert (curNode_ != nullptr);
+
+    // find next valid child to go to
+    int32_t nextIndex = findValidSucceedingChildIndex(*curNode_,prevIndex_);
 
     // instantiate common iterator
-    Iterator nextIter;
-    // find next valid child to go to
-    int32_t nextIndex = findValidSucceedingChildIndex(*curNode,prevIndex);
-
     // if valid child
+    Iterator nextIter;
     if (nextIndex < S) {
-        nextIter = Iterator(curNode->child.at(nextIndex).get(), -1);
+        nextIter = Iterator(curNode_->child.at(nextIndex).get(), -1);
     }
     // at this point: no valid child to go to next
 
     // if parent not null, go up to get to next node
-    else if (curNode->parent != nullptr) {
+    else if (curNode_->parent != nullptr) {
         // find curNode's index as child in parent's children
-        int parentsPrevIndex = findChildsIndex(*(curNode->parent), *curNode);
-        nextIter = Iterator(curNode->parent, parentsPrevIndex);
+        int parentsPrevIndex = findChildsIndex(*(curNode_->parent), *curNode_);
+        nextIter = Iterator(curNode_->parent, parentsPrevIndex);
         ++nextIter;
     }
 
     // else return end iterator
     else {
-        nextIter = Iterator(curNode, S-1);
+        nextIter = Iterator(curNode_, S-1);
     }
 
     swap(nextIter);
@@ -132,19 +125,7 @@ Iterator<K,T,S> Iterator<K, T, S>::operator++(int) {
 
 template<typename K, typename T, uint32_t S>
 bool Iterator<K, T, S>::operator==(const Iterator &rhs) const {
-    if (this == &rhs)
-        return true;
-    // if root holds nullptr, then rhs.root must hold nullptr to be equal
-    if (curNode == nullptr) {
-        return rhs.curNode == nullptr;
-    }
-    // else root does not hold nullptr, and rhs.root must hold equivalent node as root to be equivalent
-    else if (rhs.curNode != nullptr) {
-        if (curNode->parent == nullptr && rhs.curNode->parent == nullptr)
-            return *curNode == *(rhs.curNode) && prevIndex == rhs.prevIndex;
-        return *curNode == *(rhs.curNode);
-    }
-    return false;
+    return this == &rhs || *curNode_ == *(rhs.curNode_);
 }
 
 template<typename K, typename T, uint32_t S>
