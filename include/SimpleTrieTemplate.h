@@ -16,41 +16,30 @@
  * 0 through S-1 if new node to check,
  *      ie the return is the index for the next child to move onto
  *
- * -2 if target but not equivalent and curNode and/or its children must be modded
- *      common example: curNode points to nullptr
- *      radix trie ex: curNode's key is too big for input key (ie input key is "ai" and curNode's key is "ail")
- *
- * -3 if curNode key doesn't allow for -2 through S,
- *      ie something must be modded between curNode and its parent
- *      radix trie ex: the root node holds the letter "a", but you want to add "bee"
+ * -2 if not found
  */
 template <typename K, typename T, uint32_t S>
 class Awful_Indexer {
 public:
-    // this is strictly for navigating
+    // called when not inserting
     int32_t operator()(K& input, const Node<K,T,S>* &node) {
-        if (node != nullptr) {
-            if (input == node->key)
-                return -1;
-            else if (input < node->key)
-                return 0;
-            else
-                return 1;
+        if (input == node->key) {
+            return (node->value_) ? -1 : -2;
         }
-        return -2; // points to nullptr
+        return (input < node->key) ? 0 : 1;
     }
 
-    // this allows for modification
+    // called when inserting
     int32_t operator()(K& input, Node<K,T,S>* &node) {
-        if (node != nullptr) {
-            if (input == node->key)
-                return -1;
-            else if (input < node->key)
-                return 0;
-            else
-                return 1;
+
+        if (node == nullptr) {
+            node = new Node<K, T, S>(input);
+            return -1;
         }
-        return -2; // points to nullptr
+        else if (input == node->key)
+            return -1;
+        else
+            return (input < node->key) ? 0 : 1;
     }
 };
 
@@ -65,7 +54,7 @@ template<typename K, typename T, uint32_t S, typename Indexer>
 class Awful_Eraser {
 public:
     void operator()(Iterator<K,T,S> &ancestor, Iterator<K,T,S> &descendant, SimpleTrieTemplate<K,T,S,Indexer,Awful_Eraser<K,T,S,Indexer>> &trie) {
-
+        if ()
     }
 };
 
@@ -138,11 +127,10 @@ public:
      * @param article - the key being deleted
      */
      //region //erase();
-    void erase(key_type article,iterator* ancestor = nullptr);
+    void erase(key_type article,Node* &ancestor = nullptr);
 
      // erase article with descendant as end of its node sequence, must stop at ancestor
-    void erase(iterator& descendant, iterator* ancestor = nullptr);
-    void erase(iterator&& descendant, iterator* ancestor = nullptr);
+    void erase(Node* &descendant, Node* &ancestor = nullptr);
      //endregion
 
     /**
@@ -172,14 +160,14 @@ public:
      * @param article - the article being searched for
      * @return - returns a pair of a boolean and an iterator at the last viable node for the article's node sequence
      */
-    std::pair<bool,iterator> scout(key_type article,iterator* ancestor = nullptr);
+    std::pair<bool,iterator> scout(key_type article,Node* ancestor = nullptr);
 
     /**
      * checks if the container contains element
      * @param element - the key being searched for
      * @return - true if in container, else false
      */
-    bool contains(key_type article,iterator* ancestor = nullptr);
+    bool contains(key_type article,Node* ancestor = nullptr);
 
 //////////////////////////////////////////////////////
 //// COMPARERS
@@ -210,11 +198,11 @@ private:
 //////////////////////////////////////////////////////
 //// PRIVATE HELPER METHODS
 
-    std::pair<bool, iterator> scout_helper(key_type& key, const Node& curNode);
+    std::pair<bool, iterator> scout_helper(key_type& key, const Node* &curNode);
 
     iterator insert_helper(Node* &curNode, key_type& article, mapped_type& value);
 
-    void checkIterPtr_helper(iterator* &ptr);
+    void checkIterPtr_helper(Node* &ptr);
 
 };
 

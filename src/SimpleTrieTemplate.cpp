@@ -59,7 +59,15 @@ void SimpleTrieTemplate<K, T, S, Indexer, Eraser>::clear() noexcept {
 template<typename K, typename T, uint32_t S, typename Indexer, typename Eraser>
 Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Eraser>::insert(std::pair<key_type, mapped_type> &p, Node* ancestor) {
     checkIterPtr_helper(ancestor);
-    return insert_helper(ancestor->get(),p.first,p.second);
+    if (empty()) { //ie if curNode == end().get() && curNode == begin().get()
+        assert(ancestor == root);
+        Node* ptr(ancestor->child_.at(0).get());
+        auto it(insert_helper(ptr,p.first,p.second));
+        ancestor->child_.at(0).reset(ptr);
+        return it;
+    }
+    else
+        return insert_helper(ancestor->child_.at(0).get(),p.first,p.second);
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Eraser>
@@ -71,7 +79,15 @@ template<typename K, typename T, uint32_t S, typename Indexer, typename Eraser>
 Iterator<K,T,S>
 SimpleTrieTemplate<K, T, S, Indexer, Eraser>::insert(key_type article, mapped_type &value, Node* ancestor) {
     checkIterPtr_helper(ancestor);
-    return insert_helper(ancestor->get(),article,value);
+    if (empty()) { //ie if curNode == end().get() && curNode == begin().get()
+        assert(ancestor == root);
+        Node* ptr(ancestor->child_.at(0).get());
+        auto it(insert_helper(ptr,article,value));
+        ancestor->child_.at(0).reset(ptr);
+        return it;
+    }
+    else
+        return insert_helper(ancestor->child_.at(0).get(),article,value);
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Eraser>
@@ -81,24 +97,21 @@ SimpleTrieTemplate<K, T, S, Indexer, Eraser>::insert(key_type article, mapped_ty
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Eraser>
-void SimpleTrieTemplate<K, T, S, Indexer, Eraser>::erase(key_type article,iterator* ancestor) {
+void SimpleTrieTemplate<K, T, S, Indexer, Eraser>::erase(key_type article,Node* &ancestor) {
     auto p(scout(article,ancestor));
     if (p.first) {
-        erase(*(p.second),ancestor);
+        erase(p.second.get(),ancestor);
     }
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Eraser>
-void SimpleTrieTemplate<K, T, S, Indexer, Eraser>::erase(iterator &descendant,iterator* ancestor) {
-    uint32_t curSize(size());
-    checkIterPtr_helper(ancestor);
-    eraser(*ancestor,descendant,*this);
-    numberArticles = --curSize;
-}
-
-template<typename K, typename T, uint32_t S, typename Indexer, typename Eraser>
-void SimpleTrieTemplate<K, T, S, Indexer, Eraser>::erase(iterator &&descendant,iterator* ancestor) {
-    erase(descendant,ancestor);
+void SimpleTrieTemplate<K, T, S, Indexer, Eraser>::erase(Node* &descendant,Node* &ancestor) {
+    if (!empty()) {
+        uint32_t curSize(size());
+        checkIterPtr_helper(ancestor);
+        eraser(ancestor, descendant, *this);
+        numberArticles = --curSize;
+    }
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Eraser>
@@ -121,21 +134,21 @@ void SimpleTrieTemplate<K, T, S, Indexer, Eraser>::swap(SimpleTrieTemplate &rhs)
 template<typename K, typename T, uint32_t S, typename Indexer, typename Eraser>
 Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Eraser>::find(key_type article) {
     auto couple(scout(article));
-    return (couple.first) ? *(couple.second) : end();
+    return (couple.first) ? couple.second : end();
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Eraser>
 std::pair<bool, Iterator<K,T,S>>
-SimpleTrieTemplate<K, T, S, Indexer, Eraser>::scout(key_type article,iterator* ancestor) {
-    checkIterPtr_helper(ancestor);
-    if (*ancestor == end()) {
-        return std::pair<bool, std::unique_ptr<iterator>>(false,nullptr);
+SimpleTrieTemplate<K, T, S, Indexer, Eraser>::scout(key_type article,Node* ancestor) {
+    if (empty()) {
+        return std::pair<bool, std::unique_ptr<iterator>>(false,begin());
     }
+    checkIterPtr_helper(ancestor);
     return scout_helper(article, ancestor->get());
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Eraser>
-bool SimpleTrieTemplate<K, T, S, Indexer, Eraser>::contains(key_type article,iterator* ancestor) {
+bool SimpleTrieTemplate<K, T, S, Indexer, Eraser>::contains(key_type article,Node* ancestor) {
     return scout(article,ancestor).first;
 }
 
@@ -168,16 +181,19 @@ Iterator<K,T,S> SimpleTrieTemplate<K, T, S, Indexer, Eraser>::end() {
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Eraser>
 std::pair<bool, Iterator<K,T,S>>
-SimpleTrieTemplate<K, T, S, Indexer, Eraser>::scout_helper(key_type &key, const Node &curNode) {
-    int16_t index(indexer(key,curNode));
-    if (index == -1) {
-        return std::pair<bool,iterator>(true,iterator(curNode,-1));
-    }
-    else if (index > -1 && index < S) {
-        if (curNode.child_.at(index).get() == nullptr)
+SimpleTrieTemplate<K, T, S, Indexer, Eraser>::scout_helper(key_type &key, const Node* &curNode) {
+    int16_t index(indexer(key,curNode,*this));
+    if (index > -1 && index < S) {
+        if (curNode->child_.at(index).get() == nullptr)
             return std::pair<bool,iterator>(true,iterator(curNode,-1));
         else
-            return scout_helper(key, curNode.child_.at(index).get());
+            return scout_helper(key, *(curNode->child_.at(index)));
+    }
+    else if (index == -1) {
+        return std::pair<bool,iterator>(true,iterator(curNode,-1));
+    }
+    else if (index == -2) {
+        return std::pair<bool,iterator>(false,iterator(curNode,-1));
     }
     // else an invalid index was returned
     throw std::domain_error("indexer returned value outside of [-1," + std::to_string(S) + "]: " + std::to_string(index) + "\n");
@@ -191,7 +207,8 @@ SimpleTrieTemplate<K, T, S, Indexer, Eraser>::insert_helper(Node* &curNode, key_
         *curNode->value_ = value;
         return iterator(curNode, -1);
     }
-    else if (index > -1 && index < S) { //todo this forces all relative modification/indexing to not allow access to parents
+    //todo this forces all relative modification/indexing to not allow access to parents
+    else if (index > -1 && index < S) {
         auto ptr(curNode->child_.at(index).get());
         auto it(insert_helper(ptr, key, value));
         if (curNode->child_.at(index).get() == nullptr) {
@@ -205,9 +222,9 @@ SimpleTrieTemplate<K, T, S, Indexer, Eraser>::insert_helper(Node* &curNode, key_
 }
 
 template<typename K, typename T, uint32_t S, typename Indexer, typename Eraser>
-void SimpleTrieTemplate<K, T, S, Indexer, Eraser>::checkIterPtr_helper(SimpleTrieTemplate::iterator* &ptr) {
+void SimpleTrieTemplate<K, T, S, Indexer, Eraser>::checkIterPtr_helper(Node* &ptr) {
     if (ptr == nullptr) {
-        ptr = new iterator(begin()); //todo should this be exclusive or inclusive?
+        ptr = begin().get();
     }
 }
 
