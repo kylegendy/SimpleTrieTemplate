@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <string>
+#include <stack>
 #include "Iterator.h"
 
 /**
@@ -22,11 +23,11 @@ template <typename K, typename T, uint32_t S>
 class Awful_Indexer {
 public:
     // called when not inserting
-    int32_t operator()(K& input, const Node<K,T,S>* &node) {
-        if (input == node->key) {
+    int32_t operator()(K& input, const Node<K,T,S>* node) {
+        if (input == node->key_) {
             return (node->value_) ? -1 : -2;
         }
-        return (input < node->key) ? 0 : 1;
+        return (input < node->key_) ? 0 : 1;
     }
 
     // called when inserting
@@ -36,10 +37,10 @@ public:
             node = new Node<K, T, S>(input);
             return -1;
         }
-        else if (input == node->key)
+        else if (input == node->key_)
             return -1;
         else
-            return (input < node->key) ? 0 : 1;
+            return (input < node->key_) ? 0 : 1;
     }
 };
 
@@ -53,8 +54,55 @@ class SimpleTrieTemplate;
 template<typename K, typename T, uint32_t S, typename Indexer>
 class Awful_Eraser {
 public:
-    void operator()(Iterator<K,T,S> &ancestor, Iterator<K,T,S> &descendant, SimpleTrieTemplate<K,T,S,Indexer,Awful_Eraser<K,T,S,Indexer>> &trie) {
-        if ()
+    void operator()(Node<K,T,S>* &ancestor, Node<K,T,S>* &descendant, SimpleTrieTemplate<K,T,S,Indexer,Awful_Eraser<K,T,S,Indexer>> &trie) {
+
+        std::stack<std::pair<K,T>> stk;
+        mergeStack(stk, getStack(descendant->child_.at(0).get()));
+        mergeStack(stk, getStack(descendant->child_.at(1).get()));
+
+        Node<K,T,S>* par(descendant->parent_);
+        if (ancestor == descendant) {
+            par->child_.at(findChildsIndex(descendant)).reset();
+            descendant = par;
+            ancestor = descendant;
+        }
+        else {
+            par->child_.at(findChildsIndex(descendant)).reset();
+            descendant = par;
+        }
+
+        while (!stk.empty()) {
+            trie.insert(stk.top());
+            stk.pop();
+        }
+    }
+
+    static uint32_t findChildsIndex(Node<K,T,S>* &child) {
+        assert(child->parent_ != nullptr);
+        Node<K,T,S>* parptr(child->parent_);
+        for (uint32_t i(0); i < S; ++i) {
+            if (parptr->child_.at(i).get() == child)
+                return i;
+        }
+        throw std::domain_error("child's index not found -- potential linking problem");
+    }
+
+    static std::stack<std::pair<K,T>> getStack(Node<K,T,S>* node) {
+        std::stack<std::pair<K,T>> stk;
+        if (node != nullptr) {
+            stk.push(std::pair<K, T>(node->key_, *node->value_));
+            mergeStack(stk,getStack(node->child_.at(0).get()));
+            mergeStack(stk,getStack(node->child_.at(1).get()));
+        }
+        return stk;
+    }
+
+    static std::stack<std::pair<K,T>> mergeStack(std::stack<std::pair<K,T>> &merged, std::stack<std::pair<K,T>> other) {
+        while (!other.empty()) {
+            merged.push(other.top());
+            other.pop();
+        }
+        return merged;
     }
 };
 
@@ -127,10 +175,10 @@ public:
      * @param article - the key being deleted
      */
      //region //erase();
-    void erase(key_type article,Node* &ancestor = nullptr);
+    void erase(key_type article,Node* ancestor = nullptr);
 
      // erase article with descendant as end of its node sequence, must stop at ancestor
-    void erase(Node* &descendant, Node* &ancestor = nullptr);
+    void erase(Node* &descendant, Node* ancestor = nullptr);
      //endregion
 
     /**
@@ -187,20 +235,21 @@ private:
 //////////////////////////////////////////////////////
 //// VARIABLES
 
-    uint32_t numberArticles;
+    uint32_t numberArticles_;
 
-    key_indexer indexer;
+    key_indexer indexer_;
 
-    key_eraser eraser;
+    key_eraser eraser_;
 
-    Node* root;
+    Node* root_;
 
 //////////////////////////////////////////////////////
 //// PRIVATE HELPER METHODS
 
-    std::pair<bool, iterator> scout_helper(key_type& key, const Node* &curNode);
+    std::pair<bool, iterator> scout_helper(key_type& key, const Node* curNode);
 
     iterator insert_helper(Node* &curNode, key_type& article, mapped_type& value);
+    iterator insert_helper(Node* &&curNode, key_type& article, mapped_type& value);
 
     void checkIterPtr_helper(Node* &ptr);
 
