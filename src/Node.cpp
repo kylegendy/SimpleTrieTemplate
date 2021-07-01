@@ -25,7 +25,7 @@ Node<K, T, S>::Node(const Node &rhs) : parent_(nullptr), key_(rhs.key_), value_(
 }
 
 template<typename K, typename T, uint32_t S>
-void Node<K, T, S>::swap(Node &rhs) {
+void Node<K, T, S>::swap(Node &rhs) noexcept {
     if (this != &rhs) {
         std::swap(parent_, rhs.parent_);
         std::swap(key_, rhs.key_);

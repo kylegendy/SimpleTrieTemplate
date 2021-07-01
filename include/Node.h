@@ -19,7 +19,7 @@ struct Node {
 
     ~Node() = default;
 
-    void swap(Node &rhs);
+    void swap(Node &rhs) noexcept;
 
     Node& operator=(const Node& rhs);
     Node& operator=(const Node&& rhs);
