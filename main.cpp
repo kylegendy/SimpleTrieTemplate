@@ -352,12 +352,12 @@ std::string constructor_copy_diffOGs(std::list<std::pair<K,T>> inserts) {
     int32_t ratio(int32_t(inserts.size() * 0.45));
 
     for (uint32_t i(0); i < ratio; ++i) {
-        tr_two.insert(inserts.front());
+        tr_two.insertOrAssign(inserts.front());
         inserts.pop_front();
     }
 
     while (!inserts.empty()) {
-        tr_three.insert(inserts.front());
+        tr_three.insertOrAssign(inserts.front());
         inserts.pop_front();
     }
 
@@ -380,13 +380,13 @@ std::string constructor_copy_notByRef(std::list<std::pair<K,T>> inserts) {
         SimpleTrieTemplate<K,T,S,Indexer,Eraser> trie_two(trie_one);
 
         for (uint32_t i(0); i < ratio; ++i) {
-            trie_one.insert(inserts.front());
+            trie_one.insertOrAssign(inserts.front());
             inserts.pop_front();
         }
 
         SimpleTrieTemplate<K,T,S,Indexer,Eraser> trie_three;
         while (!inserts.empty()) {
-            trie_three.insert(inserts.front());
+            trie_three.insertOrAssign(inserts.front());
             inserts.pop_front();
         }
         SimpleTrieTemplate<K,T,S,Indexer,Eraser> trie_four(trie_three);
@@ -429,7 +429,7 @@ std::string assign_diffOnesAndDiffOthers(const std::list<std::pair<K,T>>& insert
     // filled to empty
     std::list<std::pair<K,T>> ph_one(inserts);
     while (!ph_one.empty()) {
-        trie_one.insert(ph_one.front());
+        trie_one.insertOrAssign(ph_one.front());
         ph_one.pop_front();
     }
     out += assign_oneEqualOther(trie_one,trie_two,2);
@@ -437,7 +437,7 @@ std::string assign_diffOnesAndDiffOthers(const std::list<std::pair<K,T>>& insert
     // empty to filled
     std::list<std::pair<K,T>> ph_two(inserts);
     while (!ph_two.empty()) {
-        trie_three.insert(ph_two.front());
+        trie_three.insertOrAssign(ph_two.front());
         ph_two.pop_front();
     }
     out += assign_oneEqualOther(trie_four,trie_three,3);
@@ -446,12 +446,12 @@ std::string assign_diffOnesAndDiffOthers(const std::list<std::pair<K,T>>& insert
     int32_t ratio(int32_t(inserts.size() * 0.5));
     std::list<std::pair<K,T>> ph_three(inserts);
     for (uint32_t i(0); i < ratio; ++i) {
-        trie_six.insert(ph_three.front());
+        trie_six.insertOrAssign(ph_three.front());
         ph_three.pop_front();
     }
 
     while (!ph_three.empty()) {
-        trie_five.insert(ph_three.front());
+        trie_five.insertOrAssign(ph_three.front());
         ph_three.pop_front();
     }
     out += assign_oneEqualOther(trie_six,trie_five,4);
@@ -460,12 +460,12 @@ std::string assign_diffOnesAndDiffOthers(const std::list<std::pair<K,T>>& insert
     ratio = inserts.size() * 0.4;
     std::list<std::pair<K,T>> ph_four(inserts);
     for (uint32_t i(0); i < ratio; ++i) {
-        trie_seven.insert(ph_four.front());
+        trie_seven.insertOrAssign(ph_four.front());
         ph_four.pop_front();
     }
 
     while (!ph_four.empty()) {
-        trie_eight.insert(ph_four.front());
+        trie_eight.insertOrAssign(ph_four.front());
         ph_four.pop_front();
     }
     out += assign_oneEqualOther(trie_seven,trie_eight,5);
@@ -474,12 +474,12 @@ std::string assign_diffOnesAndDiffOthers(const std::list<std::pair<K,T>>& insert
     ratio = inserts.size() * 0.7;
     std::list<std::pair<K,T>> ph_five(inserts);
     for (uint32_t i(0); i < ratio; ++i) {
-        trie_nine.insert(ph_five.front());
+        trie_nine.insertOrAssign(ph_five.front());
         ph_five.pop_front();
     }
 
     while (!ph_five.empty()) {
-        trie_ten.insert(ph_five.front());
+        trie_ten.insertOrAssign(ph_five.front());
         ph_five.pop_front();
     }
     out += assign_oneEqualOther(trie_ten,trie_nine,6);
@@ -507,13 +507,13 @@ std::string assign_notByRef(const std::list<std::pair<K,T>>& inserts) {
         trie_two = trie_one;
         std::list<std::pair<K,T>> ph_one(inserts);
         while (!ph_one.empty()) {
-            trie_one.insert(ph_one.front());
+            trie_one.insertOrAssign(ph_one.front());
             ph_one.pop_front();
         }
 
         std::list<std::pair<K,T>> ph_two(inserts);
         while (!ph_two.empty()) {
-            trie_three.insert(ph_two.front());
+            trie_three.insertOrAssign(ph_two.front());
             ph_two.pop_front();
         }
         trie_four = trie_three;
@@ -551,12 +551,12 @@ std::string empty_checksValid_cases(std::list<std::pair<K,T>> inserts) {
     out += empty_checksValid(trie_one,true,1);
 
     // proper return when not empty (contains one item)
-    trie_one.insert(inserts.front());
+    trie_one.insertOrAssign(inserts.front());
     inserts.pop_front();
     out += empty_checksValid(trie_one,false,2);
 
     // proper return when not empty (contains two item)
-    trie_one.insert(inserts.front());
+    trie_one.insertOrAssign(inserts.front());
     inserts.pop_front();
     out += empty_checksValid(trie_one,false,2);
 
@@ -594,7 +594,7 @@ std::string size_checksValid_cases(std::list<std::pair<K,T>> inserts) {
     int32_t i(0);
     while (!inserts.empty()) {
         out += size_checkValid(trie,i,i+1);
-        trie.insert(inserts.front());
+        trie.insertOrAssign(inserts.front());
         inserts.pop_front();
         ++i;
     }
@@ -638,13 +638,13 @@ std::string clear_diffCases(std::list<std::pair<K,T>> inserts) {
     out += clear_properOut(trie_one, 1);
 
     // filled with one
-    trie_two.insert(inserts.front());
+    trie_two.insertOrAssign(inserts.front());
     inserts.pop_front();
     out += clear_properOut(trie_two, 2);
 
     // filled with more than one
     while (!inserts.empty()) {
-        trie_two.insert(inserts.front());
+        trie_two.insertOrAssign(inserts.front());
         inserts.pop_front();
     }
     out += clear_properOut(trie_two,3);
@@ -693,7 +693,7 @@ std::string clear_filled_empty(std::list<std::pair<K,T>> inserts) {
     SimpleTrieTemplate<K,T,S,Indexer,Eraser> trie;
     std::string out;
 
-    trie.insert(inserts.front());
+    trie.insertOrAssign(inserts.front());
     inserts.pop_front();
 
     out += clear_properOut(trie, 6);
@@ -709,7 +709,7 @@ std::string clear_empty_filled(std::list<std::pair<K,T>> inserts) {
 
     out += clear_properOut(trie,8);
 
-    trie.insert(inserts.front());
+    trie.insertOrAssign(inserts.front());
     inserts.pop_front();
 
     out += clear_properOut(trie,9);
@@ -722,10 +722,10 @@ std::string clear_filled_filled(std::list<std::pair<K,T>> inserts) {
     SimpleTrieTemplate<K,T,S,Indexer,Eraser> trie;
     std::string out;
 
-    trie.insert(inserts.front());
+    trie.insertOrAssign(inserts.front());
     inserts.pop_front();
     out += clear_properOut(trie,10);
-    trie.insert(inserts.front());
+    trie.insertOrAssign(inserts.front());
     inserts.pop_front();
     out += clear_properOut(trie,11);
 
@@ -768,7 +768,7 @@ std::string insert_pairTypeRef(std::list<std::pair<K,T>> inserts) {
     SimpleTrieTemplate<K,T,S,Indexer,Eraser> trie;
     std::pair<K,T> p(inserts.front());
     inserts.pop_front();
-    trie.insert(p);
+    trie.insertOrAssign(p);
 
         // no size change
         // old val
@@ -787,7 +787,7 @@ std::string insert_pairTypeRef_empty(std::pair<K,T> p) {
     std::string out("\t- pairTypeRef empty: ");
     try {
         SimpleTrieTemplate<K,T,S,Indexer,Eraser> trie;
-        auto it = trie.insert(p);
+        auto it = trie.insertOrAssign(p);
         return (trie.size() == 1 && it.first() == p.first && it.second() == p.second) ? "" : out + "fail\n";
     }
     catch(...) {
@@ -799,7 +799,7 @@ std::string insert_pairTypeRef_filled(SimpleTrieTemplate<K,T,S,Indexer,Eraser> &
     std::string out("\t- pairTypeRef filled: ");
     try {
         int32_t prevSize = trie.size();
-        auto it = trie.insert(p);
+        auto it = trie.insertOrAssign(p);
 
         bool incArtCnt(trie.size() == prevSize);
         return (incArtCnt && it.second() == p.second) ? "" : out + "fail\n";
@@ -823,7 +823,7 @@ std::string insert_pairTypeVal(std::list<std::pair<K,T>> inserts) {
     SimpleTrieTemplate<K,T,S,Indexer,Eraser> trie;
     std::pair<K,T> p(inserts.front().first,inserts.front().second);
     inserts.pop_front();
-    trie.insert(p);
+    trie.insertOrAssign(p);
 
         // no size change
         // old val
@@ -842,7 +842,7 @@ std::string insert_pairTypeVal_empty(std::pair<K,T> p) {
     std::string out("\t- pairTypeVal empty: ");
     try {
         SimpleTrieTemplate<K,T,S,Indexer,Eraser> trie;
-        auto it = trie.insert(std::pair<K,T>(p));
+        auto it = trie.insertOrAssign(std::pair<K,T>(p));
         return (trie.size() == 1 && it.first() == p.first && it.second() == p.second) ? "" : out + "fail\n";
     }
     catch(...) {
@@ -854,7 +854,7 @@ std::string insert_pairTypeVal_filled(SimpleTrieTemplate<K,T,S,Indexer,Eraser> &
     std::string out("\t- pairTypeVal filled: ");
     try {
         int32_t prevSize = trie.size();
-        auto it = trie.insert(std::pair<K,T>(p));
+        auto it = trie.insertOrAssign(std::pair<K,T>(p));
 
         bool incArtCnt(trie.size() == prevSize);
         return (incArtCnt && it.second() == p.second) ? "" : out + "fail\n";
@@ -877,7 +877,7 @@ std::string insert_typeRef(std::list<std::pair<K,T>> inserts) {
     // old key in trie
     SimpleTrieTemplate<K,T,S,Indexer,Eraser> trie;
     std::pair<K,T> p(inserts.front().first,inserts.front().second);
-    trie.insert(p);
+    trie.insertOrAssign(p);
 
     // no size change
     // old val
@@ -897,7 +897,7 @@ std::string insert_typeRef_empty(std::pair<K,T> p) {
     try {
         SimpleTrieTemplate<K,T,S,Indexer,Eraser> trie;
         T val(p.second);
-        auto it = trie.insert(p.first,val);
+        auto it = trie.insertOrAssign(p.first,val);
 
         return (trie.size() == 1 && it.first() == p.first && it.second() == p.second) ? "" : out + "fail\n";
     }
@@ -910,7 +910,7 @@ std::string insert_typeRef_filled(SimpleTrieTemplate<K,T,S,Indexer,Eraser> &trie
     std::string out("\t- typeRef filled: ");
     try {
         int32_t prevSize = trie.size();
-        auto it = trie.insert(p.first,p.second);
+        auto it = trie.insertOrAssign(p.first,p.second);
 
         bool incArtCnt(trie.size() == prevSize);
         return (incArtCnt && it.first() == p.first && it.second() == p.second) ? "" : out + "fail\n";
@@ -933,7 +933,7 @@ std::string insert_typeVal(std::list<std::pair<K,T>> inserts) {
     // old key in trie
     SimpleTrieTemplate<K,T,S,Indexer,Eraser> trie;
     std::pair<K,T> p(inserts.front().first,inserts.front().second);
-    trie.insert(p);
+    trie.insertOrAssign(p);
 
     // no size change
     // old val
@@ -952,7 +952,7 @@ std::string insert_typeVal_empty(std::pair<K,T> p) {
     std::string out("\t- typeVal empty: ");
     try {
         SimpleTrieTemplate<K,T,S,Indexer,Eraser> trie;
-        auto it = trie.insert(p.first,p.second);
+        auto it = trie.insertOrAssign(p.first,p.second);
 
         return (trie.size() == 1 && it.first() == p.first && it.second() == p.second) ? "" : out + "fail\n";
     }
@@ -965,7 +965,7 @@ std::string insert_typeVal_filled(SimpleTrieTemplate<K,T,S,Indexer,Eraser> &trie
     std::string out("\t- typeVal filled: ");
     try {
         int32_t prevSize = trie.size();
-        auto it = trie.insert(p.first,p.second);
+        auto it = trie.insertOrAssign(p.first,p.second);
 
         bool incArtCnt(trie.size() == prevSize);
         return (incArtCnt && it.first() == p.first && it.second() == p.second) ? "" : out + "fail\n";
@@ -1014,29 +1014,29 @@ std::string erase_key(std::list<std::pair<K,T>> inserts) {
         // changes number appropriately
         std::pair<K,T> p(inserts.front());
         inserts.pop_front();
-        auto it_ = trie.insert(p);
+        auto it_ = trie.insertOrAssign(p);
         out += erase_key_diffCases(trie,inserts.front().first,false,2);
 
     // actual key
     std::pair<K,T> p_uniq_one(inserts.front());
     inserts.pop_front();
-    auto it__ = trie.insert(p_uniq_one);
+    auto it__ = trie.insertOrAssign(p_uniq_one);
 
     std::pair<K,T> p_uniq_two(inserts.front());
     inserts.pop_front();
-    auto it___ = trie.insert(p_uniq_two);
+    auto it___ = trie.insertOrAssign(p_uniq_two);
 
     std::pair<K,T> ph(inserts.front());
     inserts.pop_front();
     while (!inserts.empty()) {
-        trie.insert(ph);
+        trie.insertOrAssign(ph);
 
         ph = inserts.front();
         inserts.pop_front();
     }
 
     std::pair<K,T> p_uniq_three(ph);
-    trie.insert(p_uniq_three);
+    trie.insertOrAssign(p_uniq_three);
 
     out += erase_key_diffCases(trie,p_uniq_one.first,true,3);
 
@@ -1075,22 +1075,22 @@ void swap_tests(const std::list<std::pair<K,T>>& inserts) {
     // empty to filled
     std::list<std::pair<K,T>> ph_one(inserts);
     SimpleTrieTemplate<K,T,S,Indexer,Eraser> trie_three, trie_four;
-    trie_four.insert(ph_one.front());
+    trie_four.insertOrAssign(ph_one.front());
     ph_one.pop_front();
-    trie_four.insert(ph_one.front());
+    trie_four.insertOrAssign(ph_one.front());
     ph_one.pop_front();
-    trie_four.insert(ph_one.front());
+    trie_four.insertOrAssign(ph_one.front());
     ph_one.pop_front();
     s += swap_oneAndOther<K,T,S,Indexer,Eraser>(trie_three,trie_four,2);
 
     // filled to empty
     std::list<std::pair<K,T>> ph_two(inserts);
     SimpleTrieTemplate<K,T,S,Indexer,Eraser> trie_five, trie_six;
-    trie_five.insert(ph_two.front());
+    trie_five.insertOrAssign(ph_two.front());
     ph_two.pop_front();
-    trie_five.insert(ph_two.front());
+    trie_five.insertOrAssign(ph_two.front());
     ph_two.pop_front();
-    trie_five.insert(ph_two.front());
+    trie_five.insertOrAssign(ph_two.front());
     ph_two.pop_front();
     s += swap_oneAndOther<K,T,S,Indexer,Eraser>(trie_five,trie_six,3);
 
@@ -1099,12 +1099,12 @@ void swap_tests(const std::list<std::pair<K,T>>& inserts) {
     uint32_t ratio(int32_t(ph_three.size() * 0.45));
     SimpleTrieTemplate<K,T,S,Indexer,Eraser> trie_seven, trie_eight;
     for (uint32_t i(0); i < ratio; ++i) {
-        trie_seven.insert(ph_three.front());
+        trie_seven.insertOrAssign(ph_three.front());
         ph_three.pop_front();
     }
 
     while (!ph_three.empty()) {
-        trie_eight.insert(ph_three.front());
+        trie_eight.insertOrAssign(ph_three.front());
         ph_three.pop_front();
     }
     s += swap_oneAndOther<K,T,S,Indexer,Eraser>(trie_seven,trie_eight,4);
@@ -1143,7 +1143,7 @@ void find_tests(std::list<std::pair<K,T>> inserts) {
     while (!inserts.empty()) {
         ph_within = inserts.front();
         inserts.pop_front();
-        filled.insert(ph_within);
+        filled.insertOrAssign(ph_within);
     }
     s += find_keyInTrie<K,T,S,Indexer,Eraser>(filled,ph_notWithin.first,false,2);
 
@@ -1183,7 +1183,7 @@ void scout_tests(std::list<std::pair<K,T>> inserts) {
     while (!inserts.empty()) {
         ph_within = inserts.front();
         inserts.pop_front();
-        trie.insert(ph_within);
+        trie.insertOrAssign(ph_within);
     }
     s += scout_keyInTrie<K,T,S,Indexer,Eraser>(trie,ph_notWithin.first,false,2);
 
@@ -1223,7 +1223,7 @@ void contains_tests(std::list<std::pair<K,T>> inserts) {
     while (!inserts.empty()) {
         ph_within = inserts.front();
         inserts.pop_front();
-        trie.insert(ph_within);
+        trie.insertOrAssign(ph_within);
     }
     s += contains_keyInTrie<K,T,S,Indexer,Eraser>(trie,ph_notWithin.first,false,2);
 
@@ -1257,23 +1257,23 @@ void iterator_tests() {
     SimpleTrieTemplate<int32_t,char32_t> trie;
     std::map<int32_t,char32_t> map;
     std::pair<int32_t,char32_t> p(3,'a');
-    trie.insert(p);
+    trie.insertOrAssign(p);
     map.insert(p);
 
     p = std::pair<int32_t,char32_t>(2,'b');
-    trie.insert(p);
+    trie.insertOrAssign(p);
     map.insert(p);
 
     p = std::pair<int32_t,char32_t>(5,'c');
-    trie.insert(p);
+    trie.insertOrAssign(p);
     map.insert(p);
 
     p = std::pair<int32_t,char32_t>(4,'d');
-    trie.insert(p);
+    trie.insertOrAssign(p);
     map.insert(p);
 
     p = std::pair<int32_t,char32_t>(6,'e');
-    trie.insert(p);
+    trie.insertOrAssign(p);
     map.insert(p);
 
     s += iterator_filled_diffCases(trie,map,1);

@@ -72,7 +72,7 @@ public:
         }
 
         while (!stk.empty()) {
-            trie.insert(stk.top());
+            trie.insertOrAssign(stk.top());
             stk.pop();
         }
     }
@@ -163,11 +163,11 @@ public:
      * @return - an iterator to the node that holds value
      */
      //region //insert();
-    iterator insert(std::pair<key_type,mapped_type>& p, Node* ancestor = nullptr);
-    iterator insert(std::pair<key_type,mapped_type>&& p, Node* ancestor = nullptr);
+    iterator insertOrAssign(std::pair<key_type,mapped_type>& p, Node* ancestor = nullptr);
+    iterator insertOrAssign(std::pair<key_type,mapped_type>&& p, Node* ancestor = nullptr);
 
-    iterator insert(key_type article, mapped_type& value, Node* ancestor = nullptr);
-    iterator insert(key_type article, mapped_type&& value, Node* ancestor = nullptr);
+    iterator insertOrAssign(key_type article, mapped_type& value, Node* ancestor = nullptr);
+    iterator insertOrAssign(key_type article, mapped_type&& value, Node* ancestor = nullptr);
     //endregion
 
     /**

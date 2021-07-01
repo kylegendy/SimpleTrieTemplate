@@ -57,18 +57,18 @@ void SimpleTrieTemplate<K, T, S, indexer_, eraser_>::clear() noexcept {
 }
 
 template<typename K, typename T, uint32_t S, typename indexer_, typename eraser_>
-Iterator<K,T,S> SimpleTrieTemplate<K, T, S, indexer_, eraser_>::insert(std::pair<key_type, mapped_type> &p, Node* ancestor) {
-    return insert(p.first,p.second,ancestor);
+Iterator<K,T,S> SimpleTrieTemplate<K, T, S, indexer_, eraser_>::insertOrAssign(std::pair<key_type, mapped_type> &p, Node* ancestor) {
+    return insertOrAssign(p.first,p.second,ancestor);
 }
 
 template<typename K, typename T, uint32_t S, typename indexer_, typename eraser_>
-Iterator<K,T,S> SimpleTrieTemplate<K, T, S, indexer_, eraser_>::insert(std::pair<key_type, mapped_type> &&p, Node* ancestor) {
-    return insert(p,ancestor);
+Iterator<K,T,S> SimpleTrieTemplate<K, T, S, indexer_, eraser_>::insertOrAssign(std::pair<key_type, mapped_type> &&p, Node* ancestor) {
+    return insertOrAssign(p,ancestor);
 }
 
 template<typename K, typename T, uint32_t S, typename indexer_, typename eraser_>
 Iterator<K,T,S>
-SimpleTrieTemplate<K, T, S, indexer_, eraser_>::insert(key_type article, mapped_type &value, Node* ancestor) {
+SimpleTrieTemplate<K, T, S, indexer_, eraser_>::insertOrAssign(key_type article, mapped_type &value, Node* ancestor) {
     checkIterPtr_helper(ancestor);
 
     uint32_t cnt(size());
@@ -92,7 +92,7 @@ SimpleTrieTemplate<K, T, S, indexer_, eraser_>::insert(key_type article, mapped_
 
 template<typename K, typename T, uint32_t S, typename indexer_, typename eraser_>
 Iterator<K,T,S>
-SimpleTrieTemplate<K, T, S, indexer_, eraser_>::insert(key_type article, mapped_type &&value, Node* ancestor) {
+SimpleTrieTemplate<K, T, S, indexer_, eraser_>::insertOrAssign(key_type article, mapped_type &&value, Node* ancestor) {
     return insert(article,value,ancestor);
 }
 
