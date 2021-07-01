@@ -12,7 +12,7 @@ Iterator<K, T, S>::Iterator(Node<K, T, S> &currentNode, int32_t previousIndex) :
 }
 
 template<typename K, typename T, uint32_t S>
-Iterator<K, T, S>::Iterator(const Iterator &rhs) : curNode_((rhs.curNode)), prevIndex_(rhs.prevIndex) {
+Iterator<K, T, S>::Iterator(const Iterator &rhs) : curNode_((rhs.curNode_)), prevIndex_(rhs.prevIndex_) {
 }
 
 template<typename K, typename T, uint32_t S>
@@ -37,7 +37,7 @@ K &Iterator<K, T, S>::first() {
 
 template<typename K, typename T, uint32_t S>
 T &Iterator<K, T, S>::second() {
-    return curNode_->value_;
+    return *(curNode_->value_);
 }
 
 template<typename K, typename T, uint32_t S>
@@ -93,23 +93,23 @@ Iterator<K,T,S> &Iterator<K, T, S>::operator++() {
 
     // instantiate common iterator
     // if valid child
-    Iterator nextIter;
+    Iterator nextIter(*this); // instantiate an iterator
     if (nextIndex < S) {
-        nextIter = Iterator(curNode_->child.at(nextIndex).get(), -1);
+        nextIter = Iterator(*curNode_->child_.at(nextIndex), -1);
     }
     // at this point: no valid child to go to next
 
     // if parent not null, go up to get to next node
-    else if (curNode_->parent != nullptr) {
+    else if (curNode_->parent_ != nullptr) {
         // find curNode's index as child in parent's children
-        int parentsPrevIndex = findChildsIndex(*(curNode_->parent), *curNode_);
-        nextIter = Iterator(curNode_->parent, parentsPrevIndex);
+        int parentsPrevIndex = findChildsIndex(*(curNode_->parent_), *curNode_);
+        nextIter = Iterator(*curNode_->parent_, parentsPrevIndex);
         ++nextIter;
     }
 
     // else return end iterator
     else {
-        nextIter = Iterator(curNode_, S-1);
+        nextIter = Iterator(*curNode_, S-1);
     }
 
     swap(nextIter);
@@ -137,7 +137,7 @@ template<typename K, typename T, uint32_t S>
 int32_t Iterator<K, T, S>::findValidSucceedingChildIndex(const Node<K, T, S> &parent, int32_t previousIndex) {
     int32_t wlkr(previousIndex + 1);
     while (wlkr < S) {
-        if (parent.child.at(wlkr) != nullptr)
+        if (parent.child_.at(wlkr).get() != nullptr)
             break;
         ++wlkr;
     }
@@ -147,7 +147,7 @@ int32_t Iterator<K, T, S>::findValidSucceedingChildIndex(const Node<K, T, S> &pa
 template<typename K, typename T, uint32_t S>
 int32_t Iterator<K, T, S>::findChildsIndex(const Node<K, T, S> &parent, const Node<K, T, S> &child) {
     for (uint32_t i(0); i < S; ++i) {
-        if (parent.child.at(i).get() == &child)
+        if (parent.child_.at(i).get() == &child)
             return i;
     }
     return -1;
