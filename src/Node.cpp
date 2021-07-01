@@ -17,9 +17,9 @@ Node<K, T, S>::Node(K key, Node* parent) : key_(key), parent_(parent), value_(st
 template<typename K, typename T, uint32_t S>
 Node<K, T, S>::Node(const Node &rhs) : parent_(nullptr), key_(rhs.key_), value_(rhs.value_), child_(std::vector<std::unique_ptr<Node<K,T,S>>>(S)) {
     for (uint32_t i(0); i < S; ++i) {
-        if (rhs.child.at(i).get() != nullptr) {
-            child_.at(i) = std::make_unique<Node<K, T, S>>(*(rhs.child.at(i)));
-            child_.at(i)->parent = this;
+        if (rhs.child_.at(i).get() != nullptr) {
+            child_.at(i) = std::make_unique<Node<K, T, S>>(*(rhs.child_.at(i)));
+            child_.at(i)->parent_ = this;
         }
     }
 }
@@ -57,14 +57,14 @@ bool Node<K, T, S>::operator==(const Node &rhs) {
     if ((key_ == rhs.key_) && (value_ == rhs.value_)) {
         for (uint32_t i(0); i < S; ++i) {
             if (child_.at(i).get() == nullptr) {
-                if (rhs.child.at(i).get() != nullptr)
+                if (rhs.child_.at(i).get() != nullptr)
                     return false;
             }
             else {
-                if (rhs.child.at(i).get() == nullptr)
+                if (rhs.child_.at(i).get() == nullptr)
                     return false;
 
-                if (*(child_.at(i)) != *(rhs.child.at(i)))
+                if (*(child_.at(i)) != *(rhs.child_.at(i)))
                     return false;
             }
         }
