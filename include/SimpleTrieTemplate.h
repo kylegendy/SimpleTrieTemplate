@@ -9,6 +9,7 @@
 #include <string>
 #include <stack>
 #include "Iterator.h"
+#include "DefaultParameters.h"
 
 /**
  * -1 if cur node's key is equivalent to input,
@@ -20,7 +21,7 @@
  * -2 if not found
  */
 template <typename K, typename T, uint32_t S>
-class Awful_Indexer {
+class BinTrie_Indexer {
 public:
     // called when not inserting
     int32_t operator()(K& input, const Node<K,T,S>* node) {
@@ -52,9 +53,9 @@ class SimpleTrieTemplate;
  *
  */
 template<typename K, typename T, uint32_t S, typename Indexer>
-class Awful_Eraser {
+class BinTrie_Eraser {
 public:
-    void operator()(Node<K,T,S>* &ancestor, Node<K,T,S>* &descendant, SimpleTrieTemplate<K,T,S,Indexer,Awful_Eraser<K,T,S,Indexer>> &trie) {
+    void operator()(Node<K,T,S>* &ancestor, Node<K,T,S>* &descendant, SimpleTrieTemplate<K,T,S,Indexer,BinTrie_Eraser<K,T,S,Indexer>> &trie) {
 
         std::stack<std::pair<K,T>> stk;
         mergeStack(stk, getStack(descendant->child_.at(0).get()));
@@ -106,7 +107,7 @@ public:
     }
 };
 
-template <typename K, typename T, uint32_t S = 2, typename Indexer = Awful_Indexer<K,T,S>, typename Eraser = Awful_Eraser<K,T,S,Indexer>>
+template <typename K, typename T, uint32_t S = 2, typename Indexer = BinTrie_Indexer<K,T,S>, typename Eraser = BinTrie_Eraser<K,T,S,Indexer>>
 class SimpleTrieTemplate {
 public:
 
@@ -185,7 +186,7 @@ public:
      * swaps the contents
      * @param rhs - the container to exchange the contents with
      */
-    void swap(SimpleTrieTemplate& rhs);
+    void swap(SimpleTrieTemplate& rhs) noexcept;
 
 //////////////////////////////////////////////////////
 //// LOOKUPS
@@ -246,10 +247,10 @@ private:
 //////////////////////////////////////////////////////
 //// PRIVATE HELPER METHODS
 
-    std::pair<bool, iterator> scout_helper(key_type& key, const Node* curNode);
+    static std::pair<bool, iterator> scout_helper(key_type& key, const Node* curNode, key_indexer& indexer);
 
-    iterator insert_helper(Node* &curNode, key_type& article, mapped_type& value);
-    iterator insert_helper(Node* &&curNode, key_type& article, mapped_type& value);
+    static iterator insert_helper(Node* &curNode, key_type& article, mapped_type& value, key_indexer& indexer);
+    static iterator insert_helper(Node* &&curNode, key_type& article, mapped_type& value, key_indexer& indexer);
 
     void checkIterPtr_helper(Node* &ptr);
 
