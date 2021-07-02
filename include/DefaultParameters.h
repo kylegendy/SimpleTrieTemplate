@@ -24,8 +24,7 @@ public:
             input = input.substr(diff);
             return findChildIndex(input.at(0));
         }
-
-        throw std::logic_error("not sure what heppened here lmao\n");
+        return -2;
     }
 
     // called when inserting
@@ -92,29 +91,29 @@ public:
 
 class Radix_Eraser {
 public:
-    void operator()(Node<std::string,bool,26> &ancestor, Node<std::string,bool,26> &descendant, SimpleTrieTemplate<std::string,bool,26,Radix_Indexer,Radix_Eraser> &trie) {
-        assert(descendant != *trie.end().get());
-        uint16_t cnt(childCount(descendant));
+    void operator()(Node<std::string,bool,26>* &ancestor, Node<std::string,bool,26>* &descendant, SimpleTrieTemplate<std::string,bool,26,Radix_Indexer,Radix_Eraser> &trie) {
+        assert(descendant != trie.end().get());
+        uint16_t cnt(childCount(*descendant));
         if (cnt == 0) { // if child empty
             handleDelete(ancestor,descendant,trie);
 
-            if (descendant != *trie.end().get()) // handle descendant now that you've moved it, consider it the parent
+            if (descendant != trie.end().get()) // handle descendant now that you've moved it, consider it the parent
                 handleCompacting(ancestor,descendant,trie);
         }
         else { // has children
 
             // empty out value so compacting will work
-            descendant.value_ = std::nullopt;
+            descendant->value_ = std::nullopt;
 
             // handle potential children
             handleCompacting(ancestor,descendant,trie);
 
-            if (!descendant.value_ && childCount(descendant) < 2)
+            if (!descendant->value_ && childCount(*descendant) < 2)
                 handleDelete(ancestor,descendant,trie);
 
             // handle parent now that you've changed descendant
-            if (descendant != *trie.end().get())
-                handleCompacting(ancestor,*descendant.parent_,trie);
+            if (descendant != trie.end().get())
+                handleCompacting(ancestor,descendant->parent_,trie);
         }
     }
 
@@ -128,10 +127,10 @@ public:
         throw std::domain_error("child's index not found -- potential linking problem");
     }
 
-    static void handleCompacting(Node<std::string,bool,26>& ancestor, Node<std::string,bool,26>& parent, SimpleTrieTemplate<std::string,bool,26,Radix_Indexer,Radix_Eraser> &trie) {
+    static void handleCompacting(Node<std::string,bool,26>* &ancestor, Node<std::string,bool,26>* &parent, SimpleTrieTemplate<std::string,bool,26,Radix_Indexer,Radix_Eraser> &trie) {
         // if doesn't have assigned value
-        if (!parent.value_) {
-            uint16_t cnt(childCount(parent));
+        if (!parent->value_) {
+            uint16_t cnt(childCount(*parent));
 
             if (cnt == 0) { // if child empty
                 // rollback delete and compact delete
@@ -140,14 +139,14 @@ public:
             }
             else if (cnt == 1) { // if only one child
                 for (uint16_t i(0); i < 26; ++i) {
-                    if (parent.child_.at(i) != nullptr) {
+                    if (parent->child_.at(i) != nullptr) {
 
                         // merge
-                        Node<std::string,bool,26>* ph_copy(new Node<std::string,bool,26>(*parent.child_.at(i).get()));
-                        ph_copy->key_ = parent.key_ + ph_copy->key_;
-                        ph_copy->parent_ = parent.parent_;
+                        Node<std::string,bool,26>* ph_copy(new Node<std::string,bool,26>(*parent->child_.at(i).get()));
+                        ph_copy->key_ = parent->key_ + ph_copy->key_;
+                        ph_copy->parent_ = parent->parent_;
 
-                        parent.swap(*ph_copy);
+                        parent->swap(*ph_copy);
                         break;
                     }
                 }
@@ -164,13 +163,13 @@ public:
         return cnt;
     }
 
-    static void handleDelete(Node<std::string,bool,26> &ancestor, Node<std::string,bool,26> &descendant, SimpleTrieTemplate<std::string,bool,26,Radix_Indexer,Radix_Eraser> &trie) {
-        if (descendant != *trie.end().get()) {
-            uint16_t childIndex(findChildsIndex(descendant)); // find the index of descendant in parents child
+    static void handleDelete(Node<std::string,bool,26>* &ancestor, Node<std::string,bool,26>* &descendant, SimpleTrieTemplate<std::string,bool,26,Radix_Indexer,Radix_Eraser> &trie) {
+        if (descendant != trie.end().get()) {
+            uint16_t childIndex(findChildsIndex(*descendant)); // find the index of descendant in parents child
             if (ancestor == descendant)
-                ancestor = descendant.parent_;
-            descendant = descendant.parent_;
-            descendant.child_.at(childIndex).reset();
+                ancestor = descendant->parent_;
+            descendant = descendant->parent_;
+            descendant->child_.at(childIndex).reset();
         }
     }
 };
