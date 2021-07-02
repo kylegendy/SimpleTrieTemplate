@@ -5,7 +5,7 @@
 #include <iostream>
 #include <map>
 #include "./include/SimpleTrieTemplate.h"
-//#include "./include/DefaultParameters.h"
+#include "./include/DefaultParameters.h"
 
 template <typename K, typename T, uint32_t S, typename Indexer, typename Eraser>
 void run_standard_tests(SimpleTrieTemplate<K, T, S, Indexer, Eraser> &trie, std::list<std::pair<K,T>>& inserts);
@@ -191,11 +191,11 @@ int main() {
     list.push_front(std::pair<std::string,bool>("HEIGHTS",false));
     list.push_front(std::pair<std::string,bool>("HEIGHT",true));
 
-//    SimpleTrieTemplate<std::string,bool,26,RadixIndexer,RadixEraser> text_trie;
-//
-//    std::cout << "RADIX TRIE TESTS:\n";
-//    run_standard_tests(text_trie,list);
-//    std::cout << "\n\n";
+    SimpleTrieTemplate<std::string,bool,26,Radix_Indexer,Radix_Eraser> text_trie;
+
+    std::cout << "RADIX TRIE TESTS:\n";
+    run_standard_tests(text_trie,list);
+    std::cout << "\n\n";
 
 //    while (!list.empty()) {
 //        if (list.front().first == "BIN") {
