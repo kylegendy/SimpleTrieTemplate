@@ -9,7 +9,6 @@
 #include <string>
 #include <stack>
 #include "Iterator.h"
-#include "DefaultParameters.h"
 
 /**
  * -1 if cur node's key is equivalent to input,
