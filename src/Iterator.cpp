@@ -125,7 +125,7 @@ Iterator<K,T,S> Iterator<K, T, S>::operator++(int) {
 
 template<typename K, typename T, uint32_t S>
 bool Iterator<K, T, S>::operator==(const Iterator &rhs) const {
-    return this == &rhs || *curNode_ == *(rhs.curNode_);
+    return this == &rhs || curNode_ == rhs.curNode_;
 }
 
 template<typename K, typename T, uint32_t S>
