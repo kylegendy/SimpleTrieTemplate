@@ -594,6 +594,8 @@ std::string size_checksValid_cases(std::list<std::pair<K,T>> inserts) {
     int32_t i(0);
     while (!inserts.empty()) {
         out += size_checkValid(trie,i,i+1);
+        if (trie.contains(inserts.front().first))
+            --i;
         trie.insertOrAssign(inserts.front());
         inserts.pop_front();
         ++i;
