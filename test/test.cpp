@@ -4,8 +4,8 @@
 
 #include <iostream>
 #include <map>
-#include "SimpleTrieTemplate.h"
-#include "DefaultParameters.h"
+#include "../include/SimpleTrieTemplate.h"
+#include "../include/DefaultParameters.h"
 
 template <typename K, typename T, uint32_t S, typename Indexer, typename Eraser>
 void run_standard_tests(SimpleTrieTemplate<K, T, S, Indexer, Eraser> &trie, std::list<std::pair<K,T>>& inserts);
