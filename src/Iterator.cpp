@@ -77,7 +77,7 @@ Iterator<K,T,S> &Iterator<K, T, S>::moveUp() {
     // todo deal with root? if it goes wrong then it will assert for you
     int32_t index = findChildsIndex(*(curNode_->parent_), *curNode_);
     assert(index > -1 && index < S);
-    Iterator ph(curNode_->parent_, index);
+    Iterator ph(*curNode_->parent_, index);
     swap(ph);
     return *this;
 }
