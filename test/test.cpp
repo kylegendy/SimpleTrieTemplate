@@ -191,7 +191,7 @@ int main() {
     list.push_front(std::pair<std::string,bool>("HEIGHTS",false));
     list.push_front(std::pair<std::string,bool>("HEIGHT",true));
 
-    SimpleTrieTemplate<std::string,bool,26,Radix_Indexer,Radix_Eraser> text_trie;
+    SimpleTrieTemplate<std::string,bool,26,Radix_Indexer<bool>,Radix_Eraser<bool>> text_trie;
 
     std::cout << "RADIX TRIE TESTS:\n";
     run_standard_tests(text_trie,list);

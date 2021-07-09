@@ -8,10 +8,11 @@
 #include "SimpleTrieTemplate.h"
 
 // assume all upper-case letters
+template<typename T>
 class Radix_Indexer {
 public:
     // called when not inserting
-    int32_t operator()(std::string& input, const Node<std::string,bool,26>* node) {
+    int32_t operator()(std::string& input, const Node<std::string,T,26>* node) {
         // assume never nullptr
         int16_t diff(findDeviation(input,node->key_));
 
@@ -28,10 +29,10 @@ public:
     }
 
     // called when inserting
-    int32_t operator()(std::string& input, Node<std::string,bool,26>* &node) {
+    int32_t operator()(std::string& input, Node<std::string,T,26>* &node) {
         // if nullptr, found your node!!
         if (node == nullptr) {
-            node = new Node<std::string,bool,26>(input);
+            node = new Node<std::string,T,26>(input);
             input = "";
             return -1;
         }
@@ -77,8 +78,8 @@ public:
         return letter - 'A';
     }
 
-    static void breakUpNode(Node<std::string,bool,26>& node, int16_t diff) {
-        Node<std::string,bool,26> *ph_copy(new Node(node)), *def(new Node(node.parent_)); // make a copy and default
+    static void breakUpNode(Node<std::string,T,26>& node, int16_t diff) {
+        Node<std::string,T,26> *ph_copy(new Node(node)), *def(new Node(node.parent_)); // make a copy and default
 
         node.swap(*def); // give default vals
         node.key_ = ph_copy->key_.substr(0,diff); // reassign with prefix of key
@@ -89,9 +90,10 @@ public:
     }
 };
 
+template<typename T>
 class Radix_Eraser {
 public:
-    void operator()(Node<std::string,bool,26>* &ancestor, Node<std::string,bool,26>* &descendant, SimpleTrieTemplate<std::string,bool,26,Radix_Indexer,Radix_Eraser> &trie) {
+    void operator()(Node<std::string,T,26>* &ancestor, Node<std::string,T,26>* &descendant, SimpleTrieTemplate<std::string,T,26,Radix_Indexer<T>,Radix_Eraser<T>> &trie) {
         assert(descendant != trie.end().get());
         uint16_t cnt(childCount(*descendant));
         if (cnt == 0) { // if child empty
@@ -117,9 +119,9 @@ public:
         }
     }
 
-    static uint32_t findChildsIndex(Node<std::string,bool,26> &child) {
+    static uint32_t findChildsIndex(Node<std::string,T,26> &child) {
         assert(child.parent_ != nullptr);
-        Node<std::string,bool,26>* parptr(child.parent_);
+        Node<std::string,T,26>* parptr(child.parent_);
         for (uint32_t i(0); i < 26; ++i) {
             if (parptr->child_.at(i).get() == &child)
                 return i;
@@ -127,7 +129,7 @@ public:
         throw std::domain_error("child's index not found -- potential linking problem");
     }
 
-    static void handleCompacting(Node<std::string,bool,26>* &ancestor, Node<std::string,bool,26>* &parent, SimpleTrieTemplate<std::string,bool,26,Radix_Indexer,Radix_Eraser> &trie) {
+    static void handleCompacting(Node<std::string,T,26>* &ancestor, Node<std::string,T,26>* &parent, SimpleTrieTemplate<std::string,T,26,Radix_Indexer<T>,Radix_Eraser<T>> &trie) {
         // if doesn't have assigned value
         if (!parent->value_) {
             uint16_t cnt(childCount(*parent));
@@ -142,7 +144,7 @@ public:
                     if (parent->child_.at(i) != nullptr) {
 
                         // merge
-                        Node<std::string,bool,26>* ph_copy(new Node<std::string,bool,26>(*parent->child_.at(i).get()));
+                        Node<std::string,T,26>* ph_copy(new Node<std::string,T,26>(*parent->child_.at(i).get()));
                         ph_copy->key_ = parent->key_ + ph_copy->key_;
                         ph_copy->parent_ = parent->parent_;
 
@@ -154,7 +156,7 @@ public:
         }
     }
 
-    static uint16_t childCount(Node<std::string,bool,26>& node) {
+    static uint16_t childCount(Node<std::string,T,26>& node) {
         uint16_t cnt;
         for (uint16_t i(0); i < 26; ++i) {
             if (node.child_.at(i) != nullptr)
@@ -163,7 +165,7 @@ public:
         return cnt;
     }
 
-    static void handleDelete(Node<std::string,bool,26>* &ancestor, Node<std::string,bool,26>* &descendant, SimpleTrieTemplate<std::string,bool,26,Radix_Indexer,Radix_Eraser> &trie) {
+    static void handleDelete(Node<std::string,T,26>* &ancestor, Node<std::string,T,26>* &descendant, SimpleTrieTemplate<std::string,T,26,Radix_Indexer<T>,Radix_Eraser<T>> &trie) {
         if (descendant != trie.end().get()) {
             uint16_t childIndex(findChildsIndex(*descendant)); // find the index of descendant in parents child
             if (ancestor == descendant)
