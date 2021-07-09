@@ -79,7 +79,7 @@ public:
     }
 
     static void breakUpNode(Node<std::string,T,26>& node, int16_t diff) {
-        Node<std::string,T,26> *ph_copy(new Node(node)), *def(new Node(node.parent_)); // make a copy and default
+        Node<std::string,T,26> *ph_copy(new Node<std::string,T,26>(node)), *def(new Node<std::string,T,26>(node.parent_)); // make a copy and default
 
         node.swap(*def); // give default vals
         node.key_ = ph_copy->key_.substr(0,diff); // reassign with prefix of key
