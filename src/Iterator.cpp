@@ -75,9 +75,9 @@ Iterator<K,T,S> &Iterator<K, T, S>::operator=(Iterator &&rhs) {
 template<typename K, typename T, uint32_t S>
 Iterator<K,T,S> &Iterator<K, T, S>::moveUp() {
     // todo deal with root? if it goes wrong then it will assert for you
-    int32_t index = findChildsIndex(*(curNode_->parent), *curNode_);
+    int32_t index = findChildsIndex(*(curNode_->parent_), *curNode_);
     assert(index > -1 && index < S);
-    Iterator ph(curNode_->parent, index);
+    Iterator ph(curNode_->parent_, index);
     swap(ph);
     return *this;
 }
