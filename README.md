@@ -27,10 +27,10 @@ Node<typename K, typename T, uint32_t S> : the node structure used by SimpleTrie
 ##### Member Variables:
 variable | description
 ---------|---------
-Node* parent_; | a raw pointer to the parent Node of *this
 K key_; | the key held at *this
-std::optional\<T\> value; | an optional that holds a T value
-std::vector\<std::unique_ptr\<Node\>\> child; | a vector of Node type smart pointers that holds S number of children
+Node* parent_; | a raw pointer to the parent Node of *this
+std::optional\<T\> value_; | an optional that holds a T value, ie a mapped_type
+std::vector\<std::unique_ptr\<Node\>\> child_; | a vector of Node type smart pointers that holds S number of children
 
 ##### Member Functions:
 signature | description
@@ -51,20 +51,21 @@ Iterator<typename K, typename T, uin32_t S> : a forwards iterator used to iterat
 
 ##### Member Variables:
 Nothing public, but describing the private variables might prove useful.
-First, a node pointer to the node currently at.  Second, an integer value valled prevIndex, which serves the purpose of navigating through nodes with varying S values.  prevIndex tells where the iterator comes from, if its -1 its comes from the parent, if greater then it comes from a child at the index of prevIndex.
+First, a node pointer to the node currently at.  Second, an integer value called prevIndex, which serves the purpose of navigating through nodes with varying S values.  prevIndex tells where the iterator comes from, if its -1 its comes from the parent, if greater than it comes from a child at the index of prevIndex.
 
 ##### Member Functions:
 signature | description
 ----------|-----------
-Iterator(Node\<K,T,S\>* currentNode = nullptr, int32_t previousIndex = -1); | default constructor, paramaters hold default values
-Iterator(Node\<K,T,S\> &currentNode, int32_t previousIndex); | alternative constructor, the same as the default except that it takes a node by reference instead of address
+Iterator(Node\<K,T,S\> &currentNode, int32_t previousIndex = -1); | constructor
 Iterator(const Iterator &rhs); | copy constructor
 Node\<K,T,S\> &operator*(); | dereference operator, returns the node pointed to by the iterator
 Node\<K,T,S\>* operator->(); | accessor operator, returns the address of the node pointed to by the iterator
+Node\<K,T,S\>* &get(); | returns the address of the pointer to the current node
 K &first(); | returns the key held by the node
 std::forward_list\<T\> &second(); | returns the list of values held by the node
 bool isArticleEnd(); | checks if the node is the end of an article, ie if its list is not empty
-static int32_t findChildsIndex(const Node\<K,T,S\> &parent, const Node\<K,T,S\> &child); | returns the index of child within the children of parent, else -1 if not found
+int32_t& getIndex(); | returns the prevIndex value
+static int32_t findChildsIndex(const Node\<K,T,S\> &parent, const Node\<K,T,S\> &child); | returns the index of child within the child member of parent, else -1 if not found
 void swap(Iterator& rhs); | swaps the values of *this and rhs
 Iterator &operator=(Iterator &rhs); | assignment operator by reference, makes logically equivalent from itself onwards through the descendents, but does not assign parents
 Iterator &operator=(Iterator &&rhs); | assignment operator by move, does the exact same as the assignment operator by reference
@@ -83,28 +84,27 @@ SimpleTrieTemplate\<K,T,S,Indexer,Modifier,Eraser\> : a template for a trie data
 ##### Member Variables:
 variable | description
 ---------|---------
-uint32_t numberArticles; | an integer value that's number represents the number of articles inputted to the trie
-std::unique_ptr\<Node\> root; | a pointer to the first node of the trie
-key_indexer indexer; | the instance of Indexer used by the trie, a functor
-key_modifier modifier; | the instance of Modifier used by the trie, a functor
-key_eraser eraser; | the instance of Eraser used by the trie, a functor
+uint32_t numberArticles_; | an integer value that's number represents the number of articles inputted to the trie
+key_indexer indexer_; | the instance of Indexer used by the trie, a functor
+key_eraser eraser_; | the instance of Eraser used by the trie, a functor
+Node* root_; | a pointer to the first node of the trie
 
 ##### Member Functions:
 signature | description
 ----------|-----------
 explicit SimpleTrieTemplate(); | default constructor
-explicit SimpleTrieTemplate(const SimpleTrieTemplate& rhs); | copy constructor
-SimpleTrieTemplate &operator=(const SimpleTrieTemplate& rhs); | assignment operator
+explicit SimpleTrieTemplate(...parameters...); parameters include (const SimpleTrieTemplate& rhs) or (const SimpleTrieTemplate&& rhs) | copy constructor
+SimpleTrieTemplate &operator=(...parameters...); parameters include (const SimpleTrieTemplate& rhs) or (const SimpleTrieTemplate&& rhs) | assignment operator
 bool empty() const noexcept; | returns true if size() returns 0, else false
 uint32_t size() const noexcept; | returns numberArticles
 void clear() noexcept; | empties the trie such that empty() will return true
-iterator insert(parameters); | So there's a lot of inserts... and they all basically do the same thing, just with different types of parameters.  In the end, they insert values at the specified article, and return an iterator at the end of the node sequence
+iterator insertOrAssign(...parameters...); parameters include (std::pair<key_type,mapped_type>& p, Node* ancestor = nullptr) or (std::pair<key_type,mapped_type>&& p, Node* ancestor = nullptr) or (key_type article, mapped_type& value, Node* ancestor = nullptr) or (key_type article, mapped_type&& value, Node* ancestor = nullptr) | So there's a lot of inserts... and they all basically do the same thing, just with different types of parameters.  In the end, they insert values at the specified article, or if the article is already present then will assign the value, and return an iterator at the end of the node sequence
 void erase(key_type article,iterator ancestor = iterator()); | erases the article from the trie starting at ancestor.  If no ancestor is given, it assumes the root of the trie.
 void erase(iterator& descendant, iterator ancestor = iterator()); | erases all articles between iterators
 void swap(SimpleTrieTemplate& rhs); | swaps all values between *this and rhs
 iterator find(key_type article); | returns an iterator at the end of the node sequence of the article within the trie, else returns end()
-std::pair\<bool,std::unique_ptr\<iterator\>\> scout(key_type article,iterator ancestor = iterator()); | looks for the article, if found returns a pair where its first equals true, and second equals an iterator at the end of the article's node sequence.  Else, it returns false and an iterator at the last node in sequence that still follows the article.
-bool contains(key_type article,iterator ancestor = iterator()); | returns true if the trie contains the article at ancestor, else false
+std::pair\<bool,iterator\> scout(key_type article,Node* ancestor = nullptr); | looks for the article, if found returns a pair where its first equals true, and second equals an iterator at the end of the article's node sequence.  Else, it returns false and an iterator at the last node in sequence that still follows the article.
+bool contains(key_type article,Node* ancestor = nullptr); | returns true if the trie contains the article at ancestor, else false
 bool operator==(const SimpleTrieTemplate& rhs) const; | checks for logical equivalence between *this and rhs, excluding that of indexer, modifier, and eraser
 bool operator!=(const SimpleTrieTemplate& rhs) const; | returns the opposite of operator==()
 iterator begin(); | returns an iterator at the first node

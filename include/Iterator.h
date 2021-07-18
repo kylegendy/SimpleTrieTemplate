@@ -58,7 +58,7 @@ public:
     K &first();
 
     /**
-     * @return the list of values
+     * @return the value
      */
     T &second();
 
