@@ -8,18 +8,19 @@
 #include "../include/Node.h"
 
 template<typename K, typename T, uint32_t S>
-Node<K, T, S>::Node(Node *parent) : parent_(parent), value_(std::nullopt), child_(std::vector<std::unique_ptr<Node<K,T,S>>>(S)) {}
+Node<K, T, S>::Node(Node *parent) : parent_(parent), value_(std::nullopt), child_() {}
 
 template<typename K, typename T, uint32_t S>
-Node<K, T, S>::Node(K key, Node* parent) : key_(key), parent_(parent), value_(std::nullopt), child_(std::vector<std::unique_ptr<Node<K,T,S>>>(S)) {
+Node<K, T, S>::Node(K key, Node* parent) : key_(key), parent_(parent), value_(std::nullopt), child_() {
 }
 
 template<typename K, typename T, uint32_t S>
-Node<K, T, S>::Node(const Node &rhs) : parent_(nullptr), key_(rhs.key_), value_(rhs.value_), child_(std::vector<std::unique_ptr<Node<K,T,S>>>(S)) {
+Node<K, T, S>::Node(const Node &rhs) : parent_(nullptr), key_(rhs.key_), value_(rhs.value_), child_() {
+    // assign children
     for (uint32_t i(0); i < S; ++i) {
-        if (rhs.child_.at(i).get() != nullptr) {
-            child_.at(i) = std::make_unique<Node<K, T, S>>(*(rhs.child_.at(i)));
-            child_.at(i)->parent_ = this;
+        if (rhs.child_[i].get() != nullptr) {
+            child_[i] = std::make_unique<Node<K,T,S>>(*(rhs.child_[i]));
+            child_[i]->parent_ = this;
         }
     }
 }
@@ -50,7 +51,7 @@ Node<K,T,S> &Node<K, T, S>::operator=(const Node &&rhs) {
 
 template<typename K, typename T, uint32_t S>
 bool Node<K, T, S>::operator==(const Node &rhs) {
-    //todo should this include comparing child?
+    //todo should this include comparing child? NO
     if (this == &rhs)
         return true;
 

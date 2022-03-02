@@ -5,7 +5,6 @@
 #ifndef SIMPLETRIETEMPLATE_NODE_H
 #define SIMPLETRIETEMPLATE_NODE_H
 
-#include <vector>
 #include <optional>
 
 template<typename K, typename T, uint32_t S>
@@ -19,6 +18,7 @@ struct Node {
 
     ~Node() = default;
 
+    // swaps all elements
     void swap(Node &rhs) noexcept;
 
     Node& operator=(const Node& rhs);
@@ -34,7 +34,7 @@ struct Node {
 
     std::optional<T> value_;
 
-    std::vector<std::unique_ptr<Node<K,T,S>>> child_;
+    std::unique_ptr<Node<K,T,S>> child_[S];
 
 };
 
